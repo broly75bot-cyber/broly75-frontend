@@ -19,11 +19,7 @@
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{
-    background:
-      radial-gradient(circle 90px at 12% 18%, #4A6B7A 0%, #2E4550 55%, transparent 75%),
-      radial-gradient(circle 55px at 82% 10%, #6B4A3A 0%, #3D2A20 55%, transparent 75%),
-      radial-gradient(circle 130px at 50% -5%, #3A5A4A 0%, #24352C 60%, transparent 78%),
-      linear-gradient(180deg, #050A14 0%, #0A1D2A 22%, #1E4A3E 42%, #E88A4A 62%, #F4B860 72%, #3A2418 90%, #1A100A 100%);
+    background:#040604;
     color:var(--paper);
     font-family:'Space Grotesk', sans-serif;
     -webkit-font-smoothing:antialiased;
@@ -32,16 +28,90 @@
     min-height:100vh;
     position:relative;
   }
+  .bg-wordmark{
+    position:fixed;
+    inset:0;
+    z-index:-2;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    pointer-events:none;
+  }
+  .bg-wordmark span{
+    font-family:'Anton', sans-serif;
+    font-size:22vw;
+    line-height:0.85;
+    color:#0A0F0A;
+    text-transform:uppercase;
+    text-align:center;
+    transform:rotate(-8deg) scale(1.15);
+    text-shadow:
+      0 0 30px rgba(212,255,61,0.9),
+      0 0 70px rgba(212,255,61,0.6),
+      0 0 130px rgba(212,255,61,0.4);
+    -webkit-text-stroke:2px rgba(212,255,61,0.35);
+  }
+
+  #splash{
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    background:#040604;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    transition:opacity .5s ease, visibility .5s ease;
+  }
+  #splash.hide{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+  }
+  #splash .splash-logo{
+    font-family:'Anton', sans-serif;
+    font-size:15vw;
+    line-height:0.9;
+    text-transform:uppercase;
+    text-align:center;
+    color:#0A0F0A;
+    -webkit-text-stroke:1.5px rgba(212,255,61,0.5);
+    animation:splashPulse 1.4s ease-in-out infinite;
+  }
+  #splash .splash-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:rgba(212,255,61,0.6);
+    animation:splashFade 1.4s ease-in-out infinite;
+  }
+  @keyframes splashPulse{
+    0%, 100%{
+      text-shadow:
+        0 0 20px rgba(212,255,61,0.6),
+        0 0 45px rgba(212,255,61,0.4),
+        0 0 80px rgba(212,255,61,0.25);
+    }
+    50%{
+      text-shadow:
+        0 0 35px rgba(212,255,61,0.95),
+        0 0 80px rgba(212,255,61,0.7),
+        0 0 140px rgba(212,255,61,0.45);
+    }
+  }
+  @keyframes splashFade{
+    0%, 100%{ opacity:0.4; }
+    50%{ opacity:1; }
+  }
   body::before{
     content:'';
     position:fixed;
     inset:0;
-    z-index:-2;
-    background:
-      radial-gradient(ellipse 60% 40% at 20% 15%, rgba(120,255,150,0.3), transparent 60%),
-      radial-gradient(ellipse 50% 30% at 75% 8%, rgba(100,255,180,0.22), transparent 60%),
-      radial-gradient(ellipse 70% 20% at 45% 20%, rgba(140,255,160,0.18), transparent 65%);
-    filter:blur(2px);
+    z-index:-1;
+    background:radial-gradient(ellipse 70% 60% at 50% 45%, transparent 30%, #040604 85%);
   }
   body::after{
     content:'';
@@ -49,11 +119,7 @@
     left:0; right:0; bottom:0;
     height:34vh;
     z-index:-1;
-    background:
-      radial-gradient(ellipse 65% 100% at 25% 100%, rgba(6,10,8,0.6), transparent 60%),
-      radial-gradient(ellipse 55% 90% at 88% 100%, rgba(6,10,8,0.55), transparent 65%),
-      linear-gradient(180deg, transparent 0%, #070C08 100%);
-    clip-path: polygon(0% 100%, 0% 55%, 15% 48%, 28% 60%, 40% 40%, 55% 56%, 68% 34%, 82% 52%, 100% 42%, 100% 100%);
+    background:linear-gradient(180deg, transparent 0%, #040604 100%);
   }
 
   header{
@@ -473,6 +539,37 @@
     overflow-y:auto;
     z-index:10;
   }
+  #checkout-overlay{
+    background:#040604;
+    position:fixed;
+  }
+  #checkout-overlay::before{
+    content:'BROLY\A75';
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Anton', sans-serif;
+    font-size:20vw;
+    line-height:0.85;
+    color:#0A0F0A;
+    text-transform:uppercase;
+    text-align:center;
+    transform:rotate(-8deg) scale(1.3);
+    text-shadow:
+      0 0 30px rgba(212,255,61,0.9),
+      0 0 70px rgba(212,255,61,0.6),
+      0 0 130px rgba(212,255,61,0.4);
+    -webkit-text-stroke:2px rgba(212,255,61,0.35);
+    pointer-events:none;
+    z-index:0;
+    white-space:pre-line;
+  }
+  #checkout-overlay .overlay-inner{
+    position:relative;
+    z-index:1;
+  }
   .overlay.show{ transform:translateY(0); }
   .overlay-inner{ padding:26px 20px 40px; }
   .close-row{
@@ -509,6 +606,101 @@
     font-size:15px;
     font-weight:600;
     color:var(--cyan);
+  }
+
+  .promo-row{
+    display:flex;
+    gap:8px;
+    margin-bottom:6px;
+  }
+  .promo-row input{
+    flex:1;
+    margin-bottom:0;
+  }
+  .promo-row button{
+    background:var(--cyan);
+    color:var(--ink);
+    border:none;
+    padding:0 18px;
+    border-radius:10px;
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:700;
+    font-size:12px;
+    text-transform:uppercase;
+  }
+  .promo-status{
+    font-size:12px;
+    font-family:'IBM Plex Mono', monospace;
+    margin-bottom:16px;
+    min-height:14px;
+  }
+  .promo-status.ok{ color:var(--lime); }
+  .promo-status.err{ color:var(--pink); }
+
+  .fulfillment-3{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:8px;
+    margin-bottom:8px;
+  }
+  .fulfillment-3 button{
+    padding:12px 4px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    border:2px solid var(--line);
+    background:none;
+    color:var(--paper);
+    border-radius:10px;
+    line-height:1.3;
+  }
+  .fulfillment-3 button.active{
+    background:#151417;
+    border-color:var(--lime);
+    color:var(--lime);
+  }
+
+  .recap-box{
+    background:#151417;
+    border:2px solid var(--line);
+    border-radius:14px;
+    padding:16px;
+    margin-top:8px;
+  }
+  .recap-line{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    padding:6px 0;
+    color:rgba(241,239,233,0.8);
+  }
+  .recap-line.total{
+    border-top:1px solid var(--line);
+    margin-top:6px;
+    padding-top:10px;
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:700;
+    color:var(--lime);
+    font-size:15px;
+  }
+
+  .telegram-order-btn{
+    width:100%;
+    background:#229ED9;
+    color:#fff;
+    border:none;
+    padding:15px;
+    border-radius:30px;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-top:14px;
   }
 
   .form-block{ margin-top:22px; }
@@ -594,6 +786,14 @@
 </head>
 <body>
 
+<div id="splash">
+  <div class="splash-logo">BROLY<br>75</div>
+  <div class="splash-tag">Chargement de la boutique...</div>
+</div>
+
+
+<div class="bg-wordmark"><span>BROLY<br>75</span></div>
+
 <header>
   <div class="welcome-row">
     <div class="avatar-badge">B</div>
@@ -649,6 +849,13 @@
     <img class="product-hero" id="pd-img" src="" alt="">
     <div class="product-price" id="pd-price"></div>
     <div class="product-cat-tag" id="pd-cat"></div>
+    <div class="product-cat-tag" id="pd-stock" style="margin-left:8px;"></div>
+
+    <div class="section-label">Matière</div>
+    <div class="product-desc" id="pd-material" style="padding:12px 16px;"></div>
+
+    <div class="section-label">Couleur</div>
+    <div class="size-grid" id="pd-colors" style="grid-template-columns:repeat(3, 1fr);"></div>
 
     <div class="section-label">Description</div>
     <div class="product-desc" id="pd-desc"></div>
@@ -689,12 +896,20 @@
     </div>
 
     <div class="form-block">
-      <label>Mode de réception</label>
-      <div class="pay-toggle" id="fulfillment-toggle">
-        <button type="button" class="active" onclick="setFulfillment('livraison', this)">Livraison locale</button>
-        <button type="button" onclick="setFulfillment('envoi', this)">Envoi (colis postal)</button>
+      <label>Code promo</label>
+      <div class="promo-row">
+        <input type="text" id="f-promo" placeholder="Ex: BROLY10">
+        <button type="button" onclick="applyPromo()">Valider</button>
       </div>
-      <p class="warn" id="fulfillment-note" style="margin-top:-6px; margin-bottom:16px;">Remise en main propre ou dépôt local, sous 3–5 jours.</p>
+      <div class="promo-status" id="promo-status"></div>
+
+      <label>Mode de livraison</label>
+      <div class="fulfillment-3" id="fulfillment-toggle">
+        <button type="button" class="active" onclick="setFulfillment('livraison', this)">Livraison<br>locale</button>
+        <button type="button" onclick="setFulfillment('envoi', this)">Envoi<br>postal</button>
+        <button type="button" onclick="setFulfillment('retrait', this)">Point<br>relais</button>
+      </div>
+      <p class="warn" id="fulfillment-note" style="margin-top:-2px; margin-bottom:18px;">Remise en main propre ou dépôt local, sous 3–5 jours.</p>
 
       <label>Nom complet</label>
       <input type="text" id="f-name" placeholder="Prénom et nom">
@@ -704,7 +919,10 @@
       <input type="text" id="f-contact" placeholder="téléphone ou email">
     </div>
 
-    <div class="btc-box">
+    <div class="section-label">Récapitulatif</div>
+    <div class="recap-box" id="order-recap"></div>
+
+    <div class="btc-box" style="margin-top:22px;">
       <div class="eyebrow">Paiement bitcoin</div>
       <div id="qrcode"></div>
       <div class="btc-addr" id="btc-address">bc1q_exemple_adresse_a_remplacer_00000</div>
@@ -713,8 +931,11 @@
     </div>
 
     <p class="warn" style="margin-top:14px;">On vérifie automatiquement ton paiement sur la blockchain — cette page se met à jour toute seule dès réception.</p>
+
+    <button class="telegram-order-btn" onclick="orderViaTelegram()">✈️ Commander via Telegram</button>
   </div>
 </div>
+
 
 <!-- CONFIRMATION -->
 <div class="overlay" id="confirm-overlay">
@@ -732,28 +953,33 @@ if (tg) { tg.ready(); tg.expand(); }
 
 // --- Exemples de produits à remplacer par ton vrai catalogue ---
 const products = [
-  { id:1, tag:'NEW', cat:'Vestes', name:'Veste en toile brute', price:129, img:'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500', desc:'Veste coupe droite en toile épaisse, doublure intérieure douce. Idéale pour les mi-saisons, coupe légèrement oversize.', sizes:['S','M','L','XL'] },
-  { id:2, tag:'DROP', cat:'Chemises', name:'Chemise col officier', price:69, img:'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500', desc:'Chemise en coton respirant, col officier structuré. Coupe ajustée, boutonnage complet.', sizes:['S','M','L','XL'] },
-  { id:3, tag:'HOT', cat:'Pantalons', name:'Pantalon droit lin', price:89, img:'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=500', desc:'Pantalon en lin mélangé, coupe droite fluide. Taille ajustable, poches latérales profondes.', sizes:['38','40','42','44'] },
-  { id:4, tag:'NEW', cat:'Pulls', name:'Pull col rond laine', price:99, img:'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=500', desc:'Pull en laine mérinos, tricot fin, col rond. Chaud sans être épais, parfait pour superposer.', sizes:['S','M','L','XL'] },
-  { id:5, tag:'LIMITED', cat:'Manteaux', name:'Manteau long structuré', price:189, img:'https://images.unsplash.com/photo-1544923246-77307dd654cb?w=500', desc:'Manteau long à coupe structurée, laine mélangée. Fermeture croisée, épaulettes marquées.', sizes:['S','M','L','XL'] },
-  { id:6, tag:'DROP', cat:'Robes', name:'Robe portefeuille', price:119, img:'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500', desc:'Robe portefeuille en viscose fluide, nouée à la taille. Coupe évasée, tombe légère.', sizes:['XS','S','M','L'] },
+  { id:1, tag:'NEW', cat:'Vestes', name:'Veste en toile brute', price:129, img:'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500', desc:'Veste coupe droite en toile épaisse, doublure intérieure douce. Idéale pour les mi-saisons, coupe légèrement oversize.', sizes:['S','M','L','XL'], material:'100% coton toile, doublure polyester recyclé', colors:['Kaki','Noir','Beige'], stock:'En stock' },
+  { id:2, tag:'DROP', cat:'Chemises', name:'Chemise col officier', price:69, img:'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500', desc:'Chemise en coton respirant, col officier structuré. Coupe ajustée, boutonnage complet.', sizes:['S','M','L','XL'], material:'100% coton peigné', colors:['Blanc','Bleu ciel'], stock:'En stock' },
+  { id:3, tag:'HOT', cat:'Pantalons', name:'Pantalon droit lin', price:89, img:'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=500', desc:'Pantalon en lin mélangé, coupe droite fluide. Taille ajustable, poches latérales profondes.', sizes:['38','40','42','44'], material:'55% lin, 45% coton', colors:['Sable','Noir'], stock:'Stock limité' },
+  { id:4, tag:'NEW', cat:'Pulls', name:'Pull col rond laine', price:99, img:'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=500', desc:'Pull en laine mérinos, tricot fin, col rond. Chaud sans être épais, parfait pour superposer.', sizes:['S','M','L','XL'], material:'100% laine mérinos', colors:['Gris chiné','Vert olive','Bordeaux'], stock:'En stock' },
+  { id:5, tag:'LIMITED', cat:'Manteaux', name:'Manteau long structuré', price:189, img:'https://images.unsplash.com/photo-1544923246-77307dd654cb?w=500', desc:'Manteau long à coupe structurée, laine mélangée. Fermeture croisée, épaulettes marquées.', sizes:['S','M','L','XL'], material:'70% laine, 30% polyamide', colors:['Camel','Noir'], stock:'Dernières pièces' },
+  { id:6, tag:'DROP', cat:'Robes', name:'Robe portefeuille', price:119, img:'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500', desc:'Robe portefeuille en viscose fluide, nouée à la taille. Coupe évasée, tombe légère.', sizes:['XS','S','M','L'], material:'100% viscose', colors:['Terracotta','Noir','Emeraude'], stock:'En stock' },
 ];
-{ id:7, tag:'NEW', cat:'Pulls', name:'Ton nom de produit', price:75, img:'URL_DE_TA_PHOTO', desc:'Ta description ici.', sizes:['S','M','L'] },
-
 
 let selectedSize = null;
+let selectedColor = null;
 let currentProduct = null;
 
 function openProduct(id){
   const p = products.find(x => x.id === id);
   currentProduct = p;
   selectedSize = null;
+  selectedColor = null;
   document.getElementById('pd-img').src = p.img;
   document.getElementById('pd-price').textContent = p.price + ' €';
   document.getElementById('pd-cat').textContent = p.cat;
+  document.getElementById('pd-stock').textContent = p.stock;
+  document.getElementById('pd-material').textContent = p.material;
   document.getElementById('pd-desc').textContent = p.desc;
   document.getElementById('pd-footer-price').textContent = p.price + ' €';
+  document.getElementById('pd-colors').innerHTML = p.colors.map(c => `
+    <div class="size-option" onclick="selectColor(this,'${c}')">${c}</div>
+  `).join('');
   document.getElementById('pd-sizes').innerHTML = p.sizes.map(s => `
     <div class="size-option" onclick="selectSize(this,'${s}')">${s}</div>
   `).join('');
@@ -766,9 +992,16 @@ function selectSize(el, size){
   selectedSize = size;
 }
 
+function selectColor(el, color){
+  document.querySelectorAll('#pd-colors .size-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedColor = color;
+}
+
 function addFromDetail(){
   if (!selectedSize){ alert('Choisis une taille avant d\'ajouter au panier.'); return; }
-  cart[currentProduct.id] = { qty:1, size:selectedSize };
+  if (!selectedColor){ alert('Choisis une couleur avant d\'ajouter au panier.'); return; }
+  cart[currentProduct.id] = { qty:1, size:selectedSize, color:selectedColor };
   updateCartBar();
   closeOverlay('product-overlay');
   if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
@@ -778,6 +1011,28 @@ let cart = {};
 let activeCat = 'Tout';
 let currentOrderId = null;
 let fulfillmentMode = 'livraison';
+let promoCode = null;
+let promoDiscount = 0;
+
+const VALID_PROMOS = { 'BROLY10': 0.10, 'WELCOME5': 0.05 };
+
+function applyPromo(){
+  const input = document.getElementById('f-promo');
+  const status = document.getElementById('promo-status');
+  const code = input.value.trim().toUpperCase();
+  if (VALID_PROMOS[code]){
+    promoCode = code;
+    promoDiscount = VALID_PROMOS[code];
+    status.textContent = `Code appliqué — ${promoDiscount*100}% de réduction`;
+    status.className = 'promo-status ok';
+  } else {
+    promoCode = null;
+    promoDiscount = 0;
+    status.textContent = 'Code invalide';
+    status.className = 'promo-status err';
+  }
+  renderRecap();
+}
 
 function setFulfillment(mode, btn){
   fulfillmentMode = mode;
@@ -792,11 +1047,43 @@ function setFulfillment(mode, btn){
     label.textContent = 'Adresse postale complète';
     addr.placeholder = 'Numéro, rue, ville, code postal, pays';
     note.textContent = 'Envoi par transporteur partout où tu es — délai 5–10 jours selon la destination.';
+  } else if (mode === 'retrait'){
+    label.textContent = 'Point relais souhaité';
+    addr.placeholder = 'Nom ou adresse du point relais le plus proche';
+    note.textContent = 'À récupérer toi-même en point relais, sous 2–4 jours.';
   } else {
     label.textContent = 'Adresse de livraison';
     addr.placeholder = 'Numéro, rue, ville, code postal';
     note.textContent = 'Remise en main propre ou dépôt local, sous 3–5 jours.';
   }
+}
+
+function renderRecap(){
+  const items = cartItems();
+  const subtotal = cartTotal();
+  const discount = subtotal * promoDiscount;
+  const total = subtotal - discount;
+  const lines = items.map(p => `
+    <div class="recap-line"><span>${p.name} (${p.size}/${p.color})</span><span>${p.price} €</span></div>
+  `).join('');
+  const discountLine = promoDiscount > 0
+    ? `<div class="recap-line" style="color:var(--lime);"><span>Réduction (${promoCode})</span><span>-${discount.toFixed(2)} €</span></div>`
+    : '';
+  document.getElementById('order-recap').innerHTML = `
+    ${lines}
+    ${discountLine}
+    <div class="recap-line total"><span>Total</span><span>${total.toFixed(2)} €</span></div>
+  `;
+}
+
+function orderViaTelegram(){
+  const items = cartItems().map(p => `${p.name} (${p.size}/${p.color})`).join(', ');
+  const total = (cartTotal() * (1 - promoDiscount)).toFixed(2);
+  const text = encodeURIComponent(`Bonjour, je souhaite commander : ${items} — Total : ${total}€ — Mode : ${fulfillmentMode}`);
+  // ⚠️ Remplace 'tonbot' par le vrai username de ton bot Telegram
+  const url = `https://t.me/tonbot?text=${text}`;
+  if (tg?.openTelegramLink) tg.openTelegramLink(url);
+  else window.open(url, '_blank');
 }
 
 function renderCats(){
@@ -857,7 +1144,7 @@ function setActiveNav(el){
 function openCart(){
   const lines = cartItems().map(p => `
     <div class="line-item">
-      <span class="lname">${p.name} <span style="color:var(--cyan); font-family:'IBM Plex Mono',monospace; font-size:11px;">— Taille ${p.size}</span></span>
+      <span class="lname">${p.name} <span style="color:var(--cyan); font-family:'IBM Plex Mono',monospace; font-size:11px;">— ${p.size} / ${p.color}</span></span>
       <span class="lprice">${p.price} €</span>
     </div>`).join('');
   document.getElementById('cart-lines').innerHTML = lines || '<p class="sub">Panier vide.</p>';
@@ -870,6 +1157,7 @@ async function openCheckout(){
   document.getElementById('checkout-overlay').classList.add('show');
   document.getElementById('btc-amount').textContent = 'Calcul en cours...';
   document.getElementById('qrcode').innerHTML = '';
+  renderRecap();
 
   const BACKEND_URL = 'https://broly75-backend-production.up.railway.app';
 
@@ -937,6 +1225,10 @@ function confirmOrder(){
 
 renderCats();
 renderGrid();
+
+setTimeout(() => {
+  document.getElementById('splash').classList.add('hide');
+}, 1600);
 </script>
 </body>
 </html>
