@@ -300,23 +300,25 @@
   }
   .product-footer{
     position:fixed;
-    bottom:0; left:0; right:0;
-    background:rgba(11,11,13,0.95);
-    backdrop-filter:blur(8px);
-    border-top:2px solid var(--line);
-    padding:14px 20px 22px;
+    bottom:16px; left:16px; right:16px;
+    background:var(--lime);
+    border:2px solid var(--lime);
+    border-radius:30px;
+    padding:10px;
     display:none;
+    align-items:center;
     gap:10px;
     z-index:15;
+    box-shadow:0 0 24px rgba(212,255,61,0.5);
   }
   .product-footer.show{ display:flex; }
   .add-to-cart-btn{
     flex:1;
-    background:var(--lime);
-    color:var(--ink);
+    background:var(--ink);
+    color:var(--lime);
     border:none;
     padding:16px;
-    border-radius:30px;
+    border-radius:24px;
     font-family:'Space Grotesk', sans-serif;
     font-weight:700;
     font-size:15px;
@@ -324,16 +326,28 @@
     align-items:center;
     justify-content:center;
     gap:10px;
-    box-shadow:0 0 20px rgba(212,255,61,0.4);
   }
   .add-to-cart-btn .btn-price{
-    background:var(--ink);
-    color:var(--lime);
+    background:var(--lime);
+    color:var(--ink);
     padding:4px 10px;
     border-radius:14px;
     font-family:'IBM Plex Mono', monospace;
     font-size:13px;
   }
+  .round-action-btn{
+    width:48px; height:48px;
+    border-radius:50%;
+    border:2px solid var(--ink);
+    background:var(--ink);
+    color:var(--lime);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:19px;
+    flex-shrink:0;
+  }
+  .round-action-btn.telegram{ background:var(--ink); border-color:var(--ink); }
 
   .cats{
     display:flex;
@@ -1559,6 +1573,8 @@
   <button class="add-to-cart-btn" onclick="addFromDetail()">
     🛒 Ajouter <span class="btn-price" id="pd-footer-price"></span>
   </button>
+  <button class="round-action-btn" onclick="closeOverlay('product-overlay'); openCart();">🛍️</button>
+  <button class="round-action-btn telegram" onclick="askAboutProduct()">✈️</button>
 </div>
 
 <!-- CART OVERLAY -->
@@ -1701,6 +1717,17 @@ function addFromDetail(){
   updateCartBar();
   closeOverlay('product-overlay');
   if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+}
+
+function askAboutProduct(){
+  const p = currentProduct;
+  const size = selectedSize || 'taille non précisée';
+  const color = selectedColor || 'couleur non précisée';
+  const text = `Bonjour, je suis intéressé par ${p.name} (${color}, ${size}). Est-ce disponible ?`;
+  // ⚠️ Remplace 'tonbot' par le vrai nom d'utilisateur de ton bot — seul un chat de bot permet un message pré-rempli
+  const url = `https://t.me/tonbot?text=${encodeURIComponent(text)}`;
+  if (tg?.openTelegramLink) tg.openTelegramLink(url);
+  else window.open(url, '_blank');
 }
 
 let cart = {};
