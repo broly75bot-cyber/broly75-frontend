@@ -2292,6 +2292,14 @@ async function loadSiteContent(){
   try {
     const res = await fetch(BACKEND_URL + '/api/content');
     siteContent = await res.json();
+    if (siteContent.wallpaperUrl){
+      document.body.style.backgroundImage = `url('${siteContent.wallpaperUrl}')`;
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundPosition = 'center';
+      document.body.style.backgroundAttachment = 'fixed';
+      const wordmark = document.querySelector('.bg-wordmark');
+      if (wordmark) wordmark.style.display = 'none';
+    }
   } catch (err) {
     console.error('Impossible de charger le contenu du site', err);
   }

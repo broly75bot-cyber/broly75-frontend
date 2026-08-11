@@ -126,7 +126,11 @@
 
   <!-- ONGLET CONTENU -->
   <div class="tab-panel" id="tab-contenu">
-    <h2>Horaires de livraison</h2>
+    <h2>Papier peint</h2>
+    <label>URL de l'image de fond (laisse vide pour garder le décor par défaut)</label>
+    <input id="c-wallpaper" placeholder="https://...">
+
+    <h2 style="margin-top:20px;">Horaires de livraison</h2>
     <div class="form-grid">
       <div><label>Lundi – Mardi</label><input id="c-lunmar"></div>
       <div><label>Mercredi – Jeudi</label><input id="c-merjeu"></div>
@@ -307,6 +311,7 @@ async function loadContent(){
   const res = await fetch(`${BACKEND_URL}/api/content`);
   currentContent = await res.json();
   const c = currentContent;
+  document.getElementById('c-wallpaper').value = c.wallpaperUrl || '';
   document.getElementById('c-lunmar').value = c.hours?.lunMar || '';
   document.getElementById('c-merjeu').value = c.hours?.merJeu || '';
   document.getElementById('c-ven').value = c.hours?.ven || '';
@@ -338,6 +343,7 @@ async function saveContent(){
     a: document.getElementById('faq-a-'+i).value,
   }));
   const body = {
+    wallpaperUrl: document.getElementById('c-wallpaper').value,
     hours: {
       lunMar: document.getElementById('c-lunmar').value,
       merJeu: document.getElementById('c-merjeu').value,
