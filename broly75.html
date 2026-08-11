@@ -305,10 +305,11 @@
     backdrop-filter:blur(8px);
     border-top:2px solid var(--line);
     padding:14px 20px 22px;
-    display:flex;
+    display:none;
     gap:10px;
     z-index:15;
   }
+  .product-footer.show{ display:flex; }
   .add-to-cart-btn{
     flex:1;
     background:var(--lime);
@@ -541,6 +542,24 @@
     overflow-y:auto;
     z-index:10;
   }
+  .sticky-total{
+    position:sticky;
+    top:0;
+    z-index:5;
+    background:var(--lime);
+    color:var(--ink);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 20px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    font-weight:700;
+    text-transform:uppercase;
+    box-shadow:0 4px 14px rgba(0,0,0,0.35);
+  }
+  #sticky-total-amount{ font-size:13px; }
+
   #checkout-overlay{
     background:#040604;
     position:fixed;
@@ -1404,9 +1423,9 @@
     </div>
 
     <div class="long-case-list">
-      <a class="long-case" href="https://t.me/tonbot" target="_blank">
+      <a class="long-case" href="https://t.me/+Pw26j3QCPTRjNzU8" target="_blank">
         <span class="lc-left"><span class="lc-icon"><img src="Telegram.png.WEBP" alt="Telegram"></span><span class="day">Telegram principal</span></span>
-        <span class="time">@tonbot</span>
+        <span class="time">Rejoindre</span>
       </a>
       <a class="long-case" href="https://t.me/toncanal" target="_blank">
         <span class="lc-left"><span class="lc-icon"><img src="Telegram.png.WEBP" alt="Telegram"></span><span class="day">Canal Telegram</span></span>
@@ -1534,12 +1553,12 @@
     <div class="section-label">Choisis une taille</div>
     <div class="size-grid" id="pd-sizes"></div>
   </div>
+</div>
 
-  <div class="product-footer">
-    <button class="add-to-cart-btn" onclick="addFromDetail()">
-      🛒 Ajouter <span class="btn-price" id="pd-footer-price"></span>
-    </button>
-  </div>
+<div class="product-footer" id="product-footer">
+  <button class="add-to-cart-btn" onclick="addFromDetail()">
+    🛒 Ajouter <span class="btn-price" id="pd-footer-price"></span>
+  </button>
 </div>
 
 <!-- CART OVERLAY -->
@@ -1560,6 +1579,10 @@
 
 <!-- CHECKOUT OVERLAY -->
 <div class="overlay" id="checkout-overlay">
+  <div class="sticky-total" id="sticky-total">
+    <span>Total à payer</span>
+    <span id="sticky-total-amount">0.00000000 BTC</span>
+  </div>
   <div class="overlay-inner">
     <div class="close-row">
       <h2>Commande</h2>
@@ -1637,6 +1660,7 @@ let selectedColor = null;
 let currentProduct = null;
 
 function openProduct(id){
+  hideNav();
   const p = products.find(x => x.id === id);
   currentProduct = p;
   selectedSize = null;
@@ -1655,6 +1679,7 @@ function openProduct(id){
     <div class="size-option" onclick="selectSize(this,'${s}')">${s}</div>
   `).join('');
   document.getElementById('product-overlay').classList.add('show');
+  document.getElementById('product-footer').classList.add('show');
 }
 
 function selectSize(el, size){
@@ -1860,6 +1885,7 @@ const reviewLinkEl = document.getElementById('review-external-link');
 if (reviewLinkEl) reviewLinkEl.href = 'https://ton-lien-avis.exemple.com';
 
 async function openProfile(){
+  hideNav();
   const tgUser = tg?.initDataUnsafe?.user;
   if (tgUser){
     document.getElementById('profile-name').textContent = tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '');
@@ -1903,10 +1929,12 @@ function setLang(el, code){
 }
 
 function openContact(){
+  hideNav();
   document.getElementById('contact-overlay').classList.add('show');
 }
 
 function openAvis(){
+  hideNav();
   const list = document.getElementById('review-list');
   if (!list.dataset.loaded){
     list.innerHTML = REVIEW_LIST.map(r => `
@@ -1928,6 +1956,7 @@ function openAvis(){
 }
 
 function openInfo(){
+  hideNav();
   const list = document.getElementById('faq-list');
   if (!list.dataset.loaded){
     list.innerHTML = FAQ_LIST.map((item, i) => `
@@ -1948,6 +1977,7 @@ function toggleFaq(i){
 }
 
 function openCart(){
+  hideNav();
   const lines = cartItems().map(p => `
     <div class="line-item">
       <span class="lname">${p.name} <span style="color:var(--cyan); font-family:'IBM Plex Mono',monospace; font-size:11px;">— ${p.size} / ${p.color}</span></span>
@@ -1959,6 +1989,7 @@ function openCart(){
 }
 
 async function openCheckout(){
+  hideNav();
   closeOverlay('cart-overlay');
   document.getElementById('checkout-overlay').classList.add('show');
   document.getElementById('btc-amount').textContent = 'Calcul en cours...';
@@ -1986,6 +2017,7 @@ async function openCheckout(){
     currentOrderId = data.orderId;
     document.getElementById('btc-address').textContent = data.btcAddress;
     document.getElementById('btc-amount').textContent = data.expectedBtc.toFixed(8) + ' BTC';
+    document.getElementById('sticky-total-amount').textContent = data.expectedBtc.toFixed(8) + ' BTC';
     new QRCode(document.getElementById('qrcode'), {
       text: data.btcAddress,
       width:150, height:150,
@@ -2010,7 +2042,15 @@ function pollPaymentStatus(backendUrl, orderId){
   }, 8000); // vérifie toutes les 8 secondes
 }
 
-function closeOverlay(id){ document.getElementById(id).classList.remove('show'); }
+function hideNav(){ document.querySelector('.bottom-nav').style.display = 'none'; }
+function showNav(){ document.querySelector('.bottom-nav').style.display = 'flex'; }
+
+function closeOverlay(id){
+  document.getElementById(id).classList.remove('show');
+  if (id === 'product-overlay') document.getElementById('product-footer').classList.remove('show');
+  const anyOpen = document.querySelectorAll('.overlay.show').length > 0;
+  if (!anyOpen) showNav();
+}
 
 function confirmOrder(){
   closeOverlay('checkout-overlay');
