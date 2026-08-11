@@ -1318,36 +1318,43 @@
     flex:1;
   }
   .faq-item{
-    border-bottom:1px solid var(--line);
+    background:rgba(21,20,23,0.7); backdrop-filter:blur(6px);
+    border:2px solid var(--line);
+    border-radius:16px;
+    padding:16px;
+    margin-bottom:12px;
   }
-  .faq-item:last-child{ border-bottom:none; }
-  .faq-q{
-    width:100%;
-    background:none;
-    border:none;
-    color:var(--paper);
-    text-align:left;
-    padding:14px 4px;
-    font-family:'Space Grotesk', sans-serif;
-    font-weight:600;
-    font-size:13.5px;
+  .faq-q-row{
     display:flex;
-    justify-content:space-between;
-    align-items:center;
+    align-items:flex-start;
+    gap:10px;
+    margin-bottom:8px;
   }
-  .faq-q .plus{ color:var(--lime); font-size:18px; transition:transform .2s ease; }
-  .faq-item.open .faq-q .plus{ transform:rotate(45deg); }
+  .faq-q-icon{
+    width:22px; height:22px;
+    border-radius:50%;
+    border:2px solid var(--lime);
+    color:var(--lime);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:700;
+    flex-shrink:0;
+    margin-top:1px;
+  }
+  .faq-q-text{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:15px;
+    color:var(--paper);
+    line-height:1.35;
+  }
   .faq-a{
-    max-height:0;
-    overflow:hidden;
-    transition:max-height .25s ease;
-    font-size:13px;
+    font-size:13.5px;
     color:rgba(241,239,233,0.65);
     line-height:1.6;
-  }
-  .faq-item.open .faq-a{
-    max-height:200px;
-    padding-bottom:14px;
+    padding-left:32px;
   }
 
   .recap-box{
@@ -2093,12 +2100,12 @@ function setActiveNav(el){
 
 // Modifie ces 6 questions/réponses avec tes vraies infos
 const FAQ_LIST = [
-  { q:'Question fréquente 1', a:'À compléter — réponse à la question 1.' },
-  { q:'Question fréquente 2', a:'À compléter — réponse à la question 2.' },
-  { q:'Question fréquente 3', a:'À compléter — réponse à la question 3.' },
-  { q:'Question fréquente 4', a:'À compléter — réponse à la question 4.' },
-  { q:'Question fréquente 5', a:'À compléter — réponse à la question 5.' },
-  { q:'Question fréquente 6', a:'À compléter — réponse à la question 6.' },
+  { q:'Comment recevoir ma commande ?', a:'Tu peux choisir la livraison à domicile, l\'envoi en point relais, ou le retrait sur place. Les méthodes disponibles et leurs délais sont affichés au moment de la commande.' },
+  { q:'Quels moyens de paiement sont acceptés ?', a:'Le paiement se fait en bitcoin, directement dans l\'app via l\'adresse et le QR code affichés à la commande.' },
+  { q:'Comment se passe un retrait sur place ?', a:'Choisis l\'option "Point relais" au moment de commander, puis contacte-nous via Telegram pour convenir de l\'heure et du lieu exacts.' },
+  { q:'Comment suivre ma commande ?', a:'Ouvre ton profil et consulte la section "Mes commandes" pour suivre son statut. Tu es aussi notifié automatiquement dès qu\'elle est marquée comme livrée.' },
+  { q:'Que sont les coins bonus ?', a:'Les coins sont des points de fidélité gagnés à chaque commande livrée (10 coins par commande). Ils s\'affichent dans ton profil.' },
+  { q:'Comment contacter le support ?', a:'Utilise le bouton Telegram dans la page Contact, ou écris-nous directement — on répond aussi vite que possible.' },
 ];
 
 // Modifie ces avis avec les vrais retours de tes clients
@@ -2210,21 +2217,18 @@ function openInfo(){
   hideNav();
   const list = document.getElementById('faq-list');
   if (!list.dataset.loaded){
-    list.innerHTML = FAQ_LIST.map((item, i) => `
-      <div class="faq-item" id="faq-${i}">
-        <button class="faq-q" onclick="toggleFaq(${i})">
-          <span>${item.q}</span><span class="plus">+</span>
-        </button>
+    list.innerHTML = FAQ_LIST.map((item) => `
+      <div class="faq-item">
+        <div class="faq-q-row">
+          <span class="faq-q-icon">?</span>
+          <span class="faq-q-text">${item.q}</span>
+        </div>
         <div class="faq-a">${item.a}</div>
       </div>
     `).join('');
     list.dataset.loaded = 'true';
   }
   document.getElementById('info-overlay').classList.add('show');
-}
-
-function toggleFaq(i){
-  document.getElementById('faq-'+i).classList.toggle('open');
 }
 
 function openCart(){
