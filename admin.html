@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BROLY75 — Administration</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{ --ink:#0B0B0D; --paper:#F1EFE9; --lime:#D4FF3D; --pink:#FF2E88; --line:rgba(241,239,233,0.14); }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk', sans-serif; padding:24px 16px 60px; }
+  h1{ font-family:'Anton', sans-serif; font-size:28px; text-transform:uppercase; margin-bottom:20px; }
+  .login-box{ max-width:340px; margin:80px auto; text-align:center; }
+  .login-box input{
+    width:100%; padding:12px; border-radius:10px; border:2px solid var(--line);
+    background:#151417; color:var(--paper); font-family:'IBM Plex Mono', monospace; margin-bottom:12px;
+  }
+  .login-box button, .refresh-btn{
+    background:var(--lime); color:var(--ink); border:none; padding:12px 20px;
+    border-radius:24px; font-weight:700; font-family:'Space Grotesk', sans-serif; cursor:pointer;
+  }
+  #admin-panel{ display:none; max-width:640px; margin:0 auto; }
+  .top-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+  .order-card{
+    background:#151417; border:2px solid var(--line); border-radius:14px;
+    padding:16px; margin-bottom:14px;
+  }
+  .order-card.delivered{ opacity:0.5; }
+  .order-top{ display:flex; justify-content:space-between; font-family:'IBM Plex Mono', monospace; font-size:12px; color:rgba(241,239,233,0.6); margin-bottom:8px; }
+  .order-name{ font-weight:700; font-size:15px; margin-bottom:4px; }
+  .order-line{ font-size:13px; color:rgba(241,239,233,0.7); margin-bottom:2px; }
+  .order-status{
+    display:inline-block; font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase;
+    padding:3px 10px; border-radius:12px; margin-top:8px;
+  }
+  .order-status.pending{ background:var(--pink); color:var(--ink); }
+  .order-status.paid{ background:#00E5FF; color:var(--ink); }
+  .order-status.delivered{ background:var(--lime); color:var(--ink); }
+  .deliver-btn{
+    margin-top:10px; width:100%; background:var(--lime); color:var(--ink); border:none;
+    padding:10px; border-radius:20px; font-weight:700; font-family:'Space Grotesk', sans-serif; cursor:pointer;
+  }
+  .empty{ text-align:center; color:rgba(241,239,233,0.5); padding:40px 0; }
+</style>
+</head>
+<body>
+
+<div class="login-box" id="login-box">
+  <h1>BROLY75 Admin</h1>
+  <input type="password" id="admin-key-input" placeholder="Mot de passe admin">
+  <br>
+  <button onclick="login()">Se connecter</button>
+</div>
+
+<div id="admin-panel">
+  <div class="top-row">
+    <h1>Commandes</h1>
+    <button class="refresh-btn" onclick="loadOrders()">Actualiser</button>
+  </div>
+  <div id="orders-container"></div>
+</div>
+
+<script>
+// ⚠️ Doit correspondre exactement à l'URL de ton backend Railway
+const BACKEND_URL = 'https://broly75-backend-production.up.railway.app';
+let adminKey = '';
+
+function login(){
+  adminKey = document.getElementById('admin-key-input').value;
+  document.getElementById('login-box').style.display = 'none';
+  document.getElementById('admin-panel').style.display = 'block';
+  loadOrders();
+}
+
+async function loadOrders(){
+  const container = document.getElementById('orders-container');
+  container.innerHTML = '<p class="empty">Chargement...</p>';
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/orders`, {
+      headers: { 'x-admin-key': adminKey }
+    });
+    if (res.status === 401){
+      alert('Mot de passe incorrect');
+      document.getElementById('login-box').style.display = 'block';
+      document.getElementById('admin-panel').style.display = 'none';
+      return;
+    }
+    const orders = await res.json();
+    if (orders.length === 0){
+      container.innerHTML = '<p class="empty">Aucune commande pour le moment.</p>';
+      return;
+    }
+    container.innerHTML = orders.map(o => `
+      <div class="order-card ${o.status === 'delivered' ? 'delivered' : ''}">
+        <div class="order-top">
+          <span>${o.id}</span>
+          <span>${new Date(o.createdAt).toLocaleString('fr-FR')}</span>
+        </div>
+        <div class="order-name">${o.name || 'Sans nom'}</div>
+        <div class="order-line">${(o.lines || []).join(', ')}</div>
+        <div class="order-line">Total : ${o.totalEur} € — ${o.fulfillment || 'livraison'}</div>
+        <div class="order-line">${o.address || ''}</div>
+        <div class="order-line">${o.contact || ''}</div>
+        <span class="order-status ${o.status}">${o.status}</span>
+        ${o.status !== 'delivered' ? `<button class="deliver-btn" onclick="markDelivered('${o.id}')">Marquer comme livrée (+10 coins client)</button>` : ''}
+      </div>
+    `).join('');
+  } catch (err) {
+    container.innerHTML = '<p class="empty">Erreur de chargement — vérifie l\'URL du backend.</p>';
+  }
+}
+
+async function markDelivered(orderId){
+  await fetch(`${BACKEND_URL}/api/order/${orderId}/mark-delivered`, {
+    method: 'POST',
+    headers: { 'x-admin-key': adminKey }
+  });
+  loadOrders();
+}
+</script>
+</body>
+</html>
