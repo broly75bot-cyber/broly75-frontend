@@ -407,12 +407,13 @@
   }
   .card{
     background:#151417;
-    border:2px solid var(--line);
+    border:2px solid var(--lime);
     border-radius:16px;
     padding:12px 12px 14px;
     position:relative;
     cursor:pointer;
     transition:border-color .15s ease, transform .15s ease;
+    box-shadow:0 0 10px rgba(212,255,61,0.15);
   }
   .card:active{ transform:scale(0.98); }
   .card .tag{
@@ -444,7 +445,7 @@
   }
   .card .meta{
     display:flex;
-    justify-content:space-between;
+    justify-content:flex-end;
     align-items:center;
     margin-top:10px;
   }
@@ -454,14 +455,29 @@
     font-weight:600;
     color:var(--lime);
   }
+  .like-btn{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    background:var(--ink);
+    border:2px solid var(--lime);
+    border-radius:20px;
+    padding:6px 12px;
+    color:var(--lime);
+  }
+  .like-btn .like-count{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--paper);
+  }
   .card .add{
     font-size:11px;
     font-family:'IBM Plex Mono', monospace;
     font-weight:600;
     text-transform:uppercase;
     letter-spacing:0.04em;
-    border:2px solid var(--paper);
-    color:var(--paper);
+    border:2px solid var(--lime);
+    color:var(--lime);
     padding:5px 10px;
     border-radius:20px;
     background:none;
@@ -1691,12 +1707,12 @@ if (tg) { tg.ready(); tg.expand(); }
 
 // --- Exemples de produits à remplacer par ton vrai catalogue ---
 const products = [
-  { id:1, tag:'NEW', cat:'Vestes', name:'Veste en toile brute', price:129, img:'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500', desc:'Veste coupe droite en toile épaisse, doublure intérieure douce. Idéale pour les mi-saisons, coupe légèrement oversize.', sizes:['S','M','L','XL'], material:'100% coton toile, doublure polyester recyclé', colors:['Kaki','Noir','Beige'], stock:'En stock' },
-  { id:2, tag:'DROP', cat:'Chemises', name:'Chemise col officier', price:69, img:'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500', desc:'Chemise en coton respirant, col officier structuré. Coupe ajustée, boutonnage complet.', sizes:['S','M','L','XL'], material:'100% coton peigné', colors:['Blanc','Bleu ciel'], stock:'En stock' },
-  { id:3, tag:'HOT', cat:'Pantalons', name:'Pantalon droit lin', price:89, img:'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=500', desc:'Pantalon en lin mélangé, coupe droite fluide. Taille ajustable, poches latérales profondes.', sizes:['38','40','42','44'], material:'55% lin, 45% coton', colors:['Sable','Noir'], stock:'Stock limité' },
-  { id:4, tag:'NEW', cat:'Pulls', name:'Pull col rond laine', price:99, img:'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=500', desc:'Pull en laine mérinos, tricot fin, col rond. Chaud sans être épais, parfait pour superposer.', sizes:['S','M','L','XL'], material:'100% laine mérinos', colors:['Gris chiné','Vert olive','Bordeaux'], stock:'En stock' },
-  { id:5, tag:'LIMITED', cat:'Manteaux', name:'Manteau long structuré', price:189, img:'https://images.unsplash.com/photo-1544923246-77307dd654cb?w=500', desc:'Manteau long à coupe structurée, laine mélangée. Fermeture croisée, épaulettes marquées.', sizes:['S','M','L','XL'], material:'70% laine, 30% polyamide', colors:['Camel','Noir'], stock:'Dernières pièces' },
-  { id:6, tag:'DROP', cat:'Robes', name:'Robe portefeuille', price:119, img:'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500', desc:'Robe portefeuille en viscose fluide, nouée à la taille. Coupe évasée, tombe légère.', sizes:['XS','S','M','L'], material:'100% viscose', colors:['Terracotta','Noir','Emeraude'], stock:'En stock' },
+  { id:1, tag:'NEW', cat:'Vestes', name:'Veste en toile brute', price:129, img:'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500', desc:'Veste coupe droite en toile épaisse, doublure intérieure douce. Idéale pour les mi-saisons, coupe légèrement oversize.', sizes:['S','M','L','XL'], material:'100% coton toile, doublure polyester recyclé', colors:['Kaki','Noir','Beige'], stock:'En stock' , likes:24},
+  { id:2, tag:'DROP', cat:'Chemises', name:'Chemise col officier', price:69, img:'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500', desc:'Chemise en coton respirant, col officier structuré. Coupe ajustée, boutonnage complet.', sizes:['S','M','L','XL'], material:'100% coton peigné', colors:['Blanc','Bleu ciel'], stock:'En stock' , likes:12},
+  { id:3, tag:'HOT', cat:'Pantalons', name:'Pantalon droit lin', price:89, img:'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=500', desc:'Pantalon en lin mélangé, coupe droite fluide. Taille ajustable, poches latérales profondes.', sizes:['38','40','42','44'], material:'55% lin, 45% coton', colors:['Sable','Noir'], stock:'Stock limité' , likes:31},
+  { id:4, tag:'NEW', cat:'Pulls', name:'Pull col rond laine', price:99, img:'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=500', desc:'Pull en laine mérinos, tricot fin, col rond. Chaud sans être épais, parfait pour superposer.', sizes:['S','M','L','XL'], material:'100% laine mérinos', colors:['Gris chiné','Vert olive','Bordeaux'], stock:'En stock' , likes:18},
+  { id:5, tag:'LIMITED', cat:'Manteaux', name:'Manteau long structuré', price:189, img:'https://images.unsplash.com/photo-1544923246-77307dd654cb?w=500', desc:'Manteau long à coupe structurée, laine mélangée. Fermeture croisée, épaulettes marquées.', sizes:['S','M','L','XL'], material:'70% laine, 30% polyamide', colors:['Camel','Noir'], stock:'Dernières pièces' , likes:45},
+  { id:6, tag:'DROP', cat:'Robes', name:'Robe portefeuille', price:119, img:'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500', desc:'Robe portefeuille en viscose fluide, nouée à la taille. Coupe évasée, tombe légère.', sizes:['XS','S','M','L'], material:'100% viscose', colors:['Terracotta','Noir','Emeraude'], stock:'En stock' , likes:27},
 ];
 
 let selectedSize = null;
@@ -1765,6 +1781,21 @@ let currentOrderId = null;
 let fulfillmentMode = 'livraison';
 let promoCode = null;
 let promoDiscount = 0;
+let likedProducts = {};
+
+function toggleLike(id, btn){
+  const p = products.find(x => x.id === id);
+  if (likedProducts[id]){
+    p.likes -= 1;
+    delete likedProducts[id];
+  } else {
+    p.likes += 1;
+    likedProducts[id] = true;
+  }
+  btn.querySelector('.like-count').textContent = p.likes;
+  btn.querySelector('svg').setAttribute('fill', likedProducts[id] ? 'currentColor' : 'none');
+  if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+}
 
 const VALID_PROMOS = { 'BROLY10': 0.10, 'WELCOME5': 0.05 };
 
@@ -1864,8 +1895,10 @@ function renderGrid(){
       <img src="${p.img}" alt="${p.name}">
       <div class="name">${p.name}</div>
       <div class="meta">
-        <span class="price">${p.price} €</span>
-        <button class="add" onclick="event.stopPropagation(); openProduct(${p.id})">${cart[p.id]?'✓':'+'}</button>
+        <button class="like-btn" onclick="event.stopPropagation(); toggleLike(${p.id}, this)">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="${likedProducts[p.id] ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+          <span class="like-count">${p.likes}</span>
+        </button>
       </div>
     </div>
   `).join('');
