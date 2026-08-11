@@ -103,8 +103,12 @@
       </div>
       <label>Tag (NEW, DROP, HOT, LIMITED...)</label>
       <input id="pf-tag">
-      <label>URL de la photo</label>
-      <input id="pf-img" placeholder="https://...">
+      <label>Photo</label>
+<input type="file" id="pf-img-file" accept="image/*" onchange="uploadPhoto(this)">
+<input type="hidden" id="pf-img">
+<img id="pf-img-preview" src="" style="max-width:120px; border-radius:8px; margin:8px 0; display:none;">
+<div class="muted" id="pf-img-status"></div>
+
       <label>Description</label>
       <textarea id="pf-desc" rows="3"></textarea>
       <label>Matière</label>
