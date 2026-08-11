@@ -217,6 +217,128 @@
     border-radius:16px;
     margin-bottom:18px;
   }
+  .pd-title-box{
+    background:#151417;
+    border:2px solid var(--lime);
+    border-radius:16px;
+    padding:18px;
+    margin-bottom:16px;
+  }
+  .pd-type{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--lime);
+    margin-bottom:6px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .pd-type::before{
+    content:'';
+    width:7px; height:7px;
+    border-radius:50%;
+    background:var(--lime);
+    box-shadow:0 0 6px var(--lime);
+  }
+  .pd-brand{
+    font-family:'Anton', sans-serif;
+    font-size:24px;
+    text-transform:uppercase;
+    color:var(--paper);
+    margin-bottom:10px;
+  }
+  .pd-price-big{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:22px;
+    color:var(--lime);
+  }
+  .pd-desc-box{
+    background:#151417;
+    border:2px solid var(--line);
+    border-radius:16px;
+    padding:16px;
+    margin-bottom:16px;
+    font-size:13.5px;
+    line-height:1.6;
+    color:rgba(241,239,233,0.75);
+  }
+  .pd-options-box{
+    background:#151417;
+    border:2px solid var(--lime);
+    border-radius:18px;
+    padding:18px;
+  }
+  .fulfil-toggle{
+    display:flex;
+    border:2px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+    margin-bottom:6px;
+  }
+  .fulfil-toggle button{
+    flex:1;
+    background:none;
+    border:none;
+    color:var(--paper);
+    padding:13px 6px;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:13px;
+  }
+  .fulfil-toggle button.active{
+    background:var(--lime);
+    color:var(--ink);
+  }
+  .fulfil-note{
+    text-align:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    color:rgba(241,239,233,0.5);
+    margin-bottom:18px;
+  }
+  .pd-colors-inline{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .pd-sizes-inline{
+    display:grid;
+    grid-template-columns:repeat(5, 1fr);
+    gap:6px;
+    margin-bottom:20px;
+  }
+  .suggest-row{
+    display:flex;
+    gap:12px;
+    overflow-x:auto;
+    padding-bottom:4px;
+  }
+  .suggest-card{
+    flex:0 0 auto;
+    width:110px;
+    cursor:pointer;
+  }
+  .suggest-card img{
+    width:110px; height:130px;
+    object-fit:cover;
+    border-radius:12px;
+    margin-bottom:6px;
+  }
+  .suggest-card .sname{
+    font-size:11px;
+    font-weight:600;
+    line-height:1.3;
+  }
+  .suggest-card .sprice{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--lime);
+    margin-top:2px;
+  }
   .product-price{
     font-family:'Anton', sans-serif;
     font-size:34px;
@@ -1588,22 +1710,34 @@
     <div class="close-row">
       <button class="close-btn" onclick="closeOverlay('product-overlay')">← Retour</button>
     </div>
+
     <img class="product-hero" id="pd-img" src="" alt="">
-    <div class="product-price" id="pd-price"></div>
-    <div class="product-cat-tag" id="pd-cat"></div>
-    <div class="product-cat-tag" id="pd-stock" style="margin-left:8px;"></div>
 
-    <div class="section-label">Matière</div>
-    <div class="product-desc" id="pd-material" style="padding:12px 16px;"></div>
-
-    <div class="section-label">Couleur</div>
-    <div class="size-grid" id="pd-colors" style="grid-template-columns:repeat(3, 1fr);"></div>
+    <div class="pd-title-box">
+      <div class="pd-type" id="pd-type"></div>
+      <div class="pd-brand" id="pd-brand"></div>
+      <div class="pd-price-big" id="pd-price"></div>
+    </div>
 
     <div class="section-label">Description</div>
-    <div class="product-desc" id="pd-desc"></div>
+    <div class="pd-desc-box" id="pd-desc"></div>
 
-    <div class="section-label">Choisis une taille</div>
-    <div class="size-grid" id="pd-sizes"></div>
+    <div class="pd-options-box">
+      <div class="fulfil-toggle" id="pd-fulfil-toggle">
+        <button class="active" onclick="setPdFulfil(this,'livraison')">Livraison</button>
+        <button onclick="setPdFulfil(this,'retrait')">À récupérer sur place</button>
+      </div>
+      <div class="fulfil-note">(Prix selon le mode de remise)</div>
+
+      <div class="section-label" style="margin-top:0;">Couleur</div>
+      <div class="pd-colors-inline" id="pd-colors"></div>
+
+      <div class="section-label">Taille</div>
+      <div class="pd-sizes-inline" id="pd-sizes"></div>
+
+      <div class="section-label">Ça pourrait aussi te plaire</div>
+      <div class="suggest-row" id="pd-suggestions"></div>
+    </div>
   </div>
 </div>
 
@@ -1707,16 +1841,17 @@ if (tg) { tg.ready(); tg.expand(); }
 
 // --- Exemples de produits à remplacer par ton vrai catalogue ---
 const products = [
-  { id:1, tag:'NEW', cat:'Vestes', name:'Veste en toile brute', price:129, img:'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500', desc:'Veste coupe droite en toile épaisse, doublure intérieure douce. Idéale pour les mi-saisons, coupe légèrement oversize.', sizes:['S','M','L','XL'], material:'100% coton toile, doublure polyester recyclé', colors:['Kaki','Noir','Beige'], stock:'En stock' , likes:24},
-  { id:2, tag:'DROP', cat:'Chemises', name:'Chemise col officier', price:69, img:'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500', desc:'Chemise en coton respirant, col officier structuré. Coupe ajustée, boutonnage complet.', sizes:['S','M','L','XL'], material:'100% coton peigné', colors:['Blanc','Bleu ciel'], stock:'En stock' , likes:12},
-  { id:3, tag:'HOT', cat:'Pantalons', name:'Pantalon droit lin', price:89, img:'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=500', desc:'Pantalon en lin mélangé, coupe droite fluide. Taille ajustable, poches latérales profondes.', sizes:['38','40','42','44'], material:'55% lin, 45% coton', colors:['Sable','Noir'], stock:'Stock limité' , likes:31},
-  { id:4, tag:'NEW', cat:'Pulls', name:'Pull col rond laine', price:99, img:'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=500', desc:'Pull en laine mérinos, tricot fin, col rond. Chaud sans être épais, parfait pour superposer.', sizes:['S','M','L','XL'], material:'100% laine mérinos', colors:['Gris chiné','Vert olive','Bordeaux'], stock:'En stock' , likes:18},
-  { id:5, tag:'LIMITED', cat:'Manteaux', name:'Manteau long structuré', price:189, img:'https://images.unsplash.com/photo-1544923246-77307dd654cb?w=500', desc:'Manteau long à coupe structurée, laine mélangée. Fermeture croisée, épaulettes marquées.', sizes:['S','M','L','XL'], material:'70% laine, 30% polyamide', colors:['Camel','Noir'], stock:'Dernières pièces' , likes:45},
-  { id:6, tag:'DROP', cat:'Robes', name:'Robe portefeuille', price:119, img:'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500', desc:'Robe portefeuille en viscose fluide, nouée à la taille. Coupe évasée, tombe légère.', sizes:['XS','S','M','L'], material:'100% viscose', colors:['Terracotta','Noir','Emeraude'], stock:'En stock' , likes:27},
+  { id:1, tag:'NEW', cat:'Vestes', name:'Veste en toile brute', price:129, img:'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500', desc:'Veste coupe droite en toile épaisse, doublure intérieure douce. Idéale pour les mi-saisons, coupe légèrement oversize.', sizes:['S','M','L','XL'], material:'100% coton toile, doublure polyester recyclé', colors:['Kaki','Noir','Beige'], stock:'En stock' , likes:24, brand:'BROLY75'},
+  { id:2, tag:'DROP', cat:'Chemises', name:'Chemise col officier', price:69, img:'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500', desc:'Chemise en coton respirant, col officier structuré. Coupe ajustée, boutonnage complet.', sizes:['S','M','L','XL'], material:'100% coton peigné', colors:['Blanc','Bleu ciel'], stock:'En stock' , likes:12, brand:'BROLY75'},
+  { id:3, tag:'HOT', cat:'Pantalons', name:'Pantalon droit lin', price:89, img:'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=500', desc:'Pantalon en lin mélangé, coupe droite fluide. Taille ajustable, poches latérales profondes.', sizes:['38','40','42','44'], material:'55% lin, 45% coton', colors:['Sable','Noir'], stock:'Stock limité' , likes:31, brand:'BROLY75'},
+  { id:4, tag:'NEW', cat:'Pulls', name:'Pull col rond laine', price:99, img:'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=500', desc:'Pull en laine mérinos, tricot fin, col rond. Chaud sans être épais, parfait pour superposer.', sizes:['S','M','L','XL'], material:'100% laine mérinos', colors:['Gris chiné','Vert olive','Bordeaux'], stock:'En stock' , likes:18, brand:'BROLY75'},
+  { id:5, tag:'LIMITED', cat:'Manteaux', name:'Manteau long structuré', price:189, img:'https://images.unsplash.com/photo-1544923246-77307dd654cb?w=500', desc:'Manteau long à coupe structurée, laine mélangée. Fermeture croisée, épaulettes marquées.', sizes:['S','M','L','XL'], material:'70% laine, 30% polyamide', colors:['Camel','Noir'], stock:'Dernières pièces' , likes:45, brand:'BROLY75'},
+  { id:6, tag:'DROP', cat:'Robes', name:'Robe portefeuille', price:119, img:'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500', desc:'Robe portefeuille en viscose fluide, nouée à la taille. Coupe évasée, tombe légère.', sizes:['XS','S','M','L'], material:'100% viscose', colors:['Terracotta','Noir','Emeraude'], stock:'En stock' , likes:27, brand:'BROLY75'},
 ];
 
 let selectedSize = null;
 let selectedColor = null;
+let pdFulfilMode = 'livraison';
 let currentProduct = null;
 
 function openProduct(id){
@@ -1726,21 +1861,36 @@ function openProduct(id){
   currentProduct = p;
   selectedSize = null;
   selectedColor = null;
+  pdFulfilMode = 'livraison';
   document.getElementById('pd-img').src = p.img;
+  document.getElementById('pd-type').textContent = p.cat;
+  document.getElementById('pd-brand').textContent = p.brand;
   document.getElementById('pd-price').textContent = p.price + ' €';
-  document.getElementById('pd-cat').textContent = p.cat;
-  document.getElementById('pd-stock').textContent = p.stock;
-  document.getElementById('pd-material').textContent = p.material;
   document.getElementById('pd-desc').textContent = p.desc;
   document.getElementById('pd-footer-price').textContent = p.price + ' €';
+  document.querySelectorAll('#pd-fulfil-toggle button').forEach((b,i) => b.classList.toggle('active', i===0));
   document.getElementById('pd-colors').innerHTML = p.colors.map(c => `
     <div class="size-option" onclick="selectColor(this,'${c}')">${c}</div>
   `).join('');
   document.getElementById('pd-sizes').innerHTML = p.sizes.map(s => `
     <div class="size-option" onclick="selectSize(this,'${s}')">${s}</div>
   `).join('');
+  const others = products.filter(x => x.id !== id).sort(() => Math.random() - 0.5).slice(0, 4);
+  document.getElementById('pd-suggestions').innerHTML = others.map(s => `
+    <div class="suggest-card" onclick="openProduct(${s.id})">
+      <img src="${s.img}" alt="${s.name}">
+      <div class="sname">${s.name}</div>
+      <div class="sprice">${s.price} €</div>
+    </div>
+  `).join('');
   document.getElementById('product-overlay').classList.add('show');
   document.getElementById('product-footer').classList.add('show');
+}
+
+function setPdFulfil(el, mode){
+  pdFulfilMode = mode;
+  document.querySelectorAll('#pd-fulfil-toggle button').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
 }
 
 function selectSize(el, size){
