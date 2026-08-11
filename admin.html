@@ -8,39 +8,53 @@
 <style>
   :root{ --ink:#0B0B0D; --paper:#F1EFE9; --lime:#D4FF3D; --pink:#FF2E88; --line:rgba(241,239,233,0.14); }
   *{box-sizing:border-box; margin:0; padding:0;}
-  body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk', sans-serif; padding:24px 16px 60px; }
-  h1{ font-family:'Anton', sans-serif; font-size:28px; text-transform:uppercase; margin-bottom:20px; }
+  body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk', sans-serif; padding:20px 16px 60px; }
+  h1{ font-family:'Anton', sans-serif; font-size:26px; text-transform:uppercase; margin-bottom:16px; }
+  h2{ font-family:'Space Grotesk', sans-serif; font-size:16px; margin-bottom:12px; }
+  input, textarea, select{
+    width:100%; padding:11px; border-radius:10px; border:2px solid var(--line);
+    background:#151417; color:var(--paper); font-family:'Space Grotesk', sans-serif; margin-bottom:10px; font-size:14px;
+  }
+  label{ font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase; color:var(--lime); display:block; margin-bottom:5px; }
+  button{
+    background:var(--lime); color:var(--ink); border:none; padding:11px 18px;
+    border-radius:22px; font-weight:700; font-family:'Space Grotesk', sans-serif; cursor:pointer; font-size:13px;
+  }
+  button.secondary{ background:none; border:2px solid var(--line); color:var(--paper); }
+  button.danger{ background:var(--pink); color:#fff; }
+
   .login-box{ max-width:340px; margin:80px auto; text-align:center; }
-  .login-box input{
-    width:100%; padding:12px; border-radius:10px; border:2px solid var(--line);
-    background:#151417; color:var(--paper); font-family:'IBM Plex Mono', monospace; margin-bottom:12px;
+  #app{ display:none; max-width:640px; margin:0 auto; }
+
+  .tabs{ display:flex; gap:8px; margin-bottom:20px; overflow-x:auto; }
+  .tab-btn{
+    background:#151417; border:2px solid var(--line); color:var(--paper);
+    padding:9px 16px; border-radius:20px; font-family:'IBM Plex Mono', monospace; font-size:11px; text-transform:uppercase; white-space:nowrap;
   }
-  .login-box button, .refresh-btn{
-    background:var(--lime); color:var(--ink); border:none; padding:12px 20px;
-    border-radius:24px; font-weight:700; font-family:'Space Grotesk', sans-serif; cursor:pointer;
-  }
-  #admin-panel{ display:none; max-width:640px; margin:0 auto; }
-  .top-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-  .order-card{
-    background:#151417; border:2px solid var(--line); border-radius:14px;
-    padding:16px; margin-bottom:14px;
-  }
-  .order-card.delivered{ opacity:0.5; }
-  .order-top{ display:flex; justify-content:space-between; font-family:'IBM Plex Mono', monospace; font-size:12px; color:rgba(241,239,233,0.6); margin-bottom:8px; }
-  .order-name{ font-weight:700; font-size:15px; margin-bottom:4px; }
-  .order-line{ font-size:13px; color:rgba(241,239,233,0.7); margin-bottom:2px; }
-  .order-status{
-    display:inline-block; font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase;
-    padding:3px 10px; border-radius:12px; margin-top:8px;
-  }
-  .order-status.pending{ background:var(--pink); color:var(--ink); }
-  .order-status.paid{ background:#00E5FF; color:var(--ink); }
-  .order-status.delivered{ background:var(--lime); color:var(--ink); }
-  .deliver-btn{
-    margin-top:10px; width:100%; background:var(--lime); color:var(--ink); border:none;
-    padding:10px; border-radius:20px; font-weight:700; font-family:'Space Grotesk', sans-serif; cursor:pointer;
-  }
-  .empty{ text-align:center; color:rgba(241,239,233,0.5); padding:40px 0; }
+  .tab-btn.active{ background:var(--lime); color:var(--ink); border-color:var(--lime); }
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; }
+
+  .card{ background:#151417; border:2px solid var(--line); border-radius:14px; padding:16px; margin-bottom:14px; }
+  .card.delivered{ opacity:0.5; }
+  .row-between{ display:flex; justify-content:space-between; align-items:center; }
+  .muted{ color:rgba(241,239,233,0.55); font-size:12px; }
+  .status-badge{ font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase; padding:3px 10px; border-radius:12px; }
+  .status-badge.pending{ background:var(--pink); color:var(--ink); }
+  .status-badge.paid{ background:#00E5FF; color:var(--ink); }
+  .status-badge.delivered{ background:var(--lime); color:var(--ink); }
+
+  .product-card{ display:flex; gap:12px; }
+  .product-card img{ width:60px; height:70px; object-fit:cover; border-radius:8px; flex-shrink:0; background:#000; }
+  .product-card .pinfo{ flex:1; }
+  .product-card .pname{ font-weight:700; font-size:14px; }
+  .product-card .pmeta{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--lime); margin-top:2px; }
+  .product-actions{ display:flex; gap:8px; margin-top:10px; }
+  .product-actions button{ flex:1; padding:8px; font-size:11px; }
+
+  .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0 10px; }
+  .empty{ text-align:center; color:rgba(241,239,233,0.5); padding:30px 0; }
+  .faq-edit-item{ margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--line); }
 </style>
 </head>
 <body>
@@ -48,74 +62,312 @@
 <div class="login-box" id="login-box">
   <h1>BROLY75 Admin</h1>
   <input type="password" id="admin-key-input" placeholder="Mot de passe admin">
-  <br>
-  <button onclick="login()">Se connecter</button>
+  <button onclick="login()" style="width:100%;">Se connecter</button>
 </div>
 
-<div id="admin-panel">
-  <div class="top-row">
-    <h1>Commandes</h1>
-    <button class="refresh-btn" onclick="loadOrders()">Actualiser</button>
+<div id="app">
+  <h1>BROLY75 — Gestion</h1>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('commandes', this)">Commandes</button>
+    <button class="tab-btn" onclick="switchTab('produits', this)">Produits</button>
+    <button class="tab-btn" onclick="switchTab('contenu', this)">Contenu</button>
   </div>
-  <div id="orders-container"></div>
+
+  <!-- ONGLET COMMANDES -->
+  <div class="tab-panel active" id="tab-commandes">
+    <div class="row-between" style="margin-bottom:14px;">
+      <h2 style="margin:0;">Commandes</h2>
+      <button class="secondary" onclick="loadOrders()">Actualiser</button>
+    </div>
+    <div id="orders-container"></div>
+  </div>
+
+  <!-- ONGLET PRODUITS -->
+  <div class="tab-panel" id="tab-produits">
+    <div class="row-between" style="margin-bottom:14px;">
+      <h2 style="margin:0;">Produits</h2>
+      <button onclick="openProductForm()">+ Ajouter</button>
+    </div>
+    <div id="products-container"></div>
+
+    <!-- Formulaire produit (ajout/édition) -->
+    <div class="card" id="product-form" style="display:none;">
+      <h2 id="pf-title">Nouveau produit</h2>
+      <input type="hidden" id="pf-id">
+      <label>Nom</label>
+      <input id="pf-name" placeholder="Veste en toile brute">
+      <div class="form-grid">
+        <div><label>Prix (€)</label><input id="pf-price" type="number"></div>
+        <div><label>Catégorie</label><input id="pf-cat" placeholder="Vestes"></div>
+      </div>
+      <label>Tag (NEW, DROP, HOT, LIMITED...)</label>
+      <input id="pf-tag">
+      <label>URL de la photo</label>
+      <input id="pf-img" placeholder="https://...">
+      <label>Description</label>
+      <textarea id="pf-desc" rows="3"></textarea>
+      <label>Matière</label>
+      <input id="pf-material">
+      <div class="form-grid">
+        <div><label>Couleurs (séparées par virgule)</label><input id="pf-colors" placeholder="Noir, Kaki, Beige"></div>
+        <div><label>Tailles (séparées par virgule)</label><input id="pf-sizes" placeholder="S, M, L, XL"></div>
+      </div>
+      <label>Stock</label>
+      <input id="pf-stock" placeholder="En stock">
+      <label>Marque</label>
+      <input id="pf-brand" placeholder="BROLY75">
+      <div class="product-actions">
+        <button onclick="saveProduct()">Enregistrer</button>
+        <button class="secondary" onclick="closeProductForm()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONGLET CONTENU -->
+  <div class="tab-panel" id="tab-contenu">
+    <h2>Horaires de livraison</h2>
+    <div class="form-grid">
+      <div><label>Lundi – Mardi</label><input id="c-lunmar"></div>
+      <div><label>Mercredi – Jeudi</label><input id="c-merjeu"></div>
+      <div><label>Vendredi</label><input id="c-ven"></div>
+      <div><label>Week-end</label><input id="c-weekend"></div>
+    </div>
+
+    <h2 style="margin-top:20px;">Meetup</h2>
+    <label>Lieu</label>
+    <input id="c-meetup-location">
+    <label>Horaires</label>
+    <input id="c-meetup-hours">
+
+    <h2 style="margin-top:20px;">Service d'envoi</h2>
+    <label>Montant minimum</label>
+    <input id="c-shipping-min">
+
+    <h2 style="margin-top:20px;">Questions fréquentes</h2>
+    <div id="faq-editor"></div>
+
+    <h2 style="margin-top:20px;">Réseaux & contacts</h2>
+    <label>Telegram principal (lien)</label>
+    <input id="c-tg-main">
+    <label>Canal Telegram (lien)</label>
+    <input id="c-tg-channel">
+    <label>Instagram (lien)</label>
+    <input id="c-instagram">
+    <label>Snapchat (lien)</label>
+    <input id="c-snapchat">
+    <label>WhatsApp (lien)</label>
+    <input id="c-whatsapp">
+    <label>Signal (lien)</label>
+    <input id="c-signal">
+    <label>Potato (lien)</label>
+    <input id="c-potato">
+
+    <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer le contenu</button>
+    <div class="muted" id="content-status" style="text-align:center; margin-top:8px;"></div>
+  </div>
 </div>
 
 <script>
 // ⚠️ Doit correspondre exactement à l'URL de ton backend Railway
 const BACKEND_URL = 'https://broly75-backend-production.up.railway.app';
 let adminKey = '';
+let allProducts = [];
 
 function login(){
   adminKey = document.getElementById('admin-key-input').value;
   document.getElementById('login-box').style.display = 'none';
-  document.getElementById('admin-panel').style.display = 'block';
+  document.getElementById('app').style.display = 'block';
   loadOrders();
+  loadProducts();
+  loadContent();
 }
 
+function switchTab(name, btn){
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ===== COMMANDES =====
 async function loadOrders(){
   const container = document.getElementById('orders-container');
   container.innerHTML = '<p class="empty">Chargement...</p>';
   try {
-    const res = await fetch(`${BACKEND_URL}/api/orders`, {
-      headers: { 'x-admin-key': adminKey }
-    });
-    if (res.status === 401){
-      alert('Mot de passe incorrect');
-      document.getElementById('login-box').style.display = 'block';
-      document.getElementById('admin-panel').style.display = 'none';
-      return;
-    }
+    const res = await fetch(`${BACKEND_URL}/api/orders`, { headers: { 'x-admin-key': adminKey } });
+    if (res.status === 401){ alert('Mot de passe incorrect'); location.reload(); return; }
     const orders = await res.json();
-    if (orders.length === 0){
-      container.innerHTML = '<p class="empty">Aucune commande pour le moment.</p>';
-      return;
-    }
+    if (orders.length === 0){ container.innerHTML = '<p class="empty">Aucune commande pour le moment.</p>'; return; }
     container.innerHTML = orders.map(o => `
-      <div class="order-card ${o.status === 'delivered' ? 'delivered' : ''}">
-        <div class="order-top">
-          <span>${o.id}</span>
-          <span>${new Date(o.createdAt).toLocaleString('fr-FR')}</span>
-        </div>
-        <div class="order-name">${o.name || 'Sans nom'}</div>
-        <div class="order-line">${(o.lines || []).join(', ')}</div>
-        <div class="order-line">Total : ${o.totalEur} € — ${o.fulfillment || 'livraison'}</div>
-        <div class="order-line">${o.address || ''}</div>
-        <div class="order-line">${o.contact || ''}</div>
-        <span class="order-status ${o.status}">${o.status}</span>
-        ${o.status !== 'delivered' ? `<button class="deliver-btn" onclick="markDelivered('${o.id}')">Marquer comme livrée (+10 coins client)</button>` : ''}
+      <div class="card ${o.status === 'delivered' ? 'delivered' : ''}">
+        <div class="row-between"><span class="muted">${o.id}</span><span class="muted">${new Date(o.createdAt).toLocaleString('fr-FR')}</span></div>
+        <div style="font-weight:700; margin-top:6px;">${o.name || 'Sans nom'}</div>
+        <div class="muted">${(o.lines || []).join(', ')}</div>
+        <div class="muted">Total : ${o.totalEur} € — ${o.fulfillment || 'livraison'}</div>
+        <div class="muted">${o.address || ''}</div>
+        <div class="muted">${o.contact || ''}</div>
+        <span class="status-badge ${o.status}">${o.status}</span>
+        ${o.status !== 'delivered' ? `<button style="width:100%; margin-top:10px;" onclick="markDelivered('${o.id}')">Marquer comme livrée (+10 coins)</button>` : ''}
       </div>
     `).join('');
-  } catch (err) {
-    container.innerHTML = '<p class="empty">Erreur de chargement — vérifie l\'URL du backend.</p>';
-  }
+  } catch (err) { container.innerHTML = '<p class="empty">Erreur de chargement.</p>'; }
+}
+async function markDelivered(orderId){
+  await fetch(`${BACKEND_URL}/api/order/${orderId}/mark-delivered`, { method:'POST', headers:{ 'x-admin-key': adminKey } });
+  loadOrders();
 }
 
-async function markDelivered(orderId){
-  await fetch(`${BACKEND_URL}/api/order/${orderId}/mark-delivered`, {
-    method: 'POST',
-    headers: { 'x-admin-key': adminKey }
+// ===== PRODUITS =====
+async function loadProducts(){
+  const container = document.getElementById('products-container');
+  container.innerHTML = '<p class="empty">Chargement...</p>';
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/products`);
+    allProducts = await res.json();
+    if (allProducts.length === 0){ container.innerHTML = '<p class="empty">Aucun produit — ajoute le premier.</p>'; return; }
+    container.innerHTML = allProducts.map(p => `
+      <div class="card product-card">
+        <img src="${p.img || ''}" alt="">
+        <div class="pinfo">
+          <div class="pname">${p.name}</div>
+          <div class="pmeta">${p.price_eur || p.price} € — ${p.cat || ''}</div>
+          <div class="product-actions">
+            <button class="secondary" onclick="editProduct(${p.id})">Éditer</button>
+            <button class="danger" onclick="deleteProduct(${p.id})">Supprimer</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) { container.innerHTML = '<p class="empty">Erreur de chargement.</p>'; }
+}
+
+function openProductForm(){
+  document.getElementById('pf-title').textContent = 'Nouveau produit';
+  ['pf-id','pf-name','pf-price','pf-cat','pf-tag','pf-img','pf-desc','pf-material','pf-colors','pf-sizes','pf-stock','pf-brand']
+    .forEach(id => document.getElementById(id).value = '');
+  document.getElementById('product-form').style.display = 'block';
+  document.getElementById('product-form').scrollIntoView({behavior:'smooth'});
+}
+function closeProductForm(){ document.getElementById('product-form').style.display = 'none'; }
+
+function editProduct(id){
+  const p = allProducts.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('pf-title').textContent = 'Modifier — ' + p.name;
+  document.getElementById('pf-id').value = p.id;
+  document.getElementById('pf-name').value = p.name || '';
+  document.getElementById('pf-price').value = p.price_eur || p.price || '';
+  document.getElementById('pf-cat').value = p.cat || '';
+  document.getElementById('pf-tag').value = p.tag || '';
+  document.getElementById('pf-img').value = p.img || '';
+  document.getElementById('pf-desc').value = p.desc || '';
+  document.getElementById('pf-material').value = p.material || '';
+  document.getElementById('pf-colors').value = (p.colors || []).join(', ');
+  document.getElementById('pf-sizes').value = (p.sizes || []).join(', ');
+  document.getElementById('pf-stock').value = p.stock || '';
+  document.getElementById('pf-brand').value = p.brand || '';
+  document.getElementById('product-form').style.display = 'block';
+  document.getElementById('product-form').scrollIntoView({behavior:'smooth'});
+}
+
+async function saveProduct(){
+  const id = document.getElementById('pf-id').value;
+  const body = {
+    name: document.getElementById('pf-name').value,
+    price_eur: Number(document.getElementById('pf-price').value),
+    price: Number(document.getElementById('pf-price').value),
+    cat: document.getElementById('pf-cat').value,
+    tag: document.getElementById('pf-tag').value,
+    img: document.getElementById('pf-img').value,
+    desc: document.getElementById('pf-desc').value,
+    material: document.getElementById('pf-material').value,
+    colors: document.getElementById('pf-colors').value.split(',').map(s => s.trim()).filter(Boolean),
+    sizes: document.getElementById('pf-sizes').value.split(',').map(s => s.trim()).filter(Boolean),
+    stock: document.getElementById('pf-stock').value,
+    brand: document.getElementById('pf-brand').value,
+  };
+  const url = id ? `${BACKEND_URL}/api/products/${id}` : `${BACKEND_URL}/api/products`;
+  const method = id ? 'PUT' : 'POST';
+  await fetch(url, { method, headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey }, body: JSON.stringify(body) });
+  closeProductForm();
+  loadProducts();
+}
+
+async function deleteProduct(id){
+  if (!confirm('Supprimer ce produit ?')) return;
+  await fetch(`${BACKEND_URL}/api/products/${id}`, { method:'DELETE', headers:{ 'x-admin-key': adminKey } });
+  loadProducts();
+}
+
+// ===== CONTENU =====
+let currentContent = null;
+
+async function loadContent(){
+  const res = await fetch(`${BACKEND_URL}/api/content`);
+  currentContent = await res.json();
+  const c = currentContent;
+  document.getElementById('c-lunmar').value = c.hours?.lunMar || '';
+  document.getElementById('c-merjeu').value = c.hours?.merJeu || '';
+  document.getElementById('c-ven').value = c.hours?.ven || '';
+  document.getElementById('c-weekend').value = c.hours?.weekend || '';
+  document.getElementById('c-meetup-location').value = c.meetup?.location || '';
+  document.getElementById('c-meetup-hours').value = c.meetup?.hoursText || '';
+  document.getElementById('c-shipping-min').value = c.shipping?.minOrder || '';
+  document.getElementById('c-tg-main').value = c.contacts?.telegramMain || '';
+  document.getElementById('c-tg-channel').value = c.contacts?.telegramChannel || '';
+  document.getElementById('c-instagram').value = c.contacts?.instagram || '';
+  document.getElementById('c-snapchat').value = c.contacts?.snapchat || '';
+  document.getElementById('c-whatsapp').value = c.contacts?.whatsapp || '';
+  document.getElementById('c-signal').value = c.contacts?.signal || '';
+  document.getElementById('c-potato').value = c.contacts?.potato || '';
+
+  document.getElementById('faq-editor').innerHTML = (c.faq || []).map((item, i) => `
+    <div class="faq-edit-item">
+      <label>Question ${i+1}</label>
+      <input id="faq-q-${i}" value="${(item.q||'').replace(/"/g,'&quot;')}">
+      <label>Réponse ${i+1}</label>
+      <textarea id="faq-a-${i}" rows="2">${item.a||''}</textarea>
+    </div>
+  `).join('');
+}
+
+async function saveContent(){
+  const faq = (currentContent.faq || []).map((_, i) => ({
+    q: document.getElementById('faq-q-'+i).value,
+    a: document.getElementById('faq-a-'+i).value,
+  }));
+  const body = {
+    hours: {
+      lunMar: document.getElementById('c-lunmar').value,
+      merJeu: document.getElementById('c-merjeu').value,
+      ven: document.getElementById('c-ven').value,
+      weekend: document.getElementById('c-weekend').value,
+    },
+    meetup: {
+      location: document.getElementById('c-meetup-location').value,
+      available: true,
+      hoursText: document.getElementById('c-meetup-hours').value,
+    },
+    shipping: { minOrder: document.getElementById('c-shipping-min').value },
+    faq,
+    contacts: {
+      telegramMain: document.getElementById('c-tg-main').value,
+      telegramChannel: document.getElementById('c-tg-channel').value,
+      instagram: document.getElementById('c-instagram').value,
+      snapchat: document.getElementById('c-snapchat').value,
+      whatsapp: document.getElementById('c-whatsapp').value,
+      signal: document.getElementById('c-signal').value,
+      potato: document.getElementById('c-potato').value,
+    },
+  };
+  const res = await fetch(`${BACKEND_URL}/api/content`, {
+    method:'PUT', headers:{ 'Content-Type':'application/json', 'x-admin-key': adminKey }, body: JSON.stringify(body)
   });
-  loadOrders();
+  const status = document.getElementById('content-status');
+  status.textContent = res.ok ? '✅ Enregistré' : '❌ Erreur';
+  setTimeout(() => status.textContent = '', 2000);
+  currentContent = body;
 }
 </script>
 </body>

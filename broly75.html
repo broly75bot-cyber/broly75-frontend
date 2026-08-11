@@ -1650,31 +1650,31 @@
     </div>
 
     <div class="long-case-list">
-      <a class="long-case" href="https://t.me/+Pw26j3QCPTRjNzU8" target="_blank">
+      <a class="long-case" id="contact-tg-main" href="https://t.me/+Pw26j3QCPTRjNzU8" target="_blank">
         <span class="lc-left"><span class="lc-icon"><img src="Telegram.png.WEBP" alt="Telegram"></span><span class="day">Telegram principal</span></span>
         <span class="time">Rejoindre</span>
       </a>
-      <a class="long-case" href="https://t.me/toncanal" target="_blank">
+      <a class="long-case" id="contact-tg-channel" href="https://t.me/toncanal" target="_blank">
         <span class="lc-left"><span class="lc-icon"><img src="Telegram.png.WEBP" alt="Telegram"></span><span class="day">Canal Telegram</span></span>
         <span class="time">@toncanal</span>
       </a>
-      <a class="long-case" href="https://instagram.com/tonpseudo" target="_blank">
+      <a class="long-case" id="contact-instagram" href="https://instagram.com/tonpseudo" target="_blank">
         <span class="lc-left"><span class="lc-icon"><img src="instagram.png.JPG" alt="Instagram"></span><span class="day">Instagram</span></span>
         <span class="time">@tonpseudo</span>
       </a>
-      <a class="long-case" href="https://snapchat.com/add/tonpseudo" target="_blank">
+      <a class="long-case" id="contact-snapchat" href="https://snapchat.com/add/tonpseudo" target="_blank">
         <span class="lc-left"><span class="lc-icon"><img src="Snapchat.png.PNG" alt="Snapchat"></span><span class="day">Snapchat</span></span>
         <span class="time">@tonpseudo</span>
       </a>
-      <a class="long-case" href="https://wa.me/330000000000" target="_blank">
+      <a class="long-case" id="contact-whatsapp" href="https://wa.me/330000000000" target="_blank">
         <span class="lc-left"><span class="lc-icon"><img src="Whattsap.png.JPG" alt="WhatsApp"></span><span class="day">WhatsApp</span></span>
         <span class="time">+33 0 00 00 00 00</span>
       </a>
-      <a class="long-case" href="https://signal.me/#p/+330000000000" target="_blank">
+      <a class="long-case" id="contact-signal" href="https://signal.me/#p/+330000000000" target="_blank">
         <span class="lc-left"><span class="lc-icon"><img src="Signal.png.JPG" alt="Signal"></span><span class="day">Signal</span></span>
         <span class="time">+33 0 00 00 00 00</span>
       </a>
-      <a class="long-case" href="https://potato.im/tonpseudo" target="_blank">
+      <a class="long-case" id="contact-potato" href="https://potato.im/tonpseudo" target="_blank">
         <span class="lc-left"><span class="lc-icon"><img src="Potato.png.PNG" alt="Potato"></span><span class="day">Potato</span></span>
         <span class="time">@tonpseudo</span>
       </a>
@@ -1741,12 +1741,12 @@
     <div class="info-block">
       <div class="info-block-title">Meetup</div>
       <div class="long-info-box">
-        <span class="lib-label">📍 Troyes</span>
+        <span class="lib-label" id="meetup-location">📍 Troyes</span>
         <span class="lib-badge">Disponible</span>
       </div>
       <div class="info-block-title" style="margin-top:16px; margin-bottom:10px;">Horaires rendez-vous</div>
       <div class="long-info-box" style="margin-bottom:0;">
-        <span class="lib-label">🕐 14h – 21h</span>
+        <span class="lib-label" id="meetup-hours">🕐 14h – 21h</span>
       </div>
     </div>
 
@@ -1757,7 +1757,7 @@
       </div>
       <div class="long-info-box" style="margin-bottom:0;">
         <span class="lib-label">Paiement Bitcoin</span>
-        <span class="lib-badge">Minimum 100€</span>
+        <span class="lib-badge" id="shipping-min-badge">Minimum 100€</span>
       </div>
     </div>
 
@@ -1901,17 +1901,26 @@
 
 <script>
 const tg = window.Telegram?.WebApp;
+// ⚠️ Doit correspondre exactement à l'URL de ton backend Railway
+const BACKEND_URL = 'https://broly75-backend-production.up.railway.app';
 if (tg) { tg.ready(); tg.expand(); }
 
 // --- Exemples de produits à remplacer par ton vrai catalogue ---
-const products = [
-  { id:1, tag:'NEW', cat:'Vestes', name:'Veste en toile brute', price:129, img:'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500', desc:'Veste coupe droite en toile épaisse, doublure intérieure douce. Idéale pour les mi-saisons, coupe légèrement oversize.', sizes:['S','M','L','XL'], material:'100% coton toile, doublure polyester recyclé', colors:['Kaki','Noir','Beige'], stock:'En stock' , likes:24, brand:'BROLY75'},
-  { id:2, tag:'DROP', cat:'Chemises', name:'Chemise col officier', price:69, img:'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500', desc:'Chemise en coton respirant, col officier structuré. Coupe ajustée, boutonnage complet.', sizes:['S','M','L','XL'], material:'100% coton peigné', colors:['Blanc','Bleu ciel'], stock:'En stock' , likes:12, brand:'BROLY75'},
-  { id:3, tag:'HOT', cat:'Pantalons', name:'Pantalon droit lin', price:89, img:'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=500', desc:'Pantalon en lin mélangé, coupe droite fluide. Taille ajustable, poches latérales profondes.', sizes:['38','40','42','44'], material:'55% lin, 45% coton', colors:['Sable','Noir'], stock:'Stock limité' , likes:31, brand:'BROLY75'},
-  { id:4, tag:'NEW', cat:'Pulls', name:'Pull col rond laine', price:99, img:'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=500', desc:'Pull en laine mérinos, tricot fin, col rond. Chaud sans être épais, parfait pour superposer.', sizes:['S','M','L','XL'], material:'100% laine mérinos', colors:['Gris chiné','Vert olive','Bordeaux'], stock:'En stock' , likes:18, brand:'BROLY75'},
-  { id:5, tag:'LIMITED', cat:'Manteaux', name:'Manteau long structuré', price:189, img:'https://images.unsplash.com/photo-1544923246-77307dd654cb?w=500', desc:'Manteau long à coupe structurée, laine mélangée. Fermeture croisée, épaulettes marquées.', sizes:['S','M','L','XL'], material:'70% laine, 30% polyamide', colors:['Camel','Noir'], stock:'Dernières pièces' , likes:45, brand:'BROLY75'},
-  { id:6, tag:'DROP', cat:'Robes', name:'Robe portefeuille', price:119, img:'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500', desc:'Robe portefeuille en viscose fluide, nouée à la taille. Coupe évasée, tombe légère.', sizes:['XS','S','M','L'], material:'100% viscose', colors:['Terracotta','Noir','Emeraude'], stock:'En stock' , likes:27, brand:'BROLY75'},
-];
+// Le catalogue est maintenant chargé depuis ton backend (modifiable via admin.html)
+let products = [];
+
+async function loadProductsFromBackend(){
+  try {
+    const res = await fetch(BACKEND_URL + '/api/products');
+    const data = await res.json();
+    products = data.map(p => ({ ...p, price: p.price_eur || p.price }));
+  } catch (err) {
+    console.error('Impossible de charger le catalogue', err);
+    products = [];
+  }
+  renderCats();
+  renderGrid();
+}
 
 let selectedSize = null;
 let selectedColor = null;
@@ -2209,7 +2218,6 @@ async function openProfile(){
     }
 
     // Récupère le solde de coins réel depuis le backend
-    const BACKEND_URL = 'https://broly75-backend-production.up.railway.app';
     try {
       const res = await fetch(`${BACKEND_URL}/api/user/${tgUser.id}`);
       const data = await res.json();
@@ -2243,6 +2251,16 @@ function setLang(el, code){
 
 function openContact(){
   hideNav();
+  if (siteContent && siteContent.contacts){
+    const c = siteContent.contacts;
+    if (c.telegramMain) document.getElementById('contact-tg-main').href = c.telegramMain;
+    if (c.telegramChannel) document.getElementById('contact-tg-channel').href = c.telegramChannel;
+    if (c.instagram) document.getElementById('contact-instagram').href = c.instagram;
+    if (c.snapchat) document.getElementById('contact-snapchat').href = c.snapchat;
+    if (c.whatsapp) document.getElementById('contact-whatsapp').href = c.whatsapp;
+    if (c.signal) document.getElementById('contact-signal').href = c.signal;
+    if (c.potato) document.getElementById('contact-potato').href = c.potato;
+  }
   document.getElementById('contact-overlay').classList.add('show');
 }
 
@@ -2268,21 +2286,45 @@ function openAvis(){
   document.getElementById('avis-overlay').classList.add('show');
 }
 
+let siteContent = null;
+
+async function loadSiteContent(){
+  try {
+    const res = await fetch(BACKEND_URL + '/api/content');
+    siteContent = await res.json();
+  } catch (err) {
+    console.error('Impossible de charger le contenu du site', err);
+  }
+}
+
 function openInfo(){
   hideNav();
-  const list = document.getElementById('faq-list');
-  if (!list.dataset.loaded){
-    list.innerHTML = FAQ_LIST.map((item) => `
-      <div class="faq-item">
-        <div class="faq-q-row">
-          <span class="faq-q-icon">?</span>
-          <span class="faq-q-text">${item.q}</span>
-        </div>
-        <div class="faq-a">${item.a}</div>
-      </div>
-    `).join('');
-    list.dataset.loaded = 'true';
+  if (siteContent){
+    const h = siteContent.hours || {};
+    const cards = document.querySelectorAll('.hours-card .time');
+    if (cards[0]) cards[0].textContent = h.lunMar || 'À compléter';
+    if (cards[1]) cards[1].textContent = h.merJeu || 'À compléter';
+    if (cards[2]) cards[2].textContent = h.ven || 'À compléter';
+    if (cards[3]) cards[3].textContent = h.weekend || 'À compléter';
+
+    const m = siteContent.meetup || {};
+    document.getElementById('meetup-location').textContent = '📍 ' + (m.location || 'À compléter');
+    document.getElementById('meetup-hours').textContent = '🕐 ' + (m.hoursText || 'À compléter');
+    document.getElementById('shipping-min-badge').textContent = 'Minimum ' + (siteContent.shipping?.minOrder || '—');
   }
+
+  const list = document.getElementById('faq-list');
+  const faqData = (siteContent && siteContent.faq) || FAQ_LIST;
+  list.innerHTML = faqData.map((item) => `
+    <div class="faq-item">
+      <div class="faq-q-row">
+        <span class="faq-q-icon">?</span>
+        <span class="faq-q-text">${item.q}</span>
+      </div>
+      <div class="faq-a">${item.a}</div>
+    </div>
+  `).join('');
+
   document.getElementById('info-overlay').classList.add('show');
 }
 
@@ -2305,8 +2347,6 @@ async function openCheckout(){
   document.getElementById('btc-amount').textContent = 'Calcul en cours...';
   document.getElementById('qrcode').innerHTML = '';
   renderRecap();
-
-  const BACKEND_URL = 'https://broly75-backend-production.up.railway.app';
 
   try {
     const res = await fetch(BACKEND_URL + '/api/order', {
@@ -2386,8 +2426,8 @@ function confirmOrder(){
   updateCartBar();
 }
 
-renderCats();
-renderGrid();
+loadProductsFromBackend();
+loadSiteContent();
 
 setTimeout(() => {
   document.getElementById('splash').classList.add('hide');
