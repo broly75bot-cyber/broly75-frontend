@@ -267,8 +267,11 @@ function editProduct(id){
   document.getElementById('pf-name').value = p.name || '';
   document.getElementById('pf-price').value = p.price_eur || p.price || '';
   document.getElementById('pf-cat').value = p.cat || '';
-  document.getElementById('pf-tag').value = p.tag || '';
-  document.getElementById('pf-img').value = p.img || '';
+  document.getElementById('pf-tag').value = p.document.getElementById('pf-img').value = p.img || '';
+const preview = document.getElementById('pf-img-preview');
+preview.src = p.img || '';
+preview.style.display = p.img ? 'block' : 'none';
+
   document.getElementById('pf-desc').value = p.desc || '';
   document.getElementById('pf-material').value = p.material || '';
   document.getElementById('pf-colors').value = (p.colors || []).join(', ');
