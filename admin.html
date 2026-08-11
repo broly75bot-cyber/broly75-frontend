@@ -282,6 +282,31 @@ preview.style.display = p.img ? 'block' : 'none';
   document.getElementById('product-form').style.display = 'block';
   document.getElementById('product-form').scrollIntoView({behavior:'smooth'});
 }
+async function uploadPhoto(input){
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('pf-img-status');
+  status.textContent = 'Envoi en cours...';
+  const formData = new FormData();
+  formData.append('photo', file);
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/upload`, {
+      method: 'POST',
+      headers: { 'x-admin-key': adminKey },
+      body: formData,
+    });
+    const data = await res.json();
+    if (!res.ok) { status.textContent = '❌ ' + (data.error || 'Erreur upload'); return; }
+    document.getElementById('pf-img').value = data.url;
+    const preview = document.getElementById('pf-img-preview');
+    preview.src = data.url;
+    preview.style.display = 'block';
+    status.textContent = '✅ Photo envoyée';
+  } catch (err) {
+    status.textContent = '❌ Erreur réseau';
+  }
+}
+
 
 async function saveProduct(){
   const id = document.getElementById('pf-id').value;
