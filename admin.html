@@ -364,6 +364,7 @@ function switchTab(name, btn){
   btn.classList.add('active');
   if (name === 'apercu') loadStats();
   if (name === 'avis') loadReviews();
+  if (name === 'produits') loadProducts();
   if (name === 'reglages') loadStyleSettings();
 }
 
@@ -634,7 +635,7 @@ async function loadProducts(){
   const container = document.getElementById('products-container');
   container.innerHTML = '<p class="empty">Chargement...</p>';
   try {
-    const res = await fetch(`${BACKEND_URL}/api/products`, { headers: { 'x-admin-key': adminKey } });
+    const res = await fetch(`${BACKEND_URL}/api/products`);
     if (res.status === 401){ alert('Mot de passe incorrect'); location.reload(); return; }
     allProducts = await res.json();
     if (allProducts.length === 0){ container.innerHTML = '<p class="empty">Aucun produit pour le moment.</p>'; return; }
@@ -651,8 +652,8 @@ async function loadProducts(){
           <div class="pmeta">${p.price_eur ?? p.price ?? '—'} € · ${p.cat || ''}${p.tag ? ' · ' + p.tag : ''}</div>
           <div class="muted">${p.stock || ''}</div>
           <div class="product-actions">
-            <button class="secondary" onclick="editProduct('${p.id}')">Modifier</button>
-            <button class="danger" onclick="deleteProduct('${p.id}')">Supprimer</button>
+            <button class="secondary" onclick="editProduct(${p.id})">Modifier</button>
+            <button class="danger" onclick="deleteProduct(${p.id})">Supprimer</button>
           </div>
         </div>
       </div>
