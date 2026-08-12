@@ -4,26 +4,47 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BROLY75 — Administration</title>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 
   <style>
-  :root{ --ink:#0B0B0D; --paper:#F1EFE9; --lime:#D4FF3D; --pink:#FF2E88; --line:rgba(241,239,233,0.14); }
+  :root{
+    --bg:#0B0C0D;
+    --surface:#151619;
+    --surface-2:#1C1E22;
+    --border:#2A2C30;
+    --text:#EDEDEE;
+    --text-muted:#8B8D93;
+    --accent:#FFFFFF;
+    --accent-contrast:#0B0C0D;
+    --danger:#E5555C;
+    --warning:#D9A64A;
+    --success:#4FAE7C;
+    --info:#5B93E0;
+    --line:var(--border);
+    --ink:var(--bg);
+    --paper:var(--text);
+    --lime:var(--accent);
+    --pink:var(--danger);
+  }
   *{box-sizing:border-box; margin:0; padding:0;}
-  body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk', sans-serif; padding:0 16px 60px; }
-  h1{ font-family:'Anton', sans-serif; font-size:24px; text-transform:uppercase; margin-bottom:16px; }
-  h2{ font-family:'Space Grotesk', sans-serif; font-size:16px; margin-bottom:12px; }
+  body{ background:var(--bg); color:var(--text); font-family:'Inter', -apple-system, sans-serif; padding:0 16px 60px; }
+  h1{ font-family:'Inter', sans-serif; font-weight:700; font-size:19px; letter-spacing:-0.01em; margin-bottom:16px; }
+  h2{ font-family:'Inter', sans-serif; font-weight:600; font-size:14px; margin-bottom:12px; color:var(--text); }
   input, textarea, select{
-    width:100%; padding:11px; border-radius:10px; border:2px solid var(--line);
-    background:#151417; color:var(--paper); font-family:'Space Grotesk', sans-serif; margin-bottom:10px; font-size:14px;
+    width:100%; padding:10px 12px; border-radius:6px; border:1px solid var(--border);
+    background:var(--surface-2); color:var(--text); font-family:'Inter', sans-serif; margin-bottom:10px; font-size:13.5px;
   }
-  label{ font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase; color:var(--lime); display:block; margin-bottom:5px; }
+  input:focus, textarea:focus, select:focus{ outline:none; border-color:var(--text-muted); }
+  input[type="color"]{ padding:4px; height:40px; cursor:pointer; }
+  label{ font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); display:block; margin-bottom:5px; }
   button{
-    background:var(--lime); color:var(--ink); border:none; padding:11px 18px;
-    border-radius:22px; font-weight:700; font-family:'Space Grotesk', sans-serif; cursor:pointer; font-size:13px;
+    background:var(--accent); color:var(--accent-contrast); border:1px solid var(--accent); padding:9px 16px;
+    border-radius:6px; font-weight:600; font-family:'Inter', sans-serif; cursor:pointer; font-size:12.5px;
   }
-  button.secondary{ background:none; border:2px solid var(--line); color:var(--paper); }
-  button.danger{ background:var(--pink); color:#fff; }
+  button:active{ opacity:0.85; }
+  button.secondary{ background:none; border:1px solid var(--border); color:var(--text); }
+  button.danger{ background:var(--danger); color:#fff; border-color:var(--danger); }
 
   .login-box{ max-width:340px; margin:80px auto; text-align:center; }
   #app{ display:none; max-width:640px; margin:0 auto; }
@@ -31,44 +52,44 @@
   /* ===== Barre du haut : titre + actions rapides ===== */
   .top-bar{
     display:flex; justify-content:space-between; align-items:center;
-    position:sticky; top:0; z-index:20; background:var(--ink);
-    padding:16px 0 12px; margin-bottom:4px; border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:20; background:var(--bg);
+    padding:16px 0 12px; margin-bottom:4px; border-bottom:1px solid var(--border);
   }
   .top-actions{ display:flex; gap:8px; align-items:center; }
   .icon-btn{
-    background:#151417; border:2px solid var(--line); color:var(--paper);
-    width:38px; height:38px; border-radius:50%; padding:0;
-    display:flex; align-items:center; justify-content:center; font-size:16px;
+    background:var(--surface); border:1px solid var(--border); color:var(--text);
+    width:34px; height:34px; border-radius:6px; padding:0;
+    display:flex; align-items:center; justify-content:center; font-size:15px;
   }
   .icon-btn.spinning{ animation:spin 0.6s linear; }
   @keyframes spin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
-  .logout-btn{ background:none; border:2px solid var(--pink); color:var(--pink); padding:7px 14px; border-radius:18px; font-size:11px; font-family:'IBM Plex Mono', monospace; }
+  .logout-btn{ background:none; border:1px solid var(--border); color:var(--text-muted); padding:7px 14px; border-radius:6px; font-size:11px; font-family:'Inter', sans-serif; font-weight:500; }
 
-  /* ===== Menu d'onglets : repensé, plus lisible, collant sous le top-bar ===== */
+  /* ===== Menu d'onglets : navigation sobre à soulignement ===== */
   .tabs{
-    display:flex; gap:6px; margin:0 -16px 20px; padding:10px 16px;
+    display:flex; gap:2px; margin:0 -16px 20px; padding:0 16px;
     overflow-x:auto; -webkit-overflow-scrolling:touch;
-    position:sticky; top:66px; z-index:19; background:var(--ink);
-    border-bottom:1px solid var(--line);
+    position:sticky; top:59px; z-index:19; background:var(--bg);
+    border-bottom:1px solid var(--border);
   }
   .tabs::-webkit-scrollbar{ display:none; }
   .tab-btn{
-    background:#151417; border:2px solid var(--line); color:var(--paper);
-    padding:10px 16px; border-radius:20px; font-family:'IBM Plex Mono', monospace;
-    font-size:11px; text-transform:uppercase; white-space:nowrap; flex-shrink:0;
-    display:flex; align-items:center; gap:6px;
+    background:none; border:none; border-bottom:2px solid transparent; color:var(--text-muted);
+    padding:12px 14px; font-family:'Inter', sans-serif; font-weight:500;
+    font-size:12.5px; white-space:nowrap; flex-shrink:0;
+    display:flex; align-items:center; gap:6px; border-radius:0;
   }
-  .tab-btn.active{ background:var(--lime); color:var(--ink); border-color:var(--lime); }
+  .tab-btn.active{ background:none; color:var(--text); border-bottom-color:var(--text); }
 
   .stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
-  .stat-card{ background:#151417; border:2px solid var(--line); border-radius:14px; padding:14px; }
-  .stat-card .stat-value{ font-family:'Anton', sans-serif; font-size:26px; color:var(--lime); }
-  .stat-card .stat-label{ font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase; color:rgba(241,239,233,0.6); margin-top:4px; }
+  .stat-card{ background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px; }
+  .stat-card .stat-value{ font-family:'Inter', sans-serif; font-weight:700; font-size:22px; color:var(--text); }
+  .stat-card .stat-label{ font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); margin-top:4px; }
 
-  .review-card{ background:#151417; border:2px solid var(--line); border-radius:14px; padding:16px; margin-bottom:14px; }
-  .review-stars{ color:var(--lime); font-size:16px; letter-spacing:2px; }
-  .review-comment{ margin-top:8px; font-size:14px; line-height:1.4; }
-  .review-media{ max-width:100%; border-radius:10px; margin-top:10px; display:block; }
+  .review-card{ background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px; margin-bottom:14px; }
+  .review-stars{ color:var(--warning); font-size:15px; letter-spacing:2px; }
+  .review-comment{ margin-top:8px; font-size:13.5px; line-height:1.5; color:var(--text); }
+  .review-media{ max-width:100%; border-radius:6px; margin-top:10px; display:block; }
   .review-actions{ display:flex; gap:8px; margin-top:12px; }
   .review-actions button{ flex:1; padding:8px; font-size:11px; }
 
@@ -78,35 +99,35 @@
   /* ===== En-tête de section : titre + action alignés et cohérents ===== */
   .section-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:10px; }
   .section-header h2{ margin:0; }
-  .section-header button{ flex-shrink:0; padding:9px 16px; font-size:12px; }
+  .section-header button{ flex-shrink:0; padding:8px 14px; font-size:11.5px; }
 
-  .card{ background:#151417; border:2px solid var(--line); border-radius:14px; padding:16px; margin-bottom:14px; }
+  .card{ background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px; margin-bottom:12px; }
   .card.delivered{ opacity:0.5; }
   .row-between{ display:flex; justify-content:space-between; align-items:center; }
-  .muted{ color:rgba(241,239,233,0.55); font-size:12px; }
-  .status-badge{ font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase; padding:3px 10px; border-radius:12px; }
-  .status-badge.pending{ background:var(--pink); color:var(--ink); }
-  .status-badge.paid{ background:#00E5FF; color:var(--ink); }
-  .status-badge.delivered{ background:var(--lime); color:var(--ink); }
+  .muted{ color:var(--text-muted); font-size:12px; }
+  .status-badge{ font-family:'IBM Plex Mono', monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:0.03em; padding:3px 9px; border-radius:4px; }
+  .status-badge.pending{ background:rgba(217,166,74,0.15); color:var(--warning); border:1px solid rgba(217,166,74,0.35); }
+  .status-badge.paid{ background:rgba(91,147,224,0.15); color:var(--info); border:1px solid rgba(91,147,224,0.35); }
+  .status-badge.delivered{ background:rgba(79,174,124,0.15); color:var(--success); border:1px solid rgba(79,174,124,0.35); }
 
   .product-card{ display:flex; gap:12px; }
-  .product-card img{ width:60px; height:70px; object-fit:cover; border-radius:8px; flex-shrink:0; background:#000; }
+  .product-card img{ width:56px; height:64px; object-fit:cover; border-radius:6px; flex-shrink:0; background:var(--surface-2); border:1px solid var(--border); }
   .product-card .pnoimg{
-    width:60px; height:70px; border-radius:8px; flex-shrink:0;
-    background:#1e1e21; border:1px dashed var(--line);
+    width:56px; height:64px; border-radius:6px; flex-shrink:0;
+    background:var(--surface-2); border:1px dashed var(--border);
     display:flex; align-items:center; justify-content:center;
     font-family:'IBM Plex Mono', monospace; font-size:8px; text-align:center;
-    color:rgba(241,239,233,0.4); text-transform:uppercase;
+    color:var(--text-muted); text-transform:uppercase;
   }
   .product-card .pinfo{ flex:1; }
-  .product-card .pname{ font-weight:700; font-size:14px; }
-  .product-card .pmeta{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--lime); margin-top:2px; }
+  .product-card .pname{ font-weight:600; font-size:13.5px; color:var(--text); }
+  .product-card .pmeta{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--text-muted); margin-top:3px; }
   .product-actions{ display:flex; gap:8px; margin-top:10px; }
   .product-actions button{ flex:1; padding:8px; font-size:11px; }
 
   .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0 10px; }
-  .empty{ text-align:center; color:rgba(241,239,233,0.5); padding:30px 0; }
-  .faq-edit-item{ margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--line); }
+  .empty{ text-align:center; color:var(--text-muted); padding:30px 0; font-size:13px; }
+  .faq-edit-item{ margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--border); }
 </style>
 </head>
 <body>
@@ -127,12 +148,12 @@
 </div>
 
   <div class="tabs">
-    <button class="tab-btn" onclick="switchTab('apercu', this)">📊 Aperçu</button>
-    <button class="tab-btn" onclick="switchTab('avis', this)">⭐ Avis</button>
-    <button class="tab-btn active" onclick="switchTab('commandes', this)">📦 Commandes</button>
-    <button class="tab-btn" onclick="switchTab('produits', this)">🛍️ Produits</button>
-    <button class="tab-btn" onclick="switchTab('contenu', this)">📝 Contenu</button>
-    <button class="tab-btn" onclick="switchTab('reglages', this)">🎨 Réglages</button>
+    <button class="tab-btn" onclick="switchTab('apercu', this)">Aperçu</button>
+    <button class="tab-btn" onclick="switchTab('avis', this)">Avis</button>
+    <button class="tab-btn active" onclick="switchTab('commandes', this)">Commandes</button>
+    <button class="tab-btn" onclick="switchTab('produits', this)">Produits</button>
+    <button class="tab-btn" onclick="switchTab('contenu', this)">Contenu</button>
+    <button class="tab-btn" onclick="switchTab('reglages', this)">Réglages</button>
   </div>
 
 <!-- ONGLET APERÇU -->
