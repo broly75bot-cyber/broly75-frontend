@@ -128,6 +128,27 @@
   .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0 10px; }
   .empty{ text-align:center; color:var(--text-muted); padding:30px 0; font-size:13px; }
   .faq-edit-item{ margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--border); }
+
+  /* ===== Menu de navigation (lignes qui ouvrent un sous-écran) ===== */
+  .nav-list{ background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+  .nav-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:15px 16px; border-bottom:1px solid var(--border);
+    font-family:'Inter', sans-serif; font-weight:500; font-size:13.5px; color:var(--text);
+    cursor:pointer; background:none; width:100%; text-align:left; border-left:none; border-right:none; border-top:none;
+  }
+  .nav-row:last-child{ border-bottom:none; }
+  .nav-row:active{ background:var(--surface-2); }
+  .nav-row .nav-row-hint{ color:var(--text-muted); font-size:12px; font-weight:400; margin-right:8px; }
+  .nav-row::after{ content:'›'; color:var(--text-muted); font-size:19px; margin-left:8px; }
+
+  .subscreen{ display:none; }
+  .subscreen.active{ display:block; }
+  .subscreen-back{
+    display:flex; align-items:center; gap:6px; background:none; border:none; color:var(--text-muted);
+    font-family:'Inter', sans-serif; font-weight:500; font-size:13px; padding:0 0 16px; cursor:pointer;
+  }
+  .subscreen-back::before{ content:'‹'; font-size:18px; line-height:1; }
 </style>
 </head>
 <body>
@@ -171,12 +192,21 @@
 <!-- ONGLET AVIS -->
 <div class="tab-panel" id="tab-avis">
   <div class="section-header">
-    <h2>Avis en attente</h2>
+    <h2>Avis</h2>
     <button class="secondary" onclick="loadReviews()">⟳ Actualiser</button>
   </div>
-  <div id="reviews-pending-container"></div>
-  <h2 style="margin-top:24px;">Avis publiés</h2>
-  <div id="reviews-published-container"></div>
+
+  <div class="subscreen active" id="avis-menu">
+    <h2>En attente</h2>
+    <div class="nav-list" id="reviews-pending-container"></div>
+    <h2 style="margin-top:20px;">Publiés</h2>
+    <div class="nav-list" id="reviews-published-container"></div>
+  </div>
+
+  <div class="subscreen" id="avis-detail">
+    <button class="subscreen-back" onclick="closeReviewDetail()">Avis</button>
+    <div id="review-detail-content"></div>
+  </div>
 </div>
 
 <!-- ONGLET COMMANDES -->
@@ -185,7 +215,15 @@
       <h2>Commandes</h2>
       <button class="secondary" onclick="loadOrders()">⟳ Actualiser</button>
     </div>
-    <div id="orders-container"></div>
+
+    <div class="subscreen active" id="commandes-menu">
+      <div class="nav-list" id="orders-container"></div>
+    </div>
+
+    <div class="subscreen" id="commandes-detail">
+      <button class="subscreen-back" onclick="closeOrderDetail()">Commandes</button>
+      <div id="order-detail-content"></div>
+    </div>
   </div>
 
   <!-- ONGLET PRODUITS -->
@@ -239,52 +277,94 @@
       <h2>Contenu du site</h2>
       <button class="secondary" onclick="loadContent()">⟳ Actualiser</button>
     </div>
-    <h2>Papier peint</h2>
-    <label>Envoyer une image depuis mon appareil</label>
-    <input type="file" id="wallpaper-file" accept="image/*" onchange="uploadWallpaper(this)">
-    <div class="muted" id="wallpaper-status"></div>
-    <label style="margin-top:10px;">Ou URL de l'image de fond (laisse vide pour garder le décor par défaut)</label>
-    <input id="c-wallpaper" placeholder="https://...">
-    <img id="wallpaper-preview" src="" style="max-width:160px; border-radius:8px; margin-bottom:10px; display:none;">
 
-    <h2 style="margin-top:20px;">Horaires de livraison</h2>
-    <div class="form-grid">
-      <div><label>Lundi – Mardi</label><input id="c-lunmar"></div>
-      <div><label>Mercredi – Jeudi</label><input id="c-merjeu"></div>
-      <div><label>Vendredi</label><input id="c-ven"></div>
-      <div><label>Week-end</label><input id="c-weekend"></div>
+    <!-- Menu principal du contenu -->
+    <div class="subscreen active" id="contenu-menu">
+      <div class="nav-list">
+        <button class="nav-row" onclick="openContentSection('wallpaper')">Papier peint</button>
+        <button class="nav-row" onclick="openContentSection('hours')">Horaires de livraison</button>
+        <button class="nav-row" onclick="openContentSection('meetup')">Meetup</button>
+        <button class="nav-row" onclick="openContentSection('shipping')">Service d'envoi</button>
+        <button class="nav-row" onclick="openContentSection('faq')">Questions fréquentes</button>
+        <button class="nav-row" onclick="openContentSection('contacts')">Réseaux & contacts</button>
+      </div>
     </div>
 
-    <h2 style="margin-top:20px;">Meetup</h2>
-    <label>Lieu</label>
-    <input id="c-meetup-location">
-    <label>Horaires</label>
-    <input id="c-meetup-hours">
+    <!-- Sous-écran : Papier peint -->
+    <div class="subscreen" id="contenu-wallpaper">
+      <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
+      <h2>Papier peint</h2>
+      <label>Envoyer une image depuis mon appareil</label>
+      <input type="file" id="wallpaper-file" accept="image/*" onchange="uploadWallpaper(this)">
+      <div class="muted" id="wallpaper-status"></div>
+      <label style="margin-top:10px;">Ou URL de l'image de fond (laisse vide pour garder le décor par défaut)</label>
+      <input id="c-wallpaper" placeholder="https://...">
+      <img id="wallpaper-preview" src="" style="max-width:160px; border-radius:8px; margin-bottom:10px; display:none;">
+      <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer</button>
+    </div>
 
-    <h2 style="margin-top:20px;">Service d'envoi</h2>
-    <label>Montant minimum</label>
-    <input id="c-shipping-min">
+    <!-- Sous-écran : Horaires -->
+    <div class="subscreen" id="contenu-hours">
+      <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
+      <h2>Horaires de livraison</h2>
+      <div class="form-grid">
+        <div><label>Lundi – Mardi</label><input id="c-lunmar"></div>
+        <div><label>Mercredi – Jeudi</label><input id="c-merjeu"></div>
+        <div><label>Vendredi</label><input id="c-ven"></div>
+        <div><label>Week-end</label><input id="c-weekend"></div>
+      </div>
+      <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer</button>
+    </div>
 
-    <h2 style="margin-top:20px;">Questions fréquentes</h2>
-    <div id="faq-editor"></div>
+    <!-- Sous-écran : Meetup -->
+    <div class="subscreen" id="contenu-meetup">
+      <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
+      <h2>Meetup</h2>
+      <label>Lieu</label>
+      <input id="c-meetup-location">
+      <label>Horaires</label>
+      <input id="c-meetup-hours">
+      <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer</button>
+    </div>
 
-    <h2 style="margin-top:20px;">Réseaux & contacts</h2>
-    <label>Telegram principal (lien)</label>
-    <input id="c-tg-main">
-    <label>Canal Telegram (lien)</label>
-    <input id="c-tg-channel">
-    <label>Instagram (lien)</label>
-    <input id="c-instagram">
-    <label>Snapchat (lien)</label>
-    <input id="c-snapchat">
-    <label>WhatsApp (lien)</label>
-    <input id="c-whatsapp">
-    <label>Signal (lien)</label>
-    <input id="c-signal">
-    <label>Potato (lien)</label>
-    <input id="c-potato">
+    <!-- Sous-écran : Service d'envoi -->
+    <div class="subscreen" id="contenu-shipping">
+      <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
+      <h2>Service d'envoi</h2>
+      <label>Montant minimum</label>
+      <input id="c-shipping-min">
+      <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer</button>
+    </div>
 
-    <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer le contenu</button>
+    <!-- Sous-écran : FAQ -->
+    <div class="subscreen" id="contenu-faq">
+      <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
+      <h2>Questions fréquentes</h2>
+      <div id="faq-editor"></div>
+      <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer</button>
+    </div>
+
+    <!-- Sous-écran : Contacts -->
+    <div class="subscreen" id="contenu-contacts">
+      <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
+      <h2>Réseaux & contacts</h2>
+      <label>Telegram principal (lien)</label>
+      <input id="c-tg-main">
+      <label>Canal Telegram (lien)</label>
+      <input id="c-tg-channel">
+      <label>Instagram (lien)</label>
+      <input id="c-instagram">
+      <label>Snapchat (lien)</label>
+      <input id="c-snapchat">
+      <label>WhatsApp (lien)</label>
+      <input id="c-whatsapp">
+      <label>Signal (lien)</label>
+      <input id="c-signal">
+      <label>Potato (lien)</label>
+      <input id="c-potato">
+      <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer</button>
+    </div>
+
     <div class="muted" id="content-status" style="text-align:center; margin-top:8px;"></div>
   </div>
 
@@ -295,62 +375,97 @@
       <button class="secondary" onclick="loadStyleSettings()">⟳ Actualiser</button>
     </div>
 
-    <h2>Couleurs</h2>
-    <div class="form-grid">
-      <div><label>Fond (ink)</label><input type="color" id="s-color-ink"></div>
-      <div><label>Texte (paper)</label><input type="color" id="s-color-paper"></div>
+    <!-- Menu principal des réglages -->
+    <div class="subscreen active" id="reglages-menu">
+      <div class="nav-list">
+        <button class="nav-row" onclick="openSettingsSection('colors')">Couleurs</button>
+        <button class="nav-row" onclick="openSettingsSection('fonts')">Polices d'écriture</button>
+        <button class="nav-row" onclick="openSettingsSection('logo')">Logo</button>
+        <button class="nav-row" onclick="openSettingsSection('banner')">Bannière</button>
+        <button class="nav-row" onclick="openSettingsSection('announcement')">Bloc annonce / promo</button>
+      </div>
     </div>
-    <div class="form-grid">
-      <div><label>Accent principal (lime)</label><input type="color" id="s-color-lime"></div>
-      <div><label>Accent secondaire (pink)</label><input type="color" id="s-color-pink"></div>
+
+    <!-- Sous-écran : Couleurs -->
+    <div class="subscreen" id="reglages-colors">
+      <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
+      <h2>Couleurs</h2>
+      <div class="form-grid">
+        <div><label>Fond (ink)</label><input type="color" id="s-color-ink"></div>
+        <div><label>Texte (paper)</label><input type="color" id="s-color-paper"></div>
+      </div>
+      <div class="form-grid">
+        <div><label>Accent principal (lime)</label><input type="color" id="s-color-lime"></div>
+        <div><label>Accent secondaire (pink)</label><input type="color" id="s-color-pink"></div>
+      </div>
+      <label>Accent tertiaire (cyan)</label>
+      <input type="color" id="s-color-cyan">
+      <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
-    <label>Accent tertiaire (cyan)</label>
-    <input type="color" id="s-color-cyan">
 
-    <h2 style="margin-top:20px;">Polices d'écriture</h2>
-    <label>Police des titres (ex. BROLY75, prix, gros chiffres)</label>
-    <select id="s-font-title">
-      <option value="'Anton', sans-serif">Anton (par défaut)</option>
-      <option value="'Bebas Neue', sans-serif">Bebas Neue</option>
-      <option value="'Archivo Black', sans-serif">Archivo Black</option>
-      <option value="'Oswald', sans-serif">Oswald</option>
-      <option value="'Playfair Display', serif">Playfair Display</option>
-    </select>
-    <label>Police du texte courant</label>
-    <select id="s-font-body">
-      <option value="'Space Grotesk', sans-serif">Space Grotesk (par défaut)</option>
-      <option value="'Inter', sans-serif">Inter</option>
-      <option value="'Poppins', sans-serif">Poppins</option>
-      <option value="'Work Sans', sans-serif">Work Sans</option>
-      <option value="'Manrope', sans-serif">Manrope</option>
-    </select>
-    <label>Police des petits libellés (mono)</label>
-    <select id="s-font-mono">
-      <option value="'IBM Plex Mono', monospace">IBM Plex Mono (par défaut)</option>
-      <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
-      <option value="'Space Mono', monospace">Space Mono</option>
-      <option value="'Roboto Mono', monospace">Roboto Mono</option>
-    </select>
+    <!-- Sous-écran : Polices -->
+    <div class="subscreen" id="reglages-fonts">
+      <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
+      <h2>Polices d'écriture</h2>
+      <label>Police des titres (ex. BROLY75, prix, gros chiffres)</label>
+      <select id="s-font-title">
+        <option value="'Anton', sans-serif">Anton (par défaut)</option>
+        <option value="'Bebas Neue', sans-serif">Bebas Neue</option>
+        <option value="'Archivo Black', sans-serif">Archivo Black</option>
+        <option value="'Oswald', sans-serif">Oswald</option>
+        <option value="'Playfair Display', serif">Playfair Display</option>
+      </select>
+      <label>Police du texte courant</label>
+      <select id="s-font-body">
+        <option value="'Space Grotesk', sans-serif">Space Grotesk (par défaut)</option>
+        <option value="'Inter', sans-serif">Inter</option>
+        <option value="'Poppins', sans-serif">Poppins</option>
+        <option value="'Work Sans', sans-serif">Work Sans</option>
+        <option value="'Manrope', sans-serif">Manrope</option>
+      </select>
+      <label>Police des petits libellés (mono)</label>
+      <select id="s-font-mono">
+        <option value="'IBM Plex Mono', monospace">IBM Plex Mono (par défaut)</option>
+        <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+        <option value="'Space Mono', monospace">Space Mono</option>
+        <option value="'Roboto Mono', monospace">Roboto Mono</option>
+      </select>
+      <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
+    </div>
 
-    <h2 style="margin-top:20px;">Logo</h2>
-    <label>Remplace le badge rond "B" en haut de la boutique</label>
-    <input type="file" id="s-logo-file" accept="image/*" onchange="uploadStyleImage(this,'s-logo-url','s-logo-status','s-logo-preview')">
-    <div class="muted" id="s-logo-status"></div>
-    <img id="s-logo-preview" src="" style="max-width:80px; border-radius:50%; margin:8px 0; display:none;">
-    <input type="hidden" id="s-logo-url">
+    <!-- Sous-écran : Logo -->
+    <div class="subscreen" id="reglages-logo">
+      <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
+      <h2>Logo</h2>
+      <label>Remplace le badge rond "B" en haut de la boutique</label>
+      <input type="file" id="s-logo-file" accept="image/*" onchange="uploadStyleImage(this,'s-logo-url','s-logo-status','s-logo-preview')">
+      <div class="muted" id="s-logo-status"></div>
+      <img id="s-logo-preview" src="" style="max-width:80px; border-radius:50%; margin:8px 0; display:none;">
+      <input type="hidden" id="s-logo-url">
+      <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
+    </div>
 
-    <h2 style="margin-top:20px;">Bannière</h2>
-    <label>Image large affichée tout en haut de la boutique (facultatif)</label>
-    <input type="file" id="s-banner-file" accept="image/*" onchange="uploadStyleImage(this,'s-banner-url','s-banner-status','s-banner-preview')">
-    <div class="muted" id="s-banner-status"></div>
-    <img id="s-banner-preview" src="" style="max-width:100%; border-radius:8px; margin:8px 0; display:none;">
-    <input type="hidden" id="s-banner-url">
+    <!-- Sous-écran : Bannière -->
+    <div class="subscreen" id="reglages-banner">
+      <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
+      <h2>Bannière</h2>
+      <label>Image large affichée tout en haut de la boutique (facultatif)</label>
+      <input type="file" id="s-banner-file" accept="image/*" onchange="uploadStyleImage(this,'s-banner-url','s-banner-status','s-banner-preview')">
+      <div class="muted" id="s-banner-status"></div>
+      <img id="s-banner-preview" src="" style="max-width:100%; border-radius:8px; margin:8px 0; display:none;">
+      <input type="hidden" id="s-banner-url">
+      <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
+    </div>
 
-    <h2 style="margin-top:20px;">Bloc annonce / promo</h2>
-    <label>Message affiché en bandeau en haut de la boutique (laisser vide pour le masquer)</label>
-    <input id="s-announcement" placeholder="Ex : 🔥 Livraison offerte ce week-end">
+    <!-- Sous-écran : Bloc annonce -->
+    <div class="subscreen" id="reglages-announcement">
+      <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
+      <h2>Bloc annonce / promo</h2>
+      <label>Message affiché en bandeau en haut de la boutique (laisser vide pour le masquer)</label>
+      <input id="s-announcement" placeholder="Ex : 🔥 Livraison offerte ce week-end">
+      <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
+    </div>
 
-    <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer les réglages</button>
     <div class="muted" id="style-status" style="text-align:center; margin-top:8px;"></div>
   </div>
 </div>
@@ -384,9 +499,11 @@ function switchTab(name, btn){
   document.getElementById('tab-' + name).classList.add('active');
   btn.classList.add('active');
   if (name === 'apercu') loadStats();
-  if (name === 'avis') loadReviews();
+  if (name === 'avis') { closeReviewDetail(); loadReviews(); }
+  if (name === 'commandes') closeOrderDetail();
   if (name === 'produits') loadProducts();
-  if (name === 'reglages') loadStyleSettings();
+  if (name === 'contenu') closeContentSection();
+  if (name === 'reglages') { closeSettingsSection(); loadStyleSettings(); }
 }
 
 // ===== BOUTON RAFRAÎCHIR GLOBAL =====
@@ -407,28 +524,70 @@ function refreshCurrent(){
   else if (name === 'reglages') loadStyleSettings();
 }
 
+// ===== NAVIGATION MENU → SOUS-ÉCRAN (Réglages) =====
+function openSettingsSection(name){
+  document.querySelectorAll('#tab-reglages .subscreen').forEach(s => s.classList.remove('active'));
+  document.getElementById('reglages-' + name).classList.add('active');
+}
+function closeSettingsSection(){
+  document.querySelectorAll('#tab-reglages .subscreen').forEach(s => s.classList.remove('active'));
+  document.getElementById('reglages-menu').classList.add('active');
+}
+
+// ===== NAVIGATION MENU → SOUS-ÉCRAN (Contenu) =====
+function openContentSection(name){
+  document.querySelectorAll('#tab-contenu .subscreen').forEach(s => s.classList.remove('active'));
+  document.getElementById('contenu-' + name).classList.add('active');
+}
+function closeContentSection(){
+  document.querySelectorAll('#tab-contenu .subscreen').forEach(s => s.classList.remove('active'));
+  document.getElementById('contenu-menu').classList.add('active');
+}
+
 // ===== COMMANDES =====
+let allOrders = [];
+
 async function loadOrders(){
   const container = document.getElementById('orders-container');
   container.innerHTML = '<p class="empty">Chargement...</p>';
   try {
     const res = await fetch(`${BACKEND_URL}/api/orders`, { headers: { 'x-admin-key': adminKey } });
     if (res.status === 401){ alert('Mot de passe incorrect'); location.reload(); return; }
-    const orders = await res.json();
-    if (orders.length === 0){ container.innerHTML = '<p class="empty">Aucune commande pour le moment.</p>'; return; }
-    container.innerHTML = orders.map(o => `
-      <div class="card ${o.status === 'delivered' ? 'delivered' : ''}">
-        <div class="row-between"><span class="muted">${o.id}</span><span class="muted">${new Date(o.createdAt).toLocaleString('fr-FR')}</span></div>
-        <div style="font-weight:700; margin-top:6px;">${o.name || 'Sans nom'}</div>
-        <div class="muted">${(o.lines || []).join(', ')}</div>
-        <div class="muted">Total : ${o.totalEur} € — ${o.fulfillment || 'livraison'}</div>
-        <div class="muted">${o.address || ''}</div>
-        <div class="muted">${o.contact || ''}</div>
-        <span class="status-badge ${o.status}">${o.status}</span>
-        ${o.status !== 'delivered' ? `<button style="width:100%; margin-top:10px;" onclick="markDelivered('${o.id}')">Marquer comme livrée (+10 coins)</button>` : ''}
-      </div>
+    allOrders = await res.json();
+    if (allOrders.length === 0){ container.innerHTML = '<p class="empty">Aucune commande pour le moment.</p>'; return; }
+    container.innerHTML = allOrders.map(o => `
+      <button class="nav-row" onclick="showOrderDetail('${o.id}')">
+        <span>
+          <span style="display:block;">${o.name || 'Sans nom'}</span>
+          <span class="muted">${new Date(o.createdAt).toLocaleDateString('fr-FR')} · ${o.totalEur} €</span>
+        </span>
+        <span class="nav-row-hint"><span class="status-badge ${o.status}">${o.status}</span></span>
+      </button>
     `).join('');
   } catch (err) { container.innerHTML = '<p class="empty">Erreur de chargement.</p>'; }
+}
+
+function showOrderDetail(id){
+  const o = allOrders.find(x => x.id == id);
+  if (!o) return;
+  document.getElementById('order-detail-content').innerHTML = `
+    <div class="card ${o.status === 'delivered' ? 'delivered' : ''}">
+      <div class="row-between"><span class="muted">${o.id}</span><span class="muted">${new Date(o.createdAt).toLocaleString('fr-FR')}</span></div>
+      <div style="font-weight:700; margin-top:6px;">${o.name || 'Sans nom'}</div>
+      <div class="muted">${(o.lines || []).join(', ')}</div>
+      <div class="muted">Total : ${o.totalEur} € — ${o.fulfillment || 'livraison'}</div>
+      <div class="muted">${o.address || ''}</div>
+      <div class="muted">${o.contact || ''}</div>
+      <span class="status-badge ${o.status}">${o.status}</span>
+      ${o.status !== 'delivered' ? `<button style="width:100%; margin-top:10px;" onclick="markDelivered('${o.id}')">Marquer comme livrée (+10 coins)</button>` : ''}
+    </div>
+  `;
+  document.querySelectorAll('#tab-commandes .subscreen').forEach(s => s.classList.remove('active'));
+  document.getElementById('commandes-detail').classList.add('active');
+}
+function closeOrderDetail(){
+  document.querySelectorAll('#tab-commandes .subscreen').forEach(s => s.classList.remove('active'));
+  document.getElementById('commandes-menu').classList.add('active');
 }
 let salesChart = null;
 
@@ -476,48 +635,59 @@ async function loadStats(){
   } catch (err) {
     console.error('Erreur stats', err);
   }}
-  async function loadReviews(){
+let allReviews = [];
+
+async function loadReviews(){
   const pendingC = document.getElementById('reviews-pending-container');
   const publishedC = document.getElementById('reviews-published-container');
   pendingC.innerHTML = '<p class="empty">Chargement...</p>';
   publishedC.innerHTML = '';
   try {
     const res = await fetch(`${BACKEND_URL}/api/reviews/admin`, { headers: { 'x-admin-key': adminKey } });
-    const reviews = await res.json();
-    const pending = reviews.filter(r => r.status === 'pending');
-    const published = reviews.filter(r => r.status === 'published');
+    allReviews = await res.json();
+    const pending = allReviews.filter(r => r.status === 'pending');
+    const published = allReviews.filter(r => r.status === 'published');
 
-    pendingC.innerHTML = pending.length === 0 ? '<p class="empty">Aucun avis en attente.</p>' : pending.map(r => `
-      <div class="review-card">
-        <div class="row-between">
-          <span class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
-          <span class="muted">${r.authorName}</span>
-        </div>
-        <div class="review-comment">${r.comment}</div>
-        ${r.mediaUrl ? `<img class="review-media" src="${r.mediaUrl}">` : ''}
-        <div class="review-actions">
-          <button onclick="updateReview('${r.id}','published')">Publier</button>
-          <button class="danger" onclick="updateReview('${r.id}','rejected')">Rejeter</button>
-        </div>
-      </div>
-    `).join('');
+    const rowHtml = r => `
+      <button class="nav-row" onclick="showReviewDetail('${r.id}')">
+        <span>
+          <span style="display:block;">${r.authorName}</span>
+          <span class="muted">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+        </span>
+      </button>
+    `;
 
-    publishedC.innerHTML = published.length === 0 ? '<p class="empty">Aucun avis publié.</p>' : published.map(r => `
-      <div class="review-card">
-        <div class="row-between">
-          <span class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
-          <span class="muted">${r.authorName}</span>
-        </div>
-        <div class="review-comment">${r.comment}</div>
-        ${r.mediaUrl ? `<img class="review-media" src="${r.mediaUrl}">` : ''}
-        <div class="review-actions">
-          <button class="danger" onclick="deleteReview('${r.id}')">Dépublier / Supprimer</button>
-        </div>
-      </div>
-    `).join('');
+    pendingC.innerHTML = pending.length === 0 ? '<p class="empty">Aucun avis en attente.</p>' : pending.map(rowHtml).join('');
+    publishedC.innerHTML = published.length === 0 ? '<p class="empty">Aucun avis publié.</p>' : published.map(rowHtml).join('');
   } catch (err) {
     pendingC.innerHTML = '<p class="empty">Erreur de chargement.</p>';
   }
+}
+
+function showReviewDetail(id){
+  const r = allReviews.find(x => x.id == id);
+  if (!r) return;
+  const actions = r.status === 'pending'
+    ? `<button onclick="updateReview('${r.id}','published')">Publier</button>
+       <button class="danger" onclick="updateReview('${r.id}','rejected')">Rejeter</button>`
+    : `<button class="danger" onclick="deleteReview('${r.id}')">Dépublier / Supprimer</button>`;
+  document.getElementById('review-detail-content').innerHTML = `
+    <div class="review-card">
+      <div class="row-between">
+        <span class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+        <span class="muted">${r.authorName}</span>
+      </div>
+      <div class="review-comment">${r.comment}</div>
+      ${r.mediaUrl ? `<img class="review-media" src="${r.mediaUrl}">` : ''}
+      <div class="review-actions">${actions}</div>
+    </div>
+  `;
+  document.querySelectorAll('#tab-avis .subscreen').forEach(s => s.classList.remove('active'));
+  document.getElementById('avis-detail').classList.add('active');
+}
+function closeReviewDetail(){
+  document.querySelectorAll('#tab-avis .subscreen').forEach(s => s.classList.remove('active'));
+  document.getElementById('avis-menu').classList.add('active');
 }
 
 async function updateReview(id, status){
@@ -525,17 +695,20 @@ async function updateReview(id, status){
     method: 'PUT', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
     body: JSON.stringify({ status }),
   });
+  closeReviewDetail();
   loadReviews();
 }
 
 async function deleteReview(id){
   if (!confirm('Supprimer cet avis ?')) return;
   await fetch(`${BACKEND_URL}/api/reviews/${id}`, { method:'DELETE', headers:{ 'x-admin-key': adminKey } });
+  closeReviewDetail();
   loadReviews();
 }
 
 async function markDelivered(orderId){
   await fetch(`${BACKEND_URL}/api/order/${orderId}/delivered`, { method:'PUT', headers:{ 'x-admin-key': adminKey } });
+  closeOrderDetail();
   loadOrders();
 }
 
