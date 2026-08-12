@@ -246,7 +246,9 @@ function switchTab(name, btn){
   document.getElementById('tab-' + name).classList.add('active');
   btn.classList.add('active');
 if (name === 'apercu') loadStats();
+if (name === 'avis') loadReviews();
 }
+
 
 // ===== COMMANDES =====
 async function loadOrders(){
