@@ -368,13 +368,17 @@ async function updateReview(id, status){
   loadReviews();
 }
 
-#un ck="deleteProduct(${p.id})">Supprimer</button>
-          </div>
-        </div>
-      </div>
-    `).join('');
-  } catch (err) { container.innerHTML = '<p class="empty">Erreur de chargement.</p>'; }
+async function deleteReview(id){
+  if (!confirm('Supprimer cet avis ?')) return;
+  await fetch(`${BACKEND_URL}/api/reviews/${id}`, { method:'DELETE', headers:{ 'x-admin-key': adminKey } });
+  loadReviews();
 }
+
+async function markDelivered(orderId){
+  await fetch(`${BACKEND_URL}/api/order/${orderId}/delivered`, { method:'PUT', headers:{ 'x-admin-key': adminKey } });
+  loadOrders();
+}
+
 
 function openProductForm(){
   document.getElementById('pf-title').textContent = 'Nouveau produit';
