@@ -316,31 +316,59 @@ async function loadStats(){
     });
   } catch (err) {
     console.error('Erreur stats', err);
+  }async function loadReviews(){
+  const pendingC = document.getElementById('reviews-pending-container');
+  const publishedC = document.getElementById('reviews-published-container');
+  pendingC.innerHTML = '<p class="empty">Chargement...</p>';
+  publishedC.innerHTML = '';
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/reviews/admin`, { headers: { 'x-admin-key': adminKey } });
+    const reviews = await res.json();
+    const pending = reviews.filter(r => r.status === 'pending');
+    const published = reviews.filter(r => r.status === 'published');
+
+    pendingC.innerHTML = pending.length === 0 ? '<p class="empty">Aucun avis en attente.</p>' : pending.map(r => `
+      <div class="review-card">
+        <div class="row-between">
+          <span class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+          <span class="muted">${r.authorName}</span>
+        </div>
+        <div class="review-comment">${r.comment}</div>
+        ${r.mediaUrl ? `<img class="review-media" src="${r.mediaUrl}">` : ''}
+        <div class="review-actions">
+          <button onclick="updateReview('${r.id}','published')">Publier</button>
+          <button class="danger" onclick="updateReview('${r.id}','rejected')">Rejeter</button>
+        </div>
+      </div>
+    `).join('');
+
+    publishedC.innerHTML = published.length === 0 ? '<p class="empty">Aucun avis publié.</p>' : published.map(r => `
+      <div class="review-card">
+        <div class="row-between">
+          <span class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+          <span class="muted">${r.authorName}</span>
+        </div>
+        <div class="review-comment">${r.comment}</div>
+        ${r.mediaUrl ? `<img class="review-media" src="${r.mediaUrl}">` : ''}
+        <div class="review-actions">
+          <button class="danger" onclick="deleteReview('${r.id}')">Dépublier / Supprimer</button>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    pendingC.innerHTML = '<p class="empty">Erreur de chargement.</p>';
   }
 }
 
-async function markDelivered(orderId){
-  await fetch(`${BACKEND_URL}/api/order/${orderId}/mark-delivered`, { method:'POST', headers:{ 'x-admin-key': adminKey } });
-  loadOrders();
+async function updateReview(id, status){
+  await fetch(`${BACKEND_URL}/api/reviews/${id}`, {
+    method: 'PUT', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+    body: JSON.stringify({ status }),
+  });
+  loadReviews();
 }
 
-// ===== PRODUITS =====
-async function loadProducts(){
-  const container = document.getElementById('products-container');
-  container.innerHTML = '<p class="empty">Chargement...</p>';
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/products`);
-    allProducts = await res.json();
-    if (allProducts.length === 0){ container.innerHTML = '<p class="empty">Aucun produit — ajoute le premier.</p>'; return; }
-    container.innerHTML = allProducts.map(p => `
-      <div class="card product-card">
-        <img src="${p.img || ''}" alt="">
-        <div class="pinfo">
-          <div class="pname">${p.name}</div>
-          <div class="pmeta">${p.price_eur || p.price} € — ${p.cat || ''}</div>
-          <div class="product-actions">
-            <button class="secondary" onclick="editProduct(${p.id})">Éditer</button>
-            <button class="danger" onclick="deleteProduct(${p.id})">Supprimer</button>
+#un ck="deleteProduct(${p.id})">Supprimer</button>
           </div>
         </div>
       </div>
