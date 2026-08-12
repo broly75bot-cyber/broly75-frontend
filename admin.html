@@ -91,6 +91,13 @@
 
   .product-card{ display:flex; gap:12px; }
   .product-card img{ width:60px; height:70px; object-fit:cover; border-radius:8px; flex-shrink:0; background:#000; }
+  .product-card .pnoimg{
+    width:60px; height:70px; border-radius:8px; flex-shrink:0;
+    background:#1e1e21; border:1px dashed var(--line);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace; font-size:8px; text-align:center;
+    color:rgba(241,239,233,0.4); text-transform:uppercase;
+  }
   .product-card .pinfo{ flex:1; }
   .product-card .pname{ font-weight:700; font-size:14px; }
   .product-card .pmeta{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--lime); margin-top:2px; }
@@ -631,9 +638,14 @@ async function loadProducts(){
     if (res.status === 401){ alert('Mot de passe incorrect'); location.reload(); return; }
     allProducts = await res.json();
     if (allProducts.length === 0){ container.innerHTML = '<p class="empty">Aucun produit pour le moment.</p>'; return; }
-    container.innerHTML = allProducts.map(p => `
+    container.innerHTML = allProducts.map(p => {
+      const imgUrl = p.img || p.image || p.imageUrl || p.photo || p.photoUrl || '';
+      const imgTag = imgUrl
+        ? `<img src="${imgUrl}" alt="${p.name || ''}" onerror="this.replaceWith(Object.assign(document.createElement('div'), {className:'pnoimg', textContent:'Erreur'}))">`
+        : `<div class="pnoimg">Pas de photo</div>`;
+      return `
       <div class="card product-card">
-        <img src="${p.img || ''}" alt="${p.name || ''}">
+        ${imgTag}
         <div class="pinfo">
           <div class="pname">${p.name || 'Sans nom'}</div>
           <div class="pmeta">${p.price_eur ?? p.price ?? '—'} € · ${p.cat || ''}${p.tag ? ' · ' + p.tag : ''}</div>
@@ -644,7 +656,8 @@ async function loadProducts(){
           </div>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
   } catch (err) {
     container.innerHTML = '<p class="empty">Erreur de chargement.</p>';
   }
