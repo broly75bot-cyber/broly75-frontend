@@ -316,7 +316,8 @@ async function loadStats(){
     });
   } catch (err) {
     console.error('Erreur stats', err);
-  }async function loadReviews(){
+  }}
+  async function loadReviews(){
   const pendingC = document.getElementById('reviews-pending-container');
   const publishedC = document.getElementById('reviews-published-container');
   pendingC.innerHTML = '<p class="empty">Chargement...</p>';
