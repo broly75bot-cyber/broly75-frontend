@@ -124,7 +124,8 @@
     <button class="tab-btn" onclick="switchTab('avis', this)">⭐ Avis</button>
     <button class="tab-btn active" onclick="switchTab('commandes', this)">📦 Commandes</button>
     <button class="tab-btn" onclick="switchTab('produits', this)">🛍️ Produits</button>
-    <button class="tab-btn" onclick="switchTab('contenu', this)">⚙️ Contenu</button>
+    <button class="tab-btn" onclick="switchTab('contenu', this)">📝 Contenu</button>
+    <button class="tab-btn" onclick="switchTab('reglages', this)">🎨 Réglages</button>
   </div>
 
 <!-- ONGLET APERÇU -->
@@ -211,8 +212,12 @@
       <button class="secondary" onclick="loadContent()">⟳ Actualiser</button>
     </div>
     <h2>Papier peint</h2>
-    <label>URL de l'image de fond (laisse vide pour garder le décor par défaut)</label>
+    <label>Envoyer une image depuis mon appareil</label>
+    <input type="file" id="wallpaper-file" accept="image/*" onchange="uploadWallpaper(this)">
+    <div class="muted" id="wallpaper-status"></div>
+    <label style="margin-top:10px;">Ou URL de l'image de fond (laisse vide pour garder le décor par défaut)</label>
     <input id="c-wallpaper" placeholder="https://...">
+    <img id="wallpaper-preview" src="" style="max-width:160px; border-radius:8px; margin-bottom:10px; display:none;">
 
     <h2 style="margin-top:20px;">Horaires de livraison</h2>
     <div class="form-grid">
@@ -254,6 +259,72 @@
     <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer le contenu</button>
     <div class="muted" id="content-status" style="text-align:center; margin-top:8px;"></div>
   </div>
+
+  <!-- ONGLET RÉGLAGES (style du site) -->
+  <div class="tab-panel" id="tab-reglages">
+    <div class="section-header">
+      <h2>Style du site</h2>
+      <button class="secondary" onclick="loadStyleSettings()">⟳ Actualiser</button>
+    </div>
+
+    <h2>Couleurs</h2>
+    <div class="form-grid">
+      <div><label>Fond (ink)</label><input type="color" id="s-color-ink"></div>
+      <div><label>Texte (paper)</label><input type="color" id="s-color-paper"></div>
+    </div>
+    <div class="form-grid">
+      <div><label>Accent principal (lime)</label><input type="color" id="s-color-lime"></div>
+      <div><label>Accent secondaire (pink)</label><input type="color" id="s-color-pink"></div>
+    </div>
+    <label>Accent tertiaire (cyan)</label>
+    <input type="color" id="s-color-cyan">
+
+    <h2 style="margin-top:20px;">Polices d'écriture</h2>
+    <label>Police des titres (ex. BROLY75, prix, gros chiffres)</label>
+    <select id="s-font-title">
+      <option value="'Anton', sans-serif">Anton (par défaut)</option>
+      <option value="'Bebas Neue', sans-serif">Bebas Neue</option>
+      <option value="'Archivo Black', sans-serif">Archivo Black</option>
+      <option value="'Oswald', sans-serif">Oswald</option>
+      <option value="'Playfair Display', serif">Playfair Display</option>
+    </select>
+    <label>Police du texte courant</label>
+    <select id="s-font-body">
+      <option value="'Space Grotesk', sans-serif">Space Grotesk (par défaut)</option>
+      <option value="'Inter', sans-serif">Inter</option>
+      <option value="'Poppins', sans-serif">Poppins</option>
+      <option value="'Work Sans', sans-serif">Work Sans</option>
+      <option value="'Manrope', sans-serif">Manrope</option>
+    </select>
+    <label>Police des petits libellés (mono)</label>
+    <select id="s-font-mono">
+      <option value="'IBM Plex Mono', monospace">IBM Plex Mono (par défaut)</option>
+      <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+      <option value="'Space Mono', monospace">Space Mono</option>
+      <option value="'Roboto Mono', monospace">Roboto Mono</option>
+    </select>
+
+    <h2 style="margin-top:20px;">Logo</h2>
+    <label>Remplace le badge rond "B" en haut de la boutique</label>
+    <input type="file" id="s-logo-file" accept="image/*" onchange="uploadStyleImage(this,'s-logo-url','s-logo-status','s-logo-preview')">
+    <div class="muted" id="s-logo-status"></div>
+    <img id="s-logo-preview" src="" style="max-width:80px; border-radius:50%; margin:8px 0; display:none;">
+    <input type="hidden" id="s-logo-url">
+
+    <h2 style="margin-top:20px;">Bannière</h2>
+    <label>Image large affichée tout en haut de la boutique (facultatif)</label>
+    <input type="file" id="s-banner-file" accept="image/*" onchange="uploadStyleImage(this,'s-banner-url','s-banner-status','s-banner-preview')">
+    <div class="muted" id="s-banner-status"></div>
+    <img id="s-banner-preview" src="" style="max-width:100%; border-radius:8px; margin:8px 0; display:none;">
+    <input type="hidden" id="s-banner-url">
+
+    <h2 style="margin-top:20px;">Bloc annonce / promo</h2>
+    <label>Message affiché en bandeau en haut de la boutique (laisser vide pour le masquer)</label>
+    <input id="s-announcement" placeholder="Ex : 🔥 Livraison offerte ce week-end">
+
+    <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer les réglages</button>
+    <div class="muted" id="style-status" style="text-align:center; margin-top:8px;"></div>
+  </div>
 </div>
 
 <script>
@@ -286,6 +357,7 @@ function switchTab(name, btn){
   btn.classList.add('active');
   if (name === 'apercu') loadStats();
   if (name === 'avis') loadReviews();
+  if (name === 'reglages') loadStyleSettings();
 }
 
 // ===== BOUTON RAFRAÎCHIR GLOBAL =====
@@ -303,6 +375,7 @@ function refreshCurrent(){
   else if (name === 'commandes') loadOrders();
   else if (name === 'produits') loadProducts();
   else if (name === 'contenu') loadContent();
+  else if (name === 'reglages') loadStyleSettings();
 }
 
 // ===== COMMANDES =====
@@ -496,6 +569,31 @@ async function uploadPhoto(input){
 }
 
 
+async function uploadWallpaper(input){
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('wallpaper-status');
+  status.textContent = 'Envoi en cours...';
+  const formData = new FormData();
+  formData.append('photo', file);
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/upload`, {
+      method: 'POST',
+      headers: { 'x-admin-key': adminKey },
+      body: formData,
+    });
+    const data = await res.json();
+    if (!res.ok) { status.textContent = '❌ ' + (data.error || 'Erreur upload'); return; }
+    document.getElementById('c-wallpaper').value = data.url;
+    const preview = document.getElementById('wallpaper-preview');
+    preview.src = data.url;
+    preview.style.display = 'block';
+    status.textContent = '✅ Image envoyée — pense à cliquer sur "Enregistrer le contenu" pour l\'appliquer';
+  } catch (err) {
+    status.textContent = '❌ Erreur réseau';
+  }
+}
+
 async function saveProduct(){
   const id = document.getElementById('pf-id').value;
   const body = {
@@ -525,6 +623,33 @@ async function deleteProduct(id){
   loadProducts();
 }
 
+async function loadProducts(){
+  const container = document.getElementById('products-container');
+  container.innerHTML = '<p class="empty">Chargement...</p>';
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/products`, { headers: { 'x-admin-key': adminKey } });
+    if (res.status === 401){ alert('Mot de passe incorrect'); location.reload(); return; }
+    allProducts = await res.json();
+    if (allProducts.length === 0){ container.innerHTML = '<p class="empty">Aucun produit pour le moment.</p>'; return; }
+    container.innerHTML = allProducts.map(p => `
+      <div class="card product-card">
+        <img src="${p.img || ''}" alt="${p.name || ''}">
+        <div class="pinfo">
+          <div class="pname">${p.name || 'Sans nom'}</div>
+          <div class="pmeta">${p.price_eur ?? p.price ?? '—'} € · ${p.cat || ''}${p.tag ? ' · ' + p.tag : ''}</div>
+          <div class="muted">${p.stock || ''}</div>
+          <div class="product-actions">
+            <button class="secondary" onclick="editProduct('${p.id}')">Modifier</button>
+            <button class="danger" onclick="deleteProduct('${p.id}')">Supprimer</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    container.innerHTML = '<p class="empty">Erreur de chargement.</p>';
+  }
+}
+
 // ===== CONTENU =====
 let currentContent = null;
 
@@ -533,6 +658,9 @@ async function loadContent(){
   currentContent = await res.json();
   const c = currentContent;
   document.getElementById('c-wallpaper').value = c.wallpaperUrl || '';
+  const wpPreview = document.getElementById('wallpaper-preview');
+  wpPreview.src = c.wallpaperUrl || '';
+  wpPreview.style.display = c.wallpaperUrl ? 'block' : 'none';
   document.getElementById('c-lunmar').value = c.hours?.lunMar || '';
   document.getElementById('c-merjeu').value = c.hours?.merJeu || '';
   document.getElementById('c-ven').value = c.hours?.ven || '';
@@ -592,6 +720,97 @@ async function saveContent(){
     method:'PUT', headers:{ 'Content-Type':'application/json', 'x-admin-key': adminKey }, body: JSON.stringify(body)
   });
   const status = document.getElementById('content-status');
+  status.textContent = res.ok ? '✅ Enregistré' : '❌ Erreur';
+  setTimeout(() => status.textContent = '', 2000);
+  currentContent = body;
+}
+
+// ===== RÉGLAGES (style du site) =====
+async function loadStyleSettings(){
+  if (!currentContent){
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/content`);
+      currentContent = await res.json();
+    } catch (err) {
+      console.error('Impossible de charger les réglages', err);
+      return;
+    }
+  }
+  const s = currentContent.style || {};
+  const colors = s.colors || {};
+  document.getElementById('s-color-ink').value = colors.ink || '#0B0B0D';
+  document.getElementById('s-color-paper').value = colors.paper || '#F1EFE9';
+  document.getElementById('s-color-lime').value = colors.lime || '#D4FF3D';
+  document.getElementById('s-color-pink').value = colors.pink || '#FF2E88';
+  document.getElementById('s-color-cyan').value = colors.cyan || '#00E5FF';
+
+  const fonts = s.fonts || {};
+  if (fonts.title) document.getElementById('s-font-title').value = fonts.title;
+  if (fonts.body) document.getElementById('s-font-body').value = fonts.body;
+  if (fonts.mono) document.getElementById('s-font-mono').value = fonts.mono;
+
+  document.getElementById('s-logo-url').value = s.logoUrl || '';
+  const logoPreview = document.getElementById('s-logo-preview');
+  logoPreview.src = s.logoUrl || '';
+  logoPreview.style.display = s.logoUrl ? 'block' : 'none';
+
+  document.getElementById('s-banner-url').value = s.bannerUrl || '';
+  const bannerPreview = document.getElementById('s-banner-preview');
+  bannerPreview.src = s.bannerUrl || '';
+  bannerPreview.style.display = s.bannerUrl ? 'block' : 'none';
+
+  document.getElementById('s-announcement').value = s.announcement || '';
+}
+
+async function uploadStyleImage(input, urlFieldId, statusFieldId, previewFieldId){
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById(statusFieldId);
+  status.textContent = 'Envoi en cours...';
+  const formData = new FormData();
+  formData.append('photo', file);
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/upload`, {
+      method: 'POST',
+      headers: { 'x-admin-key': adminKey },
+      body: formData,
+    });
+    const data = await res.json();
+    if (!res.ok) { status.textContent = '❌ ' + (data.error || 'Erreur upload'); return; }
+    document.getElementById(urlFieldId).value = data.url;
+    const preview = document.getElementById(previewFieldId);
+    preview.src = data.url;
+    preview.style.display = 'block';
+    status.textContent = '✅ Image envoyée — pense à enregistrer les réglages';
+  } catch (err) {
+    status.textContent = '❌ Erreur réseau';
+  }
+}
+
+async function saveStyleSettings(){
+  const style = {
+    colors: {
+      ink: document.getElementById('s-color-ink').value,
+      paper: document.getElementById('s-color-paper').value,
+      lime: document.getElementById('s-color-lime').value,
+      pink: document.getElementById('s-color-pink').value,
+      cyan: document.getElementById('s-color-cyan').value,
+    },
+    fonts: {
+      title: document.getElementById('s-font-title').value,
+      body: document.getElementById('s-font-body').value,
+      mono: document.getElementById('s-font-mono').value,
+    },
+    logoUrl: document.getElementById('s-logo-url').value,
+    bannerUrl: document.getElementById('s-banner-url').value,
+    announcement: document.getElementById('s-announcement').value,
+  };
+  // On repart du contenu existant pour ne pas écraser les autres réglages (horaires, contacts, FAQ...)
+  const body = { ...(currentContent || {}), style };
+  const res = await fetch(`${BACKEND_URL}/api/content`, {
+    method: 'PUT', headers: { 'Content-Type': 'application/json', 'x-admin-key': adminKey }, body: JSON.stringify(body)
+  });
+  const status = document.getElementById('style-status');
   status.textContent = res.ok ? '✅ Enregistré' : '❌ Erreur';
   setTimeout(() => status.textContent = '', 2000);
   currentContent = body;

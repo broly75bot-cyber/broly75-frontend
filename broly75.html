@@ -16,12 +16,15 @@
     --lime:#D4FF3D;
     --cyan:#00E5FF;
     --line: rgba(241,239,233,0.14);
+    --font-title:'Anton', sans-serif;
+    --font-body:'Space Grotesk', sans-serif;
+    --font-mono:'IBM Plex Mono', monospace;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{
     background:#040604;
     color:var(--paper);
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     -webkit-font-smoothing:antialiased;
     padding-bottom:96px;
     overflow-x:hidden;
@@ -83,7 +86,7 @@
     animation:splashPulse 1.4s ease-in-out infinite;
   }
   #splash .splash-tag{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:11px;
     letter-spacing:0.2em;
     text-transform:uppercase;
@@ -133,7 +136,7 @@
   }
   .eyebrow{
     display:inline-block;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:11px;
     font-weight:600;
     letter-spacing:0.1em;
@@ -145,6 +148,26 @@
     margin-bottom:14px;
     transform:rotate(-2deg);
   }
+  .announcement-bar{
+    display:none;
+    background:var(--pink);
+    color:var(--ink);
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    text-align:center;
+    padding:9px 16px;
+  }
+  .announcement-bar.show{ display:block; }
+  .site-banner{
+    display:none;
+    width:100%;
+    max-height:180px;
+    object-fit:cover;
+  }
+  .site-banner.show{ display:block; }
   .welcome-row{
     display:flex;
     align-items:center;
@@ -158,16 +181,18 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    font-family:'Anton', sans-serif;
+    font-family:var(--font-title);
     font-size:22px;
     color:var(--lime);
     background:rgba(11,11,13,0.5);
     box-shadow:0 0 10px rgba(212,255,61,0.5);
     flex-shrink:0;
+    overflow:hidden;
   }
+  .avatar-badge img{ width:100%; height:100%; object-fit:cover; }
   .welcome-text .eyebrow{ margin-bottom:2px; }
   .welcome-text .name{
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:20px;
     color:var(--paper);
@@ -179,7 +204,7 @@
   }
 
   h1{
-    font-family:'Anton', sans-serif;
+    font-family:var(--font-title);
     font-weight:400;
     font-size:76px;
     line-height:0.92;
@@ -225,7 +250,7 @@
     margin-bottom:16px;
   }
   .pd-type{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:11px;
     text-transform:uppercase;
     letter-spacing:0.06em;
@@ -243,14 +268,14 @@
     box-shadow:0 0 6px var(--lime);
   }
   .pd-brand{
-    font-family:'Anton', sans-serif;
+    font-family:var(--font-title);
     font-size:24px;
     text-transform:uppercase;
     color:var(--paper);
     margin-bottom:10px;
   }
   .pd-price-big{
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:22px;
     color:var(--lime);
@@ -284,7 +309,7 @@
     border:none;
     color:var(--paper);
     padding:13px 6px;
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:600;
     font-size:13px;
   }
@@ -294,7 +319,7 @@
   }
   .fulfil-note{
     text-align:center;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:10.5px;
     color:rgba(241,239,233,0.5);
     margin-bottom:18px;
@@ -334,13 +359,13 @@
     line-height:1.3;
   }
   .suggest-card .sprice{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:11px;
     color:var(--lime);
     margin-top:2px;
   }
   .product-price{
-    font-family:'Anton', sans-serif;
+    font-family:var(--font-title);
     font-size:34px;
     color:var(--paper);
   }
@@ -348,7 +373,7 @@
     display:inline-flex;
     align-items:center;
     gap:6px;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:11px;
     font-weight:600;
     text-transform:uppercase;
@@ -362,7 +387,7 @@
     display:flex;
     align-items:center;
     gap:8px;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:11px;
     font-weight:600;
     text-transform:uppercase;
@@ -397,7 +422,7 @@
     border-radius:12px;
     padding:14px 0;
     text-align:center;
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:15px;
     color:var(--paper);
@@ -441,7 +466,7 @@
     border:2px solid var(--ink);
     padding:14px;
     border-radius:24px;
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:15px;
     display:flex;
@@ -454,7 +479,7 @@
     color:var(--lime);
     padding:4px 10px;
     border-radius:14px;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:13px;
   }
   .round-action-btn{
@@ -475,7 +500,7 @@
     top:-6px; right:-6px;
     background:var(--pink);
     color:#fff;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:10px;
     font-weight:700;
     width:18px; height:18px;
@@ -487,7 +512,7 @@
     position:fixed;
     bottom:82px; left:32px;
     z-index:16;
-    font-family:'Anton', sans-serif;
+    font-family:var(--font-title);
     font-size:15px;
     color:var(--lime);
     text-shadow:0 0 10px rgba(212,255,61,0.6);
@@ -503,7 +528,7 @@
   .cats::-webkit-scrollbar{ display:none; }
   .cat-btn{
     flex:0 0 auto;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:11px;
     font-weight:600;
     text-transform:uppercase;
@@ -541,7 +566,7 @@
   .card .tag{
     position:absolute;
     top:-8px; right:-6px;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:9px;
     font-weight:600;
     letter-spacing:0.06em;
@@ -560,7 +585,7 @@
     filter:saturate(1.1) contrast(1.05);
   }
   .card .name{
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:14.5px;
     line-height:1.2;
@@ -572,7 +597,7 @@
     margin-top:10px;
   }
   .card .price{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:14px;
     font-weight:600;
     color:var(--lime);
@@ -588,13 +613,13 @@
     color:var(--lime);
   }
   .like-btn .like-count{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:11px;
     color:var(--paper);
   }
   .card .add{
     font-size:11px;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-weight:600;
     text-transform:uppercase;
     letter-spacing:0.04em;
@@ -636,7 +661,7 @@
   }
   .nav-item svg{ width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.8; }
   .nav-item .nav-label{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:9px;
     text-transform:uppercase;
     letter-spacing:0.03em;
@@ -650,7 +675,7 @@
     top:-2px; right:2px;
     background:var(--pink);
     color:var(--ink);
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:9px;
     font-weight:700;
     width:15px; height:15px;
@@ -662,7 +687,7 @@
     border-radius:50%;
     background:rgba(212,255,61,0.15);
     border:1.5px solid var(--lime);
-    font-family:'Anton', sans-serif;
+    font-family:var(--font-title);
     font-size:12px;
     color:var(--lime);
   }
@@ -686,20 +711,20 @@
   }
   .cartbar.show{ transform:translateY(0); }
   .cartbar .count{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:11px;
     font-weight:600;
     text-transform:uppercase;
   }
   .cartbar .total{
-    font-family:'Anton', sans-serif;
+    font-family:var(--font-title);
     font-size:22px;
   }
   .cartbar button{
     background:var(--ink);
     color:var(--lime);
     border:none;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-weight:600;
     font-size:12px;
     letter-spacing:0.05em;
@@ -727,7 +752,7 @@
     justify-content:space-between;
     align-items:center;
     padding:12px 20px;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:12px;
     font-weight:700;
     text-transform:uppercase;
@@ -750,7 +775,7 @@
     margin-bottom:22px;
   }
   .close-btn{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-weight:600;
     font-size:12px;
     letter-spacing:0.05em;
@@ -759,7 +784,7 @@
     padding:7px 14px; border-radius:20px;
   }
   .overlay h2{
-    font-family:'Anton', sans-serif;
+    font-family:var(--font-title);
     font-size:32px;
     text-transform:uppercase;
     color:var(--lime);
@@ -771,11 +796,11 @@
     font-size:14px;
   }
   .line-item .lname{ font-weight:700; }
-  .line-item .lprice{ font-family:'IBM Plex Mono', monospace; color:var(--lime); }
+  .line-item .lprice{ font-family:var(--font-mono); color:var(--lime); }
   .totals{
     display:flex; justify-content:space-between;
     padding:18px 0;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:15px;
     font-weight:600;
     color:var(--cyan);
@@ -796,14 +821,14 @@
     border:none;
     padding:0 18px;
     border-radius:10px;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-weight:700;
     font-size:12px;
     text-transform:uppercase;
   }
   .promo-status{
     font-size:12px;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     margin-bottom:16px;
     min-height:14px;
   }
@@ -818,7 +843,7 @@
   }
   .fulfillment-3 button{
     padding:12px 4px;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:10.5px;
     font-weight:600;
     text-transform:uppercase;
@@ -862,7 +887,7 @@
     font-size:17px;
   }
   .social-btn .social-name{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:10px;
     text-transform:uppercase;
     letter-spacing:0.02em;
@@ -893,14 +918,14 @@
   .contact-btn.email .contact-icon{ background:var(--lime); color:var(--ink); }
   .contact-btn.phone .contact-icon{ background:var(--pink); color:var(--ink); }
   .contact-btn .contact-label{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:10px;
     text-transform:uppercase;
     color:rgba(241,239,233,0.5);
     margin-bottom:3px;
   }
   .contact-btn .contact-value{
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:15px;
   }
@@ -914,7 +939,7 @@
     margin-bottom:18px;
   }
   .survey-block .survey-title{
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:16px;
     margin-bottom:14px;
@@ -942,7 +967,7 @@
     background:var(--ink);
     color:var(--paper);
     padding:12px;
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-size:13px;
     border-radius:10px;
     margin-bottom:12px;
@@ -955,13 +980,13 @@
     border:none;
     padding:13px;
     border-radius:26px;
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:13px;
   }
   .survey-thanks{
     color:var(--lime);
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:12px;
     margin-top:10px;
     display:none;
@@ -987,7 +1012,7 @@
     text-decoration:none;
     padding:13px 26px;
     border-radius:26px;
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:13px;
   }
@@ -1001,7 +1026,7 @@
     margin-bottom:22px;
   }
   .rating-summary .big-score{
-    font-family:'Anton', sans-serif;
+    font-family:var(--font-title);
     font-size:44px;
     color:var(--lime);
     line-height:1;
@@ -1013,7 +1038,7 @@
     margin:8px 0 4px;
   }
   .rating-summary .count{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:11px;
     color:rgba(241,239,233,0.55);
   }
@@ -1031,7 +1056,7 @@
     margin-bottom:6px;
   }
   .review-name{
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:14px;
   }
@@ -1047,7 +1072,7 @@
     margin-bottom:6px;
   }
   .review-date{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:10px;
     color:rgba(241,239,233,0.4);
   }
@@ -1088,7 +1113,7 @@
     margin-bottom:10px;
   }
   .long-info-box .lib-label{
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:14px;
     flex:1;
@@ -1096,7 +1121,7 @@
   .lib-badge{
     background:var(--lime);
     color:var(--ink);
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:10px;
     font-weight:700;
     text-transform:uppercase;
@@ -1104,7 +1129,7 @@
     border-radius:12px;
   }
   .info-block-title{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:12px;
     font-weight:600;
     text-transform:uppercase;
@@ -1135,7 +1160,7 @@
   }
   .profile-avatar img{ width:100%; height:100%; object-fit:cover; }
   .profile-avatar .avatar-placeholder{
-    font-family:'Anton', sans-serif;
+    font-family:var(--font-title);
     font-size:34px;
     color:var(--lime);
   }
@@ -1144,14 +1169,14 @@
     bottom:0; left:0; right:0;
     background:rgba(11,11,13,0.75);
     color:var(--lime);
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:8px;
     text-transform:uppercase;
     padding:3px 0;
   }
   .profile-badge{
     display:inline-block;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:10px;
     font-weight:700;
     letter-spacing:0.1em;
@@ -1163,13 +1188,13 @@
     margin-bottom:10px;
   }
   .profile-name{
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:18px;
     color:var(--paper);
   }
   .profile-email{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:12px;
     color:rgba(241,239,233,0.55);
     margin-top:4px;
@@ -1184,13 +1209,13 @@
     box-shadow:0 0 20px rgba(212,255,61,0.15);
   }
   .coins-count{
-    font-family:'Anton', sans-serif;
+    font-family:var(--font-title);
     font-size:38px;
     color:var(--lime);
     line-height:1;
   }
   .coins-label{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:10px;
     text-transform:uppercase;
     color:rgba(241,239,233,0.5);
@@ -1217,14 +1242,14 @@
   }
   .mini-box .mini-icon{ font-size:20px; margin-bottom:8px; }
   .mini-box .mini-label{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:9px;
     text-transform:uppercase;
     color:rgba(241,239,233,0.5);
     margin-bottom:4px;
   }
   .mini-box .mini-value{
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:14px;
     color:var(--paper);
@@ -1242,7 +1267,7 @@
     padding:12px 4px;
     text-align:center;
     color:var(--paper);
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:11px;
   }
   .lang-btn.active{
@@ -1265,7 +1290,7 @@
     text-decoration:none;
     padding:13px;
     border-radius:26px;
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:13px;
     margin-top:12px;
@@ -1307,13 +1332,13 @@
     object-fit:contain;
   }
   .long-case .day{
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:14px;
     color:var(--paper);
   }
   .long-case .time{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:12px;
     color:var(--lime);
   }
@@ -1330,13 +1355,13 @@
     padding:12px;
   }
   .hours-card .day{
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:13px;
     margin-bottom:4px;
   }
   .hours-card .time{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:12px;
     color:rgba(241,239,233,0.6);
   }
@@ -1349,7 +1374,7 @@
   }
   .info-row:last-child{ border-bottom:none; }
   .info-row .info-label{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:10px;
     text-transform:uppercase;
     color:var(--cyan);
@@ -1388,7 +1413,7 @@
     margin-top:1px;
   }
   .faq-q-text{
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:15px;
     color:var(--paper);
@@ -1419,7 +1444,7 @@
     border-top:1px solid var(--line);
     margin-top:6px;
     padding-top:10px;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-weight:700;
     color:var(--lime);
     font-size:15px;
@@ -1432,7 +1457,7 @@
     border:none;
     padding:15px;
     border-radius:30px;
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-weight:700;
     font-size:14px;
     display:flex;
@@ -1445,7 +1470,7 @@
   .form-block{ margin-top:22px; }
   .form-block label{
     display:block;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:11px;
     font-weight:600;
     text-transform:uppercase;
@@ -1459,7 +1484,7 @@
     background:rgba(21,20,23,0.7); backdrop-filter:blur(6px);
     color:var(--paper);
     padding:12px 13px;
-    font-family:'Space Grotesk', sans-serif;
+    font-family:var(--font-body);
     font-size:14px;
     border-radius:10px;
     margin-bottom:14px;
@@ -1479,7 +1504,7 @@
   .btc-box .eyebrow{ background:var(--lime); }
   #qrcode{ display:inline-block; margin:14px auto; padding:10px; background:var(--paper); border-radius:10px; }
   .btc-addr{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-size:12px;
     word-break:break-all;
     background:var(--ink);
@@ -1489,7 +1514,7 @@
     margin-top:10px;
   }
   .btc-amount{
-    font-family:'Anton', sans-serif;
+    font-family:var(--font-title);
     font-size:26px;
     color:var(--lime);
     margin-top:14px;
@@ -1507,7 +1532,7 @@
     color:var(--ink);
     border:none;
     padding:16px;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:var(--font-mono);
     font-weight:700;
     font-size:12px;
     text-transform:uppercase;
@@ -1517,7 +1542,7 @@
   }
   .confirm-screen{ text-align:center; padding-top:70px; }
   .confirm-screen .mark{
-    font-family:'Anton', sans-serif;
+    font-family:var(--font-title);
     font-size:64px;
     color:var(--lime);
   }
@@ -1533,9 +1558,12 @@
 
 <div class="bg-wordmark"><span>BROLY<br>75</span></div>
 
-<div id="home-content"><header>
+<div id="home-content">
+<div class="site-banner" id="site-banner"><img id="site-banner-img" src="" alt="" style="width:100%; display:block;"></div>
+<div class="announcement-bar" id="announcement-bar"></div>
+<header>
   <div class="welcome-row">
-    <div class="avatar-badge">B</div>
+    <div class="avatar-badge" id="avatar-badge">B</div>
     <div class="welcome-text">
       <div class="eyebrow">Bienvenue</div>
       <div class="name">BROLY75</div>
@@ -2288,6 +2316,47 @@ function openAvis(){
 
 let siteContent = null;
 
+function applySiteStyle(style){
+  if (!style) return;
+  const root = document.documentElement;
+  if (style.colors){
+    if (style.colors.ink) root.style.setProperty('--ink', style.colors.ink);
+    if (style.colors.paper) root.style.setProperty('--paper', style.colors.paper);
+    if (style.colors.lime) root.style.setProperty('--lime', style.colors.lime);
+    if (style.colors.pink) root.style.setProperty('--pink', style.colors.pink);
+    if (style.colors.cyan) root.style.setProperty('--cyan', style.colors.cyan);
+  }
+  if (style.fonts){
+    const families = [];
+    if (style.fonts.title) families.push(style.fonts.title.split(',')[0].replace(/'/g,'').trim());
+    if (style.fonts.body) families.push(style.fonts.body.split(',')[0].replace(/'/g,'').trim());
+    if (style.fonts.mono) families.push(style.fonts.mono.split(',')[0].replace(/'/g,'').trim());
+    const toLoad = families.filter(f => f && !['Anton','Space Grotesk','IBM Plex Mono'].includes(f));
+    if (toLoad.length){
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/css2?' + toLoad.map(f => 'family=' + f.replace(/ /g,'+') + ':wght@400;700').join('&') + '&display=swap';
+      document.head.appendChild(link);
+    }
+    if (style.fonts.title) root.style.setProperty('--font-title', style.fonts.title);
+    if (style.fonts.body) root.style.setProperty('--font-body', style.fonts.body);
+    if (style.fonts.mono) root.style.setProperty('--font-mono', style.fonts.mono);
+  }
+  if (style.logoUrl){
+    const badge = document.getElementById('avatar-badge');
+    badge.innerHTML = `<img src="${style.logoUrl}" alt="Logo">`;
+  }
+  if (style.bannerUrl){
+    document.getElementById('site-banner-img').src = style.bannerUrl;
+    document.getElementById('site-banner').classList.add('show');
+  }
+  if (style.announcement){
+    const bar = document.getElementById('announcement-bar');
+    bar.textContent = style.announcement;
+    bar.classList.add('show');
+  }
+}
+
 async function loadSiteContent(){
   try {
     const res = await fetch(BACKEND_URL + '/api/content');
@@ -2300,6 +2369,7 @@ async function loadSiteContent(){
       const wordmark = document.querySelector('.bg-wordmark');
       if (wordmark) wordmark.style.display = 'none';
     }
+    applySiteStyle(siteContent.style);
   } catch (err) {
     console.error('Impossible de charger le contenu du site', err);
   }
@@ -2340,7 +2410,7 @@ function openCart(){
   hideNav();
   const lines = cartItems().map(p => `
     <div class="line-item">
-      <span class="lname">${p.name} <span style="color:var(--cyan); font-family:'IBM Plex Mono',monospace; font-size:11px;">— ${p.size} / ${p.color}</span></span>
+      <span class="lname">${p.name} <span style="color:var(--cyan); font-family:var(--font-mono); font-size:11px;">— ${p.size} / ${p.color}</span></span>
       <span class="lprice">${p.price} €</span>
     </div>`).join('');
   document.getElementById('cart-lines').innerHTML = lines || '<p class="sub">Panier vide.</p>';
