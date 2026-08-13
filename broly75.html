@@ -615,6 +615,18 @@
   }
   .cat-card.active .cc-label{ color:var(--lime); }
 
+  .filter-list{ display:flex; flex-direction:column; gap:8px; }
+  .filter-list .nav-row{
+    display:flex; align-items:center; justify-content:space-between;
+    background:rgba(21,20,23,0.7); backdrop-filter:blur(6px);
+    border:2px solid var(--line); border-radius:14px;
+    padding:14px 16px; text-align:left;
+    font-family:var(--font-body); font-weight:600; font-size:14px; color:var(--paper);
+  }
+  .filter-list .nav-row::after{ content:'›'; color:rgba(241,239,233,0.4); font-size:18px; }
+  .filter-list .nav-row.selected-row{ border-color:var(--lime); color:var(--lime); }
+  .filter-list .nav-row.selected-row::after{ content:'✓'; color:var(--lime); }
+
   .grid{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -1929,6 +1941,29 @@
 </header>
 
 <div class="cat-grid" id="cats"></div>
+
+<!-- FILTRE PAR STYLE -->
+<div class="overlay" id="type-filter-overlay">
+  <div class="overlay-inner">
+    <div class="close-row">
+      <h2 id="type-filter-h2">Type de vêtement</h2>
+      <button class="close-btn" onclick="closeOverlay('type-filter-overlay')">Fermer</button>
+    </div>
+    <div class="filter-list" id="type-filter-list"></div>
+  </div>
+</div>
+
+<!-- FILTRE PAR MARQUE -->
+<div class="overlay" id="brand-filter-overlay">
+  <div class="overlay-inner">
+    <div class="close-row">
+      <h2 id="brand-filter-h2">Marque</h2>
+      <button class="close-btn" onclick="closeOverlay('brand-filter-overlay')">Fermer</button>
+    </div>
+    <div class="filter-list" id="brand-filter-list"></div>
+  </div>
+</div>
+
 <div class="grid" id="grid"></div>
 </div>
 
@@ -2657,7 +2692,6 @@ function loadCartFromStorage(){
 }
 loadCartFromStorage();
 
-let activeCat = 'Tout';
 let currentOrderId = null;
 let fulfillmentMode = null;
 let promoCode = null;
@@ -2850,30 +2884,81 @@ function orderViaTelegram(){
   else window.open(url, '_blank');
 }
 
-// Modifiable depuis l'admin (onglet Contenu > Catégories produits) ; valeurs par défaut si rien n'est configuré
-let CATEGORY_LIST = ['Catégorie 1', 'Catégorie 2'];
+// Les 2 cases de la page d'accueil ouvrent chacune une liste de choix,
+// construite automatiquement à partir des vrais produits (pas besoin de les configurer à la main).
+let activeType = 'Tout';
+let activeBrand = 'Tout';
 
 function renderCats(){
   const bar = document.getElementById('cats');
-  bar.innerHTML = CATEGORY_LIST.map(c => {
-    const thumb = products.find(p => p.cat === c)?.img || '';
-    return `
-      <div class="cat-card ${c===activeCat?'active':''}" style="background-image:url('${thumb}')" onclick="setCat('${c}')">
-        <div class="cc-label">${c}</div>
-      </div>
-    `;
-  }).join('');
+  const typeThumb = products.find(p => activeType === 'Tout' ? true : p.cat === activeType)?.img || '';
+  const brandThumb = products.find(p => activeBrand === 'Tout' ? true : p.brand === activeBrand)?.img || '';
+  const cat1Name = (siteContent?.labels?.cat1Name) || 'Catégorie 1';
+  const cat2Name = (siteContent?.labels?.cat2Name) || 'Catégorie 2';
+  bar.innerHTML = `
+    <div class="cat-card ${activeType!=='Tout'?'active':''}" style="background-image:url('${typeThumb}')" onclick="openTypeFilter()">
+      <div class="cc-label" id="label-cat1-text">${activeType === 'Tout' ? cat1Name : activeType}</div>
+    </div>
+    <div class="cat-card ${activeBrand!=='Tout'?'active':''}" style="background-image:url('${brandThumb}')" onclick="openBrandFilter()">
+      <div class="cc-label" id="label-cat2-text">${activeBrand === 'Tout' ? cat2Name : activeBrand}</div>
+    </div>
+  `;
 }
 
-function setCat(c){
-  activeCat = (activeCat === c) ? 'Tout' : c;
+// Applique l'ordre choisi dans l'admin ; ce qui n'a pas été classé passe à la fin, dans l'ordre détecté
+function sortByCustomOrder(values, order){
+  if (!order || !order.length) return values;
+  const ordered = order.filter(o => values.includes(o));
+  const rest = values.filter(v => !order.includes(v));
+  return [...ordered, ...rest];
+}
+
+function openTypeFilter(){
+  hideNav();
+  const h2 = document.getElementById('type-filter-h2');
+  if (h2 && siteContent?.labels?.cat1Name) h2.textContent = siteContent.labels.cat1Name;
+  const detected = [...new Set(products.map(p => p.cat).filter(Boolean))];
+  const types = sortByCustomOrder(detected, siteContent?.typeOrder);
+  const list = document.getElementById('type-filter-list');
+  list.innerHTML = [
+    `<button class="nav-row ${activeType==='Tout'?'selected-row':''}" onclick="pickType('Tout')">Tous les styles</button>`,
+    ...types.map(t => `<button class="nav-row ${activeType===t?'selected-row':''}" onclick="pickType('${t}')">${t}</button>`)
+  ].join('');
+  document.getElementById('type-filter-overlay').classList.add('show');
+}
+function pickType(t){
+  activeType = t;
+  closeOverlay('type-filter-overlay');
+  renderCats();
+  renderGrid();
+}
+
+function openBrandFilter(){
+  hideNav();
+  const h2 = document.getElementById('brand-filter-h2');
+  if (h2 && siteContent?.labels?.cat2Name) h2.textContent = siteContent.labels.cat2Name;
+  const detected = [...new Set(products.map(p => p.brand).filter(Boolean))];
+  const brands = sortByCustomOrder(detected, siteContent?.brandOrder);
+  const list = document.getElementById('brand-filter-list');
+  list.innerHTML = [
+    `<button class="nav-row ${activeBrand==='Tout'?'selected-row':''}" onclick="pickBrand('Tout')">Toutes les marques</button>`,
+    ...brands.map(b => `<button class="nav-row ${activeBrand===b?'selected-row':''}" onclick="pickBrand('${b}')">${b}</button>`)
+  ].join('');
+  document.getElementById('brand-filter-overlay').classList.add('show');
+}
+function pickBrand(b){
+  activeBrand = b;
+  closeOverlay('brand-filter-overlay');
   renderCats();
   renderGrid();
 }
 
 function renderGrid(){
   const grid = document.getElementById('grid');
-  const list = activeCat==='Tout' ? products : products.filter(p=>p.cat===activeCat);
+  const list = products.filter(p =>
+    (activeType === 'Tout' || p.cat === activeType) &&
+    (activeBrand === 'Tout' || p.brand === activeBrand)
+  );
   grid.innerHTML = list.map(p => `
     <div class="card" id="card-${p.id}" onclick="openProduct(${p.id})">
       <div class="tag">${p.tag}</div>
@@ -3212,9 +3297,6 @@ async function loadSiteContent(){
       if (wordmark) wordmark.style.display = 'none';
     }
     applySiteStyle(siteContent.style);
-    if (siteContent.categories && siteContent.categories.length){
-      CATEGORY_LIST = siteContent.categories;
-    }
     applyDeliveryLabels(siteContent.labels);
     renderCats();
     renderGrid();

@@ -247,7 +247,11 @@
       <input id="pf-name" placeholder="Veste en toile brute">
       <div class="form-grid">
         <div><label>Prix (€)</label><input id="pf-price" type="number"></div>
-        <div><label>Catégorie</label><input id="pf-cat" placeholder="Vestes"></div>
+        <div>
+          <label>Catégorie (style)</label>
+          <select id="pf-cat"></select>
+          <input id="pf-cat-new" placeholder="Ou tape un nouveau style ici" style="margin-top:-4px;">
+        </div>
       </div>
       <label>Tag (NEW, DROP, HOT, LIMITED...)</label>
       <input id="pf-tag">
@@ -268,7 +272,8 @@
       <label>Stock</label>
       <input id="pf-stock" placeholder="En stock">
       <label>Marque</label>
-      <input id="pf-brand" placeholder="BROLY75">
+      <select id="pf-brand"></select>
+      <input id="pf-brand-new" placeholder="Ou tape une nouvelle marque ici" style="margin-top:-4px;">
       <div class="product-actions">
         <button onclick="saveProduct()">Enregistrer</button>
         <button class="secondary" onclick="closeProductForm()">Annuler</button>
@@ -287,7 +292,7 @@
     <div class="subscreen active" id="contenu-menu">
       <div class="nav-list">
         <button class="nav-row" onclick="openContentSection('wallpaper')">Papier peint</button>
-        <button class="nav-row" onclick="openContentSection('categories')">Catégories produits</button>
+        <button class="nav-row" onclick="openContentSection('categories')">Ordre des catégories</button>
         <button class="nav-row" onclick="openContentSection('labels')">Intitulés des cases</button>
         <button class="nav-row" onclick="openContentSection('hours')">Horaires de livraison</button>
         <button class="nav-row" onclick="openContentSection('meetup')">Meetup</button>
@@ -310,14 +315,21 @@
       <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
-    <!-- Sous-écran : Catégories -->
+    <!-- Sous-écran : Ordre des catégories -->
     <div class="subscreen" id="contenu-categories">
       <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
-      <h2>Catégories produits</h2>
-      <p class="muted" style="margin-bottom:14px;">Ce sont les catégories affichées en cases cliquables sur la page d'accueil de la boutique. Le champ "Catégorie" de chaque produit doit correspondre exactement à un de ces noms.</p>
-      <div id="categories-editor"></div>
-      <button class="secondary" style="width:100%; margin-top:6px;" onclick="addCategoryField()">+ Ajouter une catégorie</button>
-      <button style="width:100%; margin-top:10px;" onclick="saveContent()">Enregistrer</button>
+      <h2>Ordre d'affichage des catégories</h2>
+      <p class="muted" style="margin-bottom:14px;">Les styles et marques sont détectés automatiquement depuis tes produits. Ici, tu choisis simplement l'ordre dans lequel ils apparaissent dans les listes de la boutique. Ce que tu tapes doit correspondre exactement au texte utilisé dans tes fiches produits.</p>
+
+      <h2>Ordre des styles de vêtements</h2>
+      <div id="type-order-editor"></div>
+      <button class="secondary" style="width:100%; margin-top:6px;" onclick="addOrderField('type-order-editor')">+ Ajouter un style</button>
+
+      <h2 style="margin-top:20px;">Ordre des marques</h2>
+      <div id="brand-order-editor"></div>
+      <button class="secondary" style="width:100%; margin-top:6px;" onclick="addOrderField('brand-order-editor')">+ Ajouter une marque</button>
+
+      <button style="width:100%; margin-top:14px;" onclick="saveContent()">Enregistrer</button>
     </div>
 
     <!-- Sous-écran : Intitulés des cases -->
@@ -326,7 +338,13 @@
       <h2>Intitulés des cases</h2>
       <p class="muted" style="margin-bottom:14px;">Change le titre et le sous-titre de n'importe quelle case du panier ou de l'écran Infos. Laisse un champ vide pour garder le texte par défaut.</p>
 
-      <h2 style="margin-top:4px;">Méthode de livraison — carte 1</h2>
+      <h2 style="margin-top:4px;">Cases de la page d'accueil</h2>
+      <label>Nom de la case "Style de vêtement"</label>
+      <input id="lb-cat1-name" placeholder="Catégorie 1">
+      <label>Nom de la case "Marque"</label>
+      <input id="lb-cat2-name" placeholder="Catégorie 2">
+
+      <h2 style="margin-top:16px;">Méthode de livraison — carte 1</h2>
       <label>Titre</label>
       <input id="lb-livraison-title" placeholder="Service d'envoi">
       <label>Sous-titre</label>
@@ -860,10 +878,30 @@ async function markDelivered(orderId){
 }
 
 
+function populateProductDropdowns(selectedCat, selectedBrand){
+  const cats = [...new Set(allProducts.map(p => p.cat).filter(Boolean))];
+  const brands = [...new Set(allProducts.map(p => p.brand).filter(Boolean))];
+  const catSelect = document.getElementById('pf-cat');
+  const brandSelect = document.getElementById('pf-brand');
+  catSelect.innerHTML = '<option value="">— Choisir —</option>' +
+    cats.map(c => `<option value="${c}" ${c===selectedCat?'selected':''}>${c}</option>`).join('');
+  brandSelect.innerHTML = '<option value="">— Choisir —</option>' +
+    brands.map(b => `<option value="${b}" ${b===selectedBrand?'selected':''}>${b}</option>`).join('');
+  if (selectedCat && !cats.includes(selectedCat)){
+    catSelect.innerHTML += `<option value="${selectedCat}" selected>${selectedCat}</option>`;
+  }
+  if (selectedBrand && !brands.includes(selectedBrand)){
+    brandSelect.innerHTML += `<option value="${selectedBrand}" selected>${selectedBrand}</option>`;
+  }
+}
+
 function openProductForm(){
   document.getElementById('pf-title').textContent = 'Nouveau produit';
-  ['pf-id','pf-name','pf-price','pf-cat','pf-tag','pf-img','pf-desc','pf-material','pf-colors','pf-sizes','pf-stock','pf-brand']
+  ['pf-id','pf-name','pf-price','pf-tag','pf-img','pf-desc','pf-material','pf-colors','pf-sizes','pf-stock']
     .forEach(id => document.getElementById(id).value = '');
+  document.getElementById('pf-cat-new').value = '';
+  document.getElementById('pf-brand-new').value = '';
+  populateProductDropdowns('', '');
   document.getElementById('product-form').style.display = 'block';
   document.getElementById('product-form').scrollIntoView({behavior:'smooth'});
 }
@@ -876,7 +914,9 @@ function editProduct(id){
   document.getElementById('pf-id').value = p.id;
   document.getElementById('pf-name').value = p.name || '';
   document.getElementById('pf-price').value = p.price_eur || p.price || '';
-  document.getElementById('pf-cat').value = p.cat || '';
+  populateProductDropdowns(p.cat || '', p.brand || '');
+  document.getElementById('pf-cat-new').value = '';
+  document.getElementById('pf-brand-new').value = '';
   document.getElementById('pf-tag').value = p.tag || '';
 document.getElementById('pf-img').value = p.img || '';
 const preview = document.getElementById('pf-img-preview');
@@ -888,7 +928,6 @@ preview.style.display = p.img ? 'block' : 'none';
   document.getElementById('pf-colors').value = (p.colors || []).join(', ');
   document.getElementById('pf-sizes').value = (p.sizes || []).join(', ');
   document.getElementById('pf-stock').value = p.stock || '';
-  document.getElementById('pf-brand').value = p.brand || '';
   document.getElementById('product-form').style.display = 'block';
   document.getElementById('product-form').scrollIntoView({behavior:'smooth'});
 }
@@ -945,11 +984,13 @@ async function uploadWallpaper(input){
 
 async function saveProduct(){
   const id = document.getElementById('pf-id').value;
+  const catNew = document.getElementById('pf-cat-new').value.trim();
+  const brandNew = document.getElementById('pf-brand-new').value.trim();
   const body = {
     name: document.getElementById('pf-name').value,
     price_eur: Number(document.getElementById('pf-price').value),
     price: Number(document.getElementById('pf-price').value),
-    cat: document.getElementById('pf-cat').value,
+    cat: catNew || document.getElementById('pf-cat').value,
     tag: document.getElementById('pf-tag').value,
     img: document.getElementById('pf-img').value,
     desc: document.getElementById('pf-desc').value,
@@ -957,7 +998,7 @@ async function saveProduct(){
     colors: document.getElementById('pf-colors').value.split(',').map(s => s.trim()).filter(Boolean),
     sizes: document.getElementById('pf-sizes').value.split(',').map(s => s.trim()).filter(Boolean),
     stock: document.getElementById('pf-stock').value,
-    brand: document.getElementById('pf-brand').value,
+    brand: brandNew || document.getElementById('pf-brand').value,
   };
   const url = id ? `${BACKEND_URL}/api/products/${id}` : `${BACKEND_URL}/api/products`;
   const method = id ? 'PUT' : 'POST';
@@ -1047,9 +1088,12 @@ async function loadContent(){
     </div>
   `).join('');
 
-  renderCategoriesEditor(c.categories && c.categories.length ? c.categories : ['Catégorie 1', 'Catégorie 2']);
+  renderOrderEditor('type-order-editor', c.typeOrder || []);
+  renderOrderEditor('brand-order-editor', c.brandOrder || []);
 
   const lb = c.labels || {};
+  document.getElementById('lb-cat1-name').value = lb.cat1Name || '';
+  document.getElementById('lb-cat2-name').value = lb.cat2Name || '';
   document.getElementById('lb-livraison-title').value = lb.livraisonTitle || '';
   document.getElementById('lb-livraison-sub').value = lb.livraisonSub || '';
   document.getElementById('lb-envoi-title').value = lb.envoiTitle || '';
@@ -1077,23 +1121,23 @@ async function loadContent(){
   document.getElementById('lb-info-faq-title').value = lb.infoFaqTitle || '';
 }
 
-function renderCategoriesEditor(list){
-  document.getElementById('categories-editor').innerHTML = list.map((name, i) => `
+function renderOrderEditor(containerId, list){
+  document.getElementById(containerId).innerHTML = list.map((name) => `
     <div style="display:flex; gap:8px; margin-bottom:10px;">
-      <input class="cat-field" style="flex:1; margin-bottom:0;" value="${(name||'').replace(/"/g,'&quot;')}" placeholder="Nom de la catégorie">
+      <input class="order-field" style="flex:1; margin-bottom:0;" value="${(name||'').replace(/"/g,'&quot;')}" placeholder="Nom exact utilisé dans les fiches produits">
       <button type="button" class="danger" style="flex-shrink:0;" onclick="this.parentElement.remove()">Retirer</button>
     </div>
   `).join('');
 }
 
-function addCategoryField(){
-  const editor = document.getElementById('categories-editor');
+function addOrderField(containerId){
+  const editor = document.getElementById(containerId);
   const div = document.createElement('div');
   div.style.display = 'flex';
   div.style.gap = '8px';
   div.style.marginBottom = '10px';
   div.innerHTML = `
-    <input class="cat-field" style="flex:1; margin-bottom:0;" placeholder="Nom de la catégorie">
+    <input class="order-field" style="flex:1; margin-bottom:0;" placeholder="Nom exact utilisé dans les fiches produits">
     <button type="button" class="danger" style="flex-shrink:0;" onclick="this.parentElement.remove()">Retirer</button>
   `;
   editor.appendChild(div);
@@ -1104,10 +1148,15 @@ async function saveContent(){
     q: document.getElementById('faq-q-'+i).value,
     a: document.getElementById('faq-a-'+i).value,
   }));
-  const categories = Array.from(document.querySelectorAll('.cat-field'))
+  const typeOrder = Array.from(document.querySelectorAll('#type-order-editor .order-field'))
+    .map(input => input.value.trim())
+    .filter(Boolean);
+  const brandOrder = Array.from(document.querySelectorAll('#brand-order-editor .order-field'))
     .map(input => input.value.trim())
     .filter(Boolean);
   const labels = {
+    cat1Name: document.getElementById('lb-cat1-name').value,
+    cat2Name: document.getElementById('lb-cat2-name').value,
     livraisonTitle: document.getElementById('lb-livraison-title').value,
     livraisonSub: document.getElementById('lb-livraison-sub').value,
     envoiTitle: document.getElementById('lb-envoi-title').value,
@@ -1137,7 +1186,8 @@ async function saveContent(){
   const body = {
     ...(currentContent || {}),
     wallpaperUrl: document.getElementById('c-wallpaper').value,
-    categories,
+    typeOrder,
+    brandOrder,
     labels,
     hours: {
       lunMar: document.getElementById('c-lunmar').value,
