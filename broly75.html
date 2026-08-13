@@ -2629,10 +2629,20 @@ let cart = {};
 
 // Le panier reste enregistré sur l'appareil même si on ferme complètement l'app
 function saveCartToStorage(){
-  try { localStorage.setItem('broly75_cart', JSON.stringify(cart)); } catch (err) { console.error('Impossible de sauvegarder le panier', err); }
+  try {
+    localStorage.setItem('broly75_cart', JSON.stringify(cart));
+    localStorage.setItem('broly75_cart_time', Date.now().toString());
+  } catch (err) { console.error('Impossible de sauvegarder le panier', err); }
 }
 function loadCartFromStorage(){
   try {
+    const savedTime = Number(localStorage.getItem('broly75_cart_time') || 0);
+    const isExpired = savedTime && (Date.now() - savedTime) > 24 * 60 * 60 * 1000; // 24h
+    if (isExpired){
+      localStorage.removeItem('broly75_cart');
+      localStorage.removeItem('broly75_cart_time');
+      return;
+    }
     const saved = localStorage.getItem('broly75_cart');
     if (saved) cart = JSON.parse(saved);
   } catch (err) { console.error('Impossible de charger le panier', err); }
