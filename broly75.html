@@ -3033,7 +3033,7 @@ async function submitSurvey(){
     const res = await fetch(BACKEND_URL + '/api/reviews', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ rating: surveyRating, comment, authorName }),
+      body: JSON.stringify({ rating: surveyRating, comment, authorName, initData: tg?.initData || '' }),
     });
     const data = await res.json();
     if (!res.ok){ alert(data.error || 'Impossible d\'envoyer ton avis.'); return; }
