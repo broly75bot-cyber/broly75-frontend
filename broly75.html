@@ -2206,7 +2206,14 @@
 const tg = window.Telegram?.WebApp;
 // ⚠️ Doit correspondre exactement à l'URL de ton backend Railway
 const BACKEND_URL = 'https://broly75-backend-production.up.railway.app';
-if (tg) { tg.ready(); tg.expand(); }
+if (tg) {
+  tg.ready();
+  tg.expand();
+  // Mode plein écran (couvre aussi la barre du haut de Telegram) — disponible sur les versions récentes de l'app
+  if (typeof tg.requestFullscreen === 'function') tg.requestFullscreen();
+  // Empêche l'app de se fermer accidentellement en scrollant vers le bas
+  if (typeof tg.disableVerticalSwipes === 'function') tg.disableVerticalSwipes();
+}
 
 // Bloque l'accès si l'app n'est pas ouverte depuis Telegram (pas de tg, ou pas d'initData)
 const isRealTelegram = !!(tg && tg.initData);
