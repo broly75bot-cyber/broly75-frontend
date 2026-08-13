@@ -1024,6 +1024,27 @@
   .field-card .form-grid > div:last-child{ padding-left:5px; }
   .field-card .form-grid input{ margin-bottom:0; }
 
+  .remise-label{
+    font-family:var(--font-mono); font-size:11px; font-weight:600; text-transform:uppercase;
+    letter-spacing:0.06em; color:rgba(241,239,233,0.5); margin:4px 0 10px;
+  }
+  .mode-toggle-3{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:16px;
+  }
+  .mode-toggle-3 .mt-card{
+    background:rgba(0,0,0,0.4); border:2px solid var(--line); border-radius:14px;
+    padding:14px 6px; text-align:center; cursor:pointer;
+  }
+  .mode-toggle-3 .mt-icon{
+    width:40px; height:40px; border-radius:12px; background:rgba(62,205,107,0.08);
+    color:rgba(241,239,233,0.6); display:flex; align-items:center; justify-content:center;
+    margin:0 auto 8px;
+  }
+  .mode-toggle-3 .mt-label{ font-size:11.5px; font-weight:600; color:var(--paper); }
+  .mode-toggle-3 .mt-card.active{ border-color:var(--lime); background:rgba(62,205,107,0.08); }
+  .mode-toggle-3 .mt-card.active .mt-icon{ background:var(--lime); color:#05130A; }
+  .mode-toggle-3 .mt-card.active .mt-label{ color:var(--lime); }
+
   .items-carousel{
     display:flex; overflow-x:auto; scroll-snap-type:x mandatory;
     gap:12px; margin:0 -16px 12px; padding:0 16px 4px;
@@ -1911,7 +1932,7 @@
     <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="7.5" r="0.6" fill="currentColor" stroke="none"/></svg></span>
     <span class="nav-label">Infos</span>
   </button>
-  <button class="nav-item" onclick="setActiveNav(this); openCart();">
+  <button class="nav-item" onclick="setActiveNav(this); openCheckout();">
     <span class="nav-icon">
       <svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M2 3h2l2.6 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L21 7H6"/></svg>
       <span class="badge" id="nav-cart-badge" style="display:none;">0</span>
@@ -2195,7 +2216,7 @@
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M2 3h2l2.6 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L21 7H6"/></svg>
     Ajouter <span class="btn-price" id="pd-footer-price"></span>
   </button>
-  <button class="round-action-btn" onclick="closeOverlay('product-overlay'); openCart();">
+  <button class="round-action-btn" onclick="closeOverlay('product-overlay'); openCheckout();">
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M2 3h2l2.6 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L21 7H6"/></svg>
     <span class="fbadge" id="footer-cart-badge" style="display:none;">0</span>
   </button>
@@ -2270,7 +2291,7 @@
       </div>
     </div>
     <div id="fulfillment-toggle">
-      <div class="option-card selected" data-mode="livraison" onclick="setFulfillment('livraison', this)">
+      <div class="option-card" data-mode="livraison" onclick="setFulfillment('livraison', this)">
         <div class="oc-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
         <div class="oc-info">
           <div class="oc-title">Service d'envoi</div>
@@ -2316,7 +2337,7 @@
     </div>
 
     <!-- ADRESSE (visible seulement si "Service d'envoi" est choisi) -->
-    <div class="section-box" id="delivery-address-section">
+    <div class="section-box" id="delivery-address-section" style="display:none;">
       <div class="checkout-section-header">
         <div class="csh-step">3</div>
         <div>
@@ -2324,15 +2345,85 @@
           <div class="csh-sub" id="f-address-sub">Pour la remise de ta commande</div>
         </div>
       </div>
+
+      <div class="remise-label">Mode de remise</div>
+      <div class="mode-toggle-3" id="remise-toggle">
+        <div class="mt-card active" data-remise="personnelle" onclick="setRemiseMode('personnelle', this)">
+          <div class="mt-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></div>
+          <div class="mt-label">Adresse<br>personnelle</div>
+        </div>
+        <div class="mt-card" data-remise="relais" onclick="setRemiseMode('relais', this)">
+          <div class="mt-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+          <div class="mt-label">Point relais</div>
+        </div>
+        <div class="mt-card" data-remise="locker" onclick="setRemiseMode('locker', this)">
+          <div class="mt-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="1"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+          <div class="mt-label">Locker /<br>Consigne</div>
+        </div>
+      </div>
+
+      <!-- Adresse personnelle : champs déjà utilisés jusqu'ici -->
+      <div id="remise-personnelle-fields">
+        <div class="field-card">
+          <label id="f-address-label"><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></span> Adresse</label>
+          <input type="text" id="f-address" placeholder="Numéro et rue">
+        </div>
+        <div class="field-card">
+          <div class="form-grid">
+            <div><label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="9" height="18"/><rect x="15" y="10" width="5" height="11"/></svg></span> Ville</label><input type="text" id="f-city" placeholder="Ville"></div>
+            <div><label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span> Code postal</label><input type="text" id="f-zip" placeholder="00000"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Point relais : recherche + champs à ajuster -->
+      <div id="remise-relais-fields" style="display:none;">
+        <div class="field-card">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+            <span style="width:38px; height:38px; border-radius:10px; background:rgba(62,205,107,0.15); display:flex; align-items:center; justify-content:center; color:var(--lime); flex-shrink:0;">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            </span>
+            <div>
+              <div style="font-weight:700; font-size:14.5px;">Point relais</div>
+              <div style="font-size:12px; color:rgba(241,239,233,0.5);">Indiquez le point relais et son adresse complète.</div>
+            </div>
+          </div>
+          <button type="button" class="photo-upload-btn" onclick="openRelaisSearch()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg> Trouver un point sur la carte</button>
+        </div>
+        <div class="remise-label" style="margin-top:14px;">Ajuster si besoin</div>
+        <div class="field-card">
+          <label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></span> Nom du point relais *</label>
+          <input type="text" id="f-relais-name" placeholder="Ex : Tabac de la Gare">
+        </div>
+        <div class="field-card">
+          <label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></span> Adresse du point *</label>
+          <input type="text" id="f-relais-address" placeholder="Numéro et rue">
+        </div>
+        <div class="field-card">
+          <div class="form-grid">
+            <div><label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span> Code postal *</label><input type="text" id="f-relais-zip" placeholder="00000"></div>
+            <div><label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="9" height="18"/><rect x="15" y="10" width="5" height="11"/></svg></span> Ville *</label><input type="text" id="f-relais-city" placeholder="Ville"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Locker / Consigne : pas de formulaire, juste une consigne -->
+      <div id="remise-locker-fields" style="display:none;">
+        <div class="field-card" style="display:flex; align-items:flex-start; gap:12px;">
+          <span style="width:38px; height:38px; border-radius:10px; background:rgba(62,205,107,0.15); display:flex; align-items:center; justify-content:center; color:var(--lime); flex-shrink:0;">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+          </span>
+          <span style="font-size:13.5px; color:rgba(241,239,233,0.75); line-height:1.5;">Pas de formulaire : envoyez une capture d'écran de votre locker (nom/ID et adresse visibles) dans « Photo du lieu » ci-dessous.</span>
+        </div>
+      </div>
+
       <div class="field-card">
-        <label id="f-address-label"><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></span> Adresse</label>
-        <input type="text" id="f-address" placeholder="Numéro et rue">
+        <label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3c2.5 2.5 4 5.7 4 9s-1.5 6.5-4 9c-2.5-2.5-4-5.7-4-9s1.5-6.5 4-9z"/></svg></span> Pays</label>
+        <input type="text" id="f-country" value="France">
       </div>
       <div class="field-card">
-        <div class="form-grid">
-          <div><label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="9" height="18"/><rect x="15" y="10" width="5" height="11"/></svg></span> Ville</label><input type="text" id="f-city" placeholder="Ville"></div>
-          <div><label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span> Code postal</label><input type="text" id="f-zip" placeholder="00000"></div>
-        </div>
+        <label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span> Email <span style="text-transform:none; color:rgba(241,239,233,0.4);">(optionnel)</span></label>
+        <input type="email" id="f-email" placeholder="jean@exemple.com">
       </div>
       <div class="field-card">
         <label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z" opacity="0"/><line x1="6" y1="8" x2="18" y2="8"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="6" y1="16" x2="13" y2="16"/></svg></span> Infos complémentaires <span style="text-transform:none; color:rgba(241,239,233,0.4);">(optionnel)</span></label>
@@ -2536,7 +2627,7 @@ function askAboutProduct(){
 let cart = {};
 let activeCat = 'Tout';
 let currentOrderId = null;
-let fulfillmentMode = 'livraison';
+let fulfillmentMode = null;
 let promoCode = null;
 let promoDiscount = 0;
 let likedProducts = {};
@@ -2573,6 +2664,23 @@ function applyPromo(){
     status.className = 'promo-status err';
   }
   renderRecap();
+}
+
+let remiseMode = 'personnelle';
+function setRemiseMode(mode, card){
+  remiseMode = mode;
+  document.querySelectorAll('#remise-toggle .mt-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+
+  document.getElementById('remise-personnelle-fields').style.display = mode === 'personnelle' ? 'block' : 'none';
+  document.getElementById('remise-relais-fields').style.display = mode === 'relais' ? 'block' : 'none';
+  document.getElementById('remise-locker-fields').style.display = mode === 'locker' ? 'block' : 'none';
+}
+
+function openRelaisSearch(){
+  const url = 'https://www.google.com/maps/search/point+relais';
+  if (tg?.openLink) tg.openLink(url);
+  else window.open(url, '_blank');
 }
 
 function setFulfillment(mode, card){
@@ -2633,9 +2741,27 @@ function buildFullAddress(){
     const meetup = (siteContent && siteContent.meetup) || {};
     return `Point relais : ${meetup.location || 'à confirmer'} (${meetup.hoursText || 'horaires à confirmer'})`;
   }
+
+  let addressPart = '';
+  if (remiseMode === 'relais'){
+    addressPart = [
+      document.getElementById('f-relais-name').value,
+      document.getElementById('f-relais-address').value,
+      [document.getElementById('f-relais-zip').value, document.getElementById('f-relais-city').value].filter(Boolean).join(' '),
+    ].filter(Boolean).join(', ');
+  } else if (remiseMode === 'locker'){
+    addressPart = 'Locker / Consigne — voir photo du lieu jointe';
+  } else {
+    addressPart = [
+      document.getElementById('f-address').value,
+      [document.getElementById('f-city').value, document.getElementById('f-zip').value].filter(Boolean).join(' '),
+    ].filter(Boolean).join(', ');
+  }
+
   const parts = [
-    document.getElementById('f-address').value,
-    [document.getElementById('f-city').value, document.getElementById('f-zip').value].filter(Boolean).join(' '),
+    addressPart,
+    document.getElementById('f-country').value,
+    document.getElementById('f-email').value ? `Email : ${document.getElementById('f-email').value}` : '',
     document.getElementById('f-notes').value,
   ].filter(Boolean);
   return parts.join(', ');
@@ -3107,11 +3233,18 @@ function checkOrderFieldsValid(){
   const contact = document.getElementById('f-contact').value.trim();
 
   if (cartItems().length === 0){ alert('Ton panier est vide.'); return false; }
+  if (!fulfillmentMode){ alert('Merci de choisir un mode de livraison.'); return false; }
   if (name.length < 2){ alert('Merci d\'indiquer ton nom complet.'); return false; }
   if (contact.length < 4){ alert('Merci d\'indiquer un téléphone ou un email valide.'); return false; }
   if (fulfillmentMode === 'livraison'){
-    const address = document.getElementById('f-address').value.trim();
-    if (address.length < 4){ alert('Merci d\'indiquer ton adresse.'); return false; }
+    if (remiseMode === 'personnelle'){
+      const address = document.getElementById('f-address').value.trim();
+      if (address.length < 4){ alert('Merci d\'indiquer ton adresse.'); return false; }
+    } else if (remiseMode === 'relais'){
+      const rName = document.getElementById('f-relais-name').value.trim();
+      const rAddress = document.getElementById('f-relais-address').value.trim();
+      if (rName.length < 2 || rAddress.length < 4){ alert('Merci de compléter le nom et l\'adresse du point relais.'); return false; }
+    }
   }
   if (fulfillmentMode === 'envoi' && !selectedHoursSlot){
     alert('Merci de choisir un créneau de passage.');
