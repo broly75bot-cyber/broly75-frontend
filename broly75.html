@@ -119,7 +119,9 @@
     background:radial-gradient(ellipse 70% 60% at 50% 45%, transparent 30%, #040604 85%);
   }
   body.custom-wallpaper::before{
-    background:rgba(4,6,4,0.4);
+    background:linear-gradient(rgba(4,6,4,0.4), rgba(4,6,4,0.55)), var(--wallpaper-image, none);
+    background-size:cover;
+    background-position:center;
   }
   body::after{
     content:'';
@@ -2767,10 +2769,7 @@ async function loadSiteContent(){
     const res = await fetch(BACKEND_URL + '/api/content');
     siteContent = await res.json();
     if (siteContent.wallpaperUrl){
-      document.body.style.backgroundImage = `url('${siteContent.wallpaperUrl}')`;
-      document.body.style.backgroundSize = 'cover';
-      document.body.style.backgroundPosition = 'center';
-      document.body.style.backgroundAttachment = 'fixed';
+      document.documentElement.style.setProperty('--wallpaper-image', `url('${siteContent.wallpaperUrl}')`);
       document.body.classList.add('custom-wallpaper');
       const wordmark = document.querySelector('.bg-wordmark');
       if (wordmark) wordmark.style.display = 'none';
