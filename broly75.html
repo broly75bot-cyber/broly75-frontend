@@ -2904,8 +2904,8 @@ let activeBrand = 'Tout';
 
 function renderCats(){
   const bar = document.getElementById('cats');
-  const typeThumb = products.find(p => activeType === 'Tout' ? true : p.cat === activeType)?.img || '';
-  const brandThumb = products.find(p => activeBrand === 'Tout' ? true : p.brand === activeBrand)?.img || '';
+  const typeThumb = siteContent?.labels?.cat1Image || products.find(p => activeType === 'Tout' ? true : p.cat === activeType)?.img || '';
+  const brandThumb = siteContent?.labels?.cat2Image || products.find(p => activeBrand === 'Tout' ? true : p.brand === activeBrand)?.img || '';
   const cat1Name = (siteContent?.labels?.cat1Name) || 'Catégorie 1';
   const cat2Name = (siteContent?.labels?.cat2Name) || 'Catégorie 2';
   bar.innerHTML = `

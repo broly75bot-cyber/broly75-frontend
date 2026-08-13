@@ -341,8 +341,19 @@
       <h2 style="margin-top:4px;">Cases de la page d'accueil</h2>
       <label>Nom de la case "Style de vêtement"</label>
       <input id="lb-cat1-name" placeholder="Catégorie 1">
+      <label>Photo de fond (facultatif — sinon une photo produit est utilisée automatiquement)</label>
+      <input type="file" id="cat1-img-file" accept="image/*" onchange="uploadCatImage(this,'cat1')">
+      <div class="muted" id="cat1-img-status"></div>
+      <img id="cat1-img-preview" src="" style="max-width:100px; border-radius:8px; margin:6px 0 12px; display:none;">
+      <input type="hidden" id="cat1-img-url">
+
       <label>Nom de la case "Marque"</label>
       <input id="lb-cat2-name" placeholder="Catégorie 2">
+      <label>Photo de fond (facultatif — sinon une photo produit est utilisée automatiquement)</label>
+      <input type="file" id="cat2-img-file" accept="image/*" onchange="uploadCatImage(this,'cat2')">
+      <div class="muted" id="cat2-img-status"></div>
+      <img id="cat2-img-preview" src="" style="max-width:100px; border-radius:8px; margin:6px 0 12px; display:none;">
+      <input type="hidden" id="cat2-img-url">
 
       <h2 style="margin-top:16px;">Méthode de livraison — carte 1</h2>
       <label>Titre</label>
@@ -990,6 +1001,31 @@ async function uploadPhoto(input){
 }
 
 
+async function uploadCatImage(input, key){
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById(`${key}-img-status`);
+  status.textContent = 'Envoi en cours...';
+  const formData = new FormData();
+  formData.append('photo', file);
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/upload`, {
+      method: 'POST',
+      headers: { 'x-admin-key': adminKey },
+      body: formData,
+    });
+    const data = await res.json();
+    if (!res.ok) { status.textContent = '❌ ' + (data.error || 'Erreur upload'); return; }
+    document.getElementById(`${key}-img-url`).value = data.url;
+    const preview = document.getElementById(`${key}-img-preview`);
+    preview.src = data.url;
+    preview.style.display = 'block';
+    status.textContent = '✅ Photo envoyée — pense à enregistrer';
+  } catch (err) {
+    status.textContent = '❌ Erreur réseau';
+  }
+}
+
 async function uploadContactLogo(input, platform){
   const file = input.files[0];
   if (!file) return;
@@ -1161,6 +1197,14 @@ async function loadContent(){
   const lb = c.labels || {};
   document.getElementById('lb-cat1-name').value = lb.cat1Name || '';
   document.getElementById('lb-cat2-name').value = lb.cat2Name || '';
+  document.getElementById('cat1-img-url').value = lb.cat1Image || '';
+  document.getElementById('cat2-img-url').value = lb.cat2Image || '';
+  const cat1Preview = document.getElementById('cat1-img-preview');
+  cat1Preview.src = lb.cat1Image || '';
+  cat1Preview.style.display = lb.cat1Image ? 'block' : 'none';
+  const cat2Preview = document.getElementById('cat2-img-preview');
+  cat2Preview.src = lb.cat2Image || '';
+  cat2Preview.style.display = lb.cat2Image ? 'block' : 'none';
   document.getElementById('lb-livraison-title').value = lb.livraisonTitle || '';
   document.getElementById('lb-livraison-sub').value = lb.livraisonSub || '';
   document.getElementById('lb-envoi-title').value = lb.envoiTitle || '';
@@ -1224,6 +1268,8 @@ async function saveContent(){
   const labels = {
     cat1Name: document.getElementById('lb-cat1-name').value,
     cat2Name: document.getElementById('lb-cat2-name').value,
+    cat1Image: document.getElementById('cat1-img-url').value,
+    cat2Image: document.getElementById('cat2-img-url').value,
     livraisonTitle: document.getElementById('lb-livraison-title').value,
     livraisonSub: document.getElementById('lb-livraison-sub').value,
     envoiTitle: document.getElementById('lb-envoi-title').value,
