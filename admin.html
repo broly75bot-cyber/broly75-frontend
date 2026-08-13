@@ -1302,6 +1302,7 @@ async function saveContent(){
   status.scrollIntoView({ behavior: 'smooth', block: 'center' });
   setTimeout(() => status.textContent = '', 2500);
   currentContent = body;
+  if (res.ok) setTimeout(() => closeContentSection(), 600);
 }
 
 // ===== RÉGLAGES (style du site) =====
@@ -1393,6 +1394,7 @@ async function saveStyleSettings(){
   status.textContent = res.ok ? '✅ Enregistré' : '❌ Erreur';
   setTimeout(() => status.textContent = '', 2000);
   currentContent = body;
+  if (res.ok) setTimeout(() => closeSettingsSection(), 600);
 }
 </script>
 </body>
