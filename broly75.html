@@ -554,6 +554,44 @@
     border-color:var(--lime);
   }
 
+  .cat-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    padding:18px 16px 4px;
+  }
+  .cat-card{
+    position:relative;
+    aspect-ratio:1/1;
+    border-radius:18px;
+    overflow:hidden;
+    border:2px solid var(--line);
+    background-size:cover;
+    background-position:center;
+    background-color:rgba(21,20,23,0.7);
+    cursor:pointer;
+    display:flex;
+    align-items:flex-end;
+    padding:14px;
+  }
+  .cat-card::after{
+    content:'';
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.75) 100%);
+  }
+  .cat-card .cc-label{
+    position:relative; z-index:1;
+    font-family:var(--font-body);
+    font-weight:700;
+    font-size:15px;
+    color:var(--paper);
+  }
+  .cat-card.active{
+    border-color:var(--lime);
+    box-shadow:0 0 16px rgba(212,255,61,0.25);
+  }
+  .cat-card.active .cc-label{ color:var(--lime); }
+
   .grid{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -778,7 +816,7 @@
     z-index:1;
   }
   .overlay.show{ transform:translateY(0); }
-  .overlay-inner{ padding:26px 20px 40px; }
+  .overlay-inner{ padding:26px 20px calc(70px + env(safe-area-inset-bottom, 0px)); }
   .close-row{
     display:flex; justify-content:space-between; align-items:center;
     margin-bottom:22px;
@@ -1773,7 +1811,7 @@
   <h1>BROLY<span class="hot">75</span></h1>
 </header>
 
-<div class="cats" id="cats"></div>
+<div class="cat-grid" id="cats"></div>
 <div class="grid" id="grid"></div>
 </div>
 
@@ -2463,15 +2501,19 @@ function orderViaTelegram(){
 const CATEGORY_LIST = ['Catégorie 1', 'Catégorie 2'];
 
 function renderCats(){
-  const cats = ['Tout', ...CATEGORY_LIST];
   const bar = document.getElementById('cats');
-  bar.innerHTML = cats.map(c => `
-    <button class="cat-btn ${c===activeCat?'active':''}" onclick="setCat('${c}')">${c}</button>
-  `).join('');
+  bar.innerHTML = CATEGORY_LIST.map(c => {
+    const thumb = products.find(p => p.cat === c)?.img || '';
+    return `
+      <div class="cat-card ${c===activeCat?'active':''}" style="background-image:url('${thumb}')" onclick="setCat('${c}')">
+        <div class="cc-label">${c}</div>
+      </div>
+    `;
+  }).join('');
 }
 
 function setCat(c){
-  activeCat = c;
+  activeCat = (activeCat === c) ? 'Tout' : c;
   renderCats();
   renderGrid();
 }
