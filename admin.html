@@ -324,24 +324,83 @@
     <div class="subscreen" id="contenu-labels">
       <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
       <h2>Intitulés des cases</h2>
-      <p class="muted" style="margin-bottom:14px;">Change le titre et le sous-titre des 3 cartes de méthode de livraison dans le panier de la boutique.</p>
+      <p class="muted" style="margin-bottom:14px;">Change le titre et le sous-titre de n'importe quelle case du panier ou de l'écran Infos. Laisse un champ vide pour garder le texte par défaut.</p>
 
-      <label>Carte 1 — Titre</label>
+      <h2 style="margin-top:4px;">Méthode de livraison — carte 1</h2>
+      <label>Titre</label>
       <input id="lb-livraison-title" placeholder="Service d'envoi">
-      <label>Carte 1 — Sous-titre</label>
+      <label>Sous-titre</label>
       <input id="lb-livraison-sub" placeholder="Remise en main propre ou dépôt local">
 
-      <label style="margin-top:10px;">Carte 2 — Titre</label>
+      <h2 style="margin-top:16px;">Méthode de livraison — carte 2</h2>
+      <label>Titre</label>
       <input id="lb-envoi-title" placeholder="Horaires de livraison">
-      <label>Carte 2 — Sous-titre</label>
+      <label>Sous-titre</label>
       <input id="lb-envoi-sub" placeholder="Choisis un créneau de passage">
 
-      <label style="margin-top:10px;">Carte 3 — Titre</label>
+      <h2 style="margin-top:16px;">Méthode de livraison — carte 3</h2>
+      <label>Titre</label>
       <input id="lb-retrait-title" placeholder="Point relais">
-      <label>Carte 3 — Sous-titre</label>
+      <label>Sous-titre</label>
       <input id="lb-retrait-sub" placeholder="À récupérer toi-même, sous 2–4 jours">
 
-      <button style="width:100%; margin-top:10px;" onclick="saveContent()">Enregistrer</button>
+      <h2 style="margin-top:16px;">Section "Tes articles"</h2>
+      <label>Titre</label>
+      <input id="lb-articles-title" placeholder="Tes articles">
+      <label>Sous-titre</label>
+      <input id="lb-articles-sub" placeholder="Vérifie les quantités avant de commander">
+
+      <h2 style="margin-top:16px;">Section "Code promo"</h2>
+      <label>Titre</label>
+      <input id="lb-promo-title" placeholder="Code promo">
+      <label>Sous-titre</label>
+      <input id="lb-promo-sub" placeholder="Entrer un code promo">
+
+      <h2 style="margin-top:16px;">En-tête "Méthode de livraison"</h2>
+      <label>Titre</label>
+      <input id="lb-method-title" placeholder="Méthode de livraison">
+      <label>Sous-titre</label>
+      <input id="lb-method-sub" placeholder="Choisissez comment recevoir votre commande">
+
+      <h2 style="margin-top:16px;">Section "Tes coordonnées"</h2>
+      <label>Titre</label>
+      <input id="lb-coords-title" placeholder="Tes coordonnées">
+      <label>Sous-titre</label>
+      <input id="lb-coords-sub" placeholder="Pour te recontacter au besoin">
+
+      <h2 style="margin-top:16px;">Section "Adresse de livraison"</h2>
+      <label>Titre</label>
+      <input id="lb-address-title" placeholder="Adresse de livraison">
+      <label>Sous-titre</label>
+      <input id="lb-address-sub" placeholder="Pour la remise de ta commande">
+
+      <h2 style="margin-top:16px;">Section "Horaire de tournée"</h2>
+      <label>Titre</label>
+      <input id="lb-hoursbox-title" placeholder="Horaire de tournée">
+      <label>Sous-titre</label>
+      <input id="lb-hoursbox-sub" placeholder="Choisis un créneau de passage">
+
+      <h2 style="margin-top:16px;">Section "Lieu du rendez-vous"</h2>
+      <label>Titre</label>
+      <input id="lb-meetupbox-title" placeholder="Lieu du rendez-vous">
+
+      <h2 style="margin-top:16px;">Section "Récapitulatif"</h2>
+      <label>Titre</label>
+      <input id="lb-recap-title" placeholder="Récapitulatif">
+
+      <h2 style="margin-top:20px;">Écran Infos</h2>
+      <label>Titre "Horaires de livraison"</label>
+      <input id="lb-info-hours-title" placeholder="Horaires de livraison">
+      <label>Titre "Meetup"</label>
+      <input id="lb-info-meetup-title" placeholder="Meetup">
+      <label>Titre "Horaires rendez-vous"</label>
+      <input id="lb-info-meetuphours-title" placeholder="Horaires rendez-vous">
+      <label>Titre "Service d'envoi"</label>
+      <input id="lb-info-shipping-title" placeholder="Service d'envoi">
+      <label>Titre "Questions fréquentes"</label>
+      <input id="lb-info-faq-title" placeholder="Questions fréquentes">
+
+      <button style="width:100%; margin-top:14px;" onclick="saveContent()">Enregistrer</button>
     </div>
 
     <!-- Sous-écran : Horaires -->
@@ -997,6 +1056,25 @@ async function loadContent(){
   document.getElementById('lb-envoi-sub').value = lb.envoiSub || '';
   document.getElementById('lb-retrait-title').value = lb.retraitTitle || '';
   document.getElementById('lb-retrait-sub').value = lb.retraitSub || '';
+  document.getElementById('lb-articles-title').value = lb.articlesTitle || '';
+  document.getElementById('lb-articles-sub').value = lb.articlesSub || '';
+  document.getElementById('lb-promo-title').value = lb.promoTitle || '';
+  document.getElementById('lb-promo-sub').value = lb.promoSub || '';
+  document.getElementById('lb-method-title').value = lb.methodTitle || '';
+  document.getElementById('lb-method-sub').value = lb.methodSub || '';
+  document.getElementById('lb-coords-title').value = lb.coordsTitle || '';
+  document.getElementById('lb-coords-sub').value = lb.coordsSub || '';
+  document.getElementById('lb-address-title').value = lb.addressTitle || '';
+  document.getElementById('lb-address-sub').value = lb.addressSub || '';
+  document.getElementById('lb-hoursbox-title').value = lb.hoursboxTitle || '';
+  document.getElementById('lb-hoursbox-sub').value = lb.hoursboxSub || '';
+  document.getElementById('lb-meetupbox-title').value = lb.meetupboxTitle || '';
+  document.getElementById('lb-recap-title').value = lb.recapTitle || '';
+  document.getElementById('lb-info-hours-title').value = lb.infoHoursTitle || '';
+  document.getElementById('lb-info-meetup-title').value = lb.infoMeetupTitle || '';
+  document.getElementById('lb-info-meetuphours-title').value = lb.infoMeetupHoursTitle || '';
+  document.getElementById('lb-info-shipping-title').value = lb.infoShippingTitle || '';
+  document.getElementById('lb-info-faq-title').value = lb.infoFaqTitle || '';
 }
 
 function renderCategoriesEditor(list){
@@ -1036,6 +1114,25 @@ async function saveContent(){
     envoiSub: document.getElementById('lb-envoi-sub').value,
     retraitTitle: document.getElementById('lb-retrait-title').value,
     retraitSub: document.getElementById('lb-retrait-sub').value,
+    articlesTitle: document.getElementById('lb-articles-title').value,
+    articlesSub: document.getElementById('lb-articles-sub').value,
+    promoTitle: document.getElementById('lb-promo-title').value,
+    promoSub: document.getElementById('lb-promo-sub').value,
+    methodTitle: document.getElementById('lb-method-title').value,
+    methodSub: document.getElementById('lb-method-sub').value,
+    coordsTitle: document.getElementById('lb-coords-title').value,
+    coordsSub: document.getElementById('lb-coords-sub').value,
+    addressTitle: document.getElementById('lb-address-title').value,
+    addressSub: document.getElementById('lb-address-sub').value,
+    hoursboxTitle: document.getElementById('lb-hoursbox-title').value,
+    hoursboxSub: document.getElementById('lb-hoursbox-sub').value,
+    meetupboxTitle: document.getElementById('lb-meetupbox-title').value,
+    recapTitle: document.getElementById('lb-recap-title').value,
+    infoHoursTitle: document.getElementById('lb-info-hours-title').value,
+    infoMeetupTitle: document.getElementById('lb-info-meetup-title').value,
+    infoMeetupHoursTitle: document.getElementById('lb-info-meetuphours-title').value,
+    infoShippingTitle: document.getElementById('lb-info-shipping-title').value,
+    infoFaqTitle: document.getElementById('lb-info-faq-title').value,
   };
   const body = {
     ...(currentContent || {}),
