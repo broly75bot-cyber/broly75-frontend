@@ -909,8 +909,15 @@ async function loadProducts(){
 let currentContent = null;
 
 async function loadContent(){
-  const res = await fetch(`${BACKEND_URL}/api/content`);
-  currentContent = await res.json();
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/content`);
+    currentContent = await res.json();
+  } catch (err) {
+    console.error('Impossible de charger le contenu', err);
+    if (!currentContent) currentContent = {};
+    alert('Impossible de charger le contenu (connexion au serveur). Réessaie avec le bouton Actualiser.');
+    return;
+  }
   const c = currentContent;
   document.getElementById('c-wallpaper').value = c.wallpaperUrl || '';
   const wpPreview = document.getElementById('wallpaper-preview');
@@ -942,11 +949,12 @@ async function loadContent(){
 }
 
 async function saveContent(){
-  const faq = (currentContent.faq || []).map((_, i) => ({
+  const faq = ((currentContent || {}).faq || []).map((_, i) => ({
     q: document.getElementById('faq-q-'+i).value,
     a: document.getElementById('faq-a-'+i).value,
   }));
   const body = {
+    ...(currentContent || {}),
     wallpaperUrl: document.getElementById('c-wallpaper').value,
     hours: {
       lunMar: document.getElementById('c-lunmar').value,
