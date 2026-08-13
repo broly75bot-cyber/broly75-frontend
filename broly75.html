@@ -1348,6 +1348,42 @@
     font-size:11px;
     color:rgba(241,239,233,0.55);
   }
+
+  /* ===== Case "note moyenne + répartition" (écran Avis) — classes autonomes ===== */
+  .rating-flex{ display:flex; align-items:stretch; gap:18px; }
+  .rating-flex .rf-left{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    flex-shrink:0; padding-right:16px; border-right:1px solid var(--line);
+  }
+  .rf-left .rf-score{
+    font-family:var(--font-title); font-weight:400; font-size:42px; line-height:1; color:#FFFFFF;
+  }
+  .rf-left .rf-stars{
+    color:var(--lime); font-size:17px; letter-spacing:3px; margin:10px 0 6px;
+    text-shadow:0 0 8px rgba(62,205,107,0.6);
+  }
+  .rf-left .rf-count{
+    font-family:var(--font-mono); font-size:10px; font-weight:600;
+    text-transform:uppercase; letter-spacing:0.06em; color:rgba(241,239,233,0.5);
+  }
+  .rf-breakdown{ flex:1; display:flex; flex-direction:column; justify-content:center; gap:9px; min-width:0; }
+  .rf-breakdown .rb-row{ display:flex; align-items:center; gap:8px; }
+  .rf-breakdown .rb-label{
+    display:flex; align-items:center; gap:3px; flex-shrink:0; width:26px;
+    font-family:var(--font-body); font-weight:600; font-size:13px; color:var(--paper);
+  }
+  .rf-breakdown .rb-label svg{ color:var(--lime); flex-shrink:0; }
+  .rf-breakdown .rb-track{
+    flex:1; height:6px; border-radius:3px; background:rgba(241,239,233,0.1); overflow:hidden;
+  }
+  .rf-breakdown .rb-fill{
+    height:100%; background:var(--lime); border-radius:3px; box-shadow:0 0 6px rgba(62,205,107,0.5);
+  }
+  .rf-breakdown .rb-count{
+    width:20px; text-align:right; flex-shrink:0;
+    font-family:var(--font-mono); font-size:12px; color:rgba(241,239,233,0.55);
+  }
+
   .review-card{
     background:rgba(21,20,23,0.7); backdrop-filter:blur(6px);
     border:2px solid var(--line);
@@ -2191,13 +2227,13 @@
     </div>
 
     <div class="section-box">
-      <div style="display:flex; align-items:center; gap:18px;">
-        <div style="text-align:center; flex-shrink:0;">
-          <div class="big-score" id="avg-score" style="font-size:40px;">—</div>
-          <div class="stars" id="avg-stars" style="font-size:15px;">☆☆☆☆☆</div>
-          <div class="count" id="review-count" style="margin-top:4px;">0 avis</div>
+      <div class="rating-flex">
+        <div class="rf-left">
+          <div class="rf-score" id="avg-score">—</div>
+          <div class="rf-stars" id="avg-stars">☆☆☆☆☆</div>
+          <div class="rf-count" id="review-count">0 avis</div>
         </div>
-        <div style="flex:1; display:flex; flex-direction:column; gap:6px;" id="rating-breakdown"></div>
+        <div class="rf-breakdown" id="rating-breakdown"></div>
       </div>
     </div>
 
@@ -3380,13 +3416,20 @@ async function openAvis(){
     const reviews = await res.json();
 
     document.getElementById('review-header-count').textContent = `${reviews.length} avis`;
+    const starIcon = '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>';
 
     if (reviews.length === 0){
       list.innerHTML = '<p class="warn">Aucun avis publié pour le moment — sois le premier à en laisser un !</p>';
       document.getElementById('avg-score').textContent = '—';
       document.getElementById('avg-stars').textContent = '☆☆☆☆☆';
       document.getElementById('review-count').textContent = '0 avis';
-      document.getElementById('rating-breakdown').innerHTML = '';
+      document.getElementById('rating-breakdown').innerHTML = [5,4,3,2,1].map(n => `
+        <div class="rb-row">
+          <span class="rb-label">${n} ${starIcon}</span>
+          <span class="rb-track"><span class="rb-fill" style="width:0%;"></span></span>
+          <span class="rb-count">0</span>
+        </div>
+      `).join('');
     } else {
       list.innerHTML = reviews.map(r => `
         <div class="review-card">
@@ -3414,8 +3457,8 @@ async function openAvis(){
       const counts = [5,4,3,2,1].map(n => reviews.filter(r => r.rating === n).length);
       const max = Math.max(...counts, 1);
       document.getElementById('rating-breakdown').innerHTML = [5,4,3,2,1].map((n, i) => `
-        <div class="rating-bar-row">
-          <span>${n} ★</span>
+        <div class="rb-row">
+          <span class="rb-label">${n} ${starIcon}</span>
           <span class="rb-track"><span class="rb-fill" style="width:${(counts[i]/max*100)}%;"></span></span>
           <span class="rb-count">${counts[i]}</span>
         </div>
