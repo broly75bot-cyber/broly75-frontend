@@ -1531,51 +1531,109 @@
     margin-top:12px;
   }
 
-  .long-case-list{
+  .cc-list{
     display:flex;
     flex-direction:column;
     gap:10px;
   }
-  .long-case{
+  .cc-card{
     display:flex;
-    justify-content:space-between;
     align-items:center;
+    gap:14px;
     background:rgba(21,20,23,0.7); backdrop-filter:blur(6px);
     border:2px solid var(--lime);
-    border-radius:14px;
-    padding:14px 18px;
+    border-radius:16px;
+    padding:14px 16px;
     text-decoration:none;
   }
-  .lc-left{
-    display:flex;
-    align-items:center;
-    gap:12px;
+  .cc-card.principal{
+    background:rgba(62,205,107,0.1);
+    box-shadow:0 0 18px rgba(62,205,107,0.2);
   }
-  .lc-icon{
-    width:38px; height:38px;
-    border-radius:50%;
+  .cc-icon{
+    width:48px; height:48px;
+    border-radius:14px;
     display:flex;
     align-items:center;
     justify-content:center;
     overflow:hidden;
     background:#fff;
     flex-shrink:0;
-    padding:6px;
   }
-  .lc-icon img{
+  .cc-icon img{
     width:100%; height:100%;
-    object-fit:contain;
+    object-fit:cover;
   }
-  .long-case .day{
+  .cc-info{
+    flex:1;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+  }
+  .cc-badge{
+    align-self:flex-start;
+    background:var(--lime);
+    color:var(--ink);
+    font-family:var(--font-mono);
+    font-size:9.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    padding:2px 8px;
+    border-radius:10px;
+    margin-bottom:4px;
+  }
+  .cc-name{
     font-family:var(--font-body);
     font-weight:700;
-    font-size:14px;
+    font-size:15px;
     color:var(--paper);
   }
-  .long-case .time{
+  .cc-link{
     font-family:var(--font-mono);
-    font-size:12px;
+    font-size:11.5px;
+    color:rgba(241,239,233,0.5);
+    margin-top:2px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .cc-chevron{
+    width:34px; height:34px;
+    border-radius:50%;
+    border:1.5px solid var(--line);
+    color:rgba(241,239,233,0.5);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    flex-shrink:0;
+  }
+  .cc-card.principal .cc-chevron{
+    border-color:var(--lime);
     color:var(--lime);
+  }
+  .cc-available{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    margin-top:16px;
+    padding:12px;
+    border:2px solid var(--lime);
+    border-radius:20px;
+    font-family:var(--font-mono);
+    font-size:11px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--lime);
+  }
+  .cc-dot{
+    width:8px; height:8px;
+    border-radius:50%;
+    background:var(--lime);
+    box-shadow:0 0 6px var(--lime);
   }
 
   .hours-grid{
@@ -1944,36 +2002,67 @@
       <button class="close-btn" onclick="closeOverlay('contact-overlay')">Fermer</button>
     </div>
 
-    <div class="long-case-list">
-      <a class="long-case" id="contact-tg-main" href="https://t.me/+Pw26j3QCPTRjNzU8" target="_blank">
-        <span class="lc-left"><span class="lc-icon"><img src="Telegram.png.WEBP" alt="Telegram"></span><span class="day">Telegram principal</span></span>
-        <span class="time">Rejoindre</span>
+    <div class="cc-list">
+      <a class="cc-card principal" id="contact-tg-main" href="https://t.me/+Pw26j3QCPTRjNzU8" target="_blank">
+        <span class="cc-icon"><img src="Telegram.png.WEBP" alt="Telegram"></span>
+        <span class="cc-info">
+          <span class="cc-badge">★ Principal</span>
+          <span class="cc-name">Telegram</span>
+          <span class="cc-link">t.me/brolybcnfrench</span>
+        </span>
+        <span class="cc-chevron">›</span>
       </a>
-      <a class="long-case" id="contact-tg-channel" href="https://t.me/toncanal" target="_blank">
-        <span class="lc-left"><span class="lc-icon"><img src="Telegram.png.WEBP" alt="Telegram"></span><span class="day">Canal Telegram</span></span>
-        <span class="time">@toncanal</span>
+      <a class="cc-card" id="contact-tg-channel" href="https://t.me/toncanal" target="_blank">
+        <span class="cc-icon"><img src="Telegram.png.WEBP" alt="Telegram"></span>
+        <span class="cc-info">
+          <span class="cc-name">Canal Telegram</span>
+          <span class="cc-link" id="contact-tg-channel-text">t.me/toncanal</span>
+        </span>
+        <span class="cc-chevron">›</span>
       </a>
-      <a class="long-case" id="contact-instagram" href="https://instagram.com/tonpseudo" target="_blank">
-        <span class="lc-left"><span class="lc-icon"><img src="instagram.png.JPG" alt="Instagram"></span><span class="day">Instagram</span></span>
-        <span class="time">@tonpseudo</span>
+      <a class="cc-card" id="contact-instagram" href="https://instagram.com/tonpseudo" target="_blank">
+        <span class="cc-icon"><img src="instagram.png.JPG" alt="Instagram"></span>
+        <span class="cc-info">
+          <span class="cc-name">Instagram</span>
+          <span class="cc-link" id="contact-instagram-text">www.instagram.com/tonpseudo</span>
+        </span>
+        <span class="cc-chevron">›</span>
       </a>
-      <a class="long-case" id="contact-snapchat" href="https://snapchat.com/add/tonpseudo" target="_blank">
-        <span class="lc-left"><span class="lc-icon"><img src="Snapchat.png.PNG" alt="Snapchat"></span><span class="day">Snapchat</span></span>
-        <span class="time">@tonpseudo</span>
+      <a class="cc-card" id="contact-snapchat" href="https://snapchat.com/add/tonpseudo" target="_blank">
+        <span class="cc-icon"><img src="Snapchat.png.PNG" alt="Snapchat"></span>
+        <span class="cc-info">
+          <span class="cc-name">Snapchat</span>
+          <span class="cc-link" id="contact-snapchat-text">www.snapchat.com/add/tonpseudo</span>
+        </span>
+        <span class="cc-chevron">›</span>
       </a>
-      <a class="long-case" id="contact-whatsapp" href="https://wa.me/330000000000" target="_blank">
-        <span class="lc-left"><span class="lc-icon"><img src="Whattsap.png.JPG" alt="WhatsApp"></span><span class="day">WhatsApp</span></span>
-        <span class="time">+33 0 00 00 00 00</span>
+      <a class="cc-card" id="contact-whatsapp" href="https://wa.me/330000000000" target="_blank">
+        <span class="cc-icon"><img src="Whattsap.png.JPG" alt="WhatsApp"></span>
+        <span class="cc-info">
+          <span class="cc-name">WhatsApp</span>
+          <span class="cc-link" id="contact-whatsapp-text">+33 0 00 00 00 00</span>
+        </span>
+        <span class="cc-chevron">›</span>
       </a>
-      <a class="long-case" id="contact-signal" href="https://signal.me/#p/+330000000000" target="_blank">
-        <span class="lc-left"><span class="lc-icon"><img src="Signal.png.JPG" alt="Signal"></span><span class="day">Signal</span></span>
-        <span class="time">+33 0 00 00 00 00</span>
+      <a class="cc-card" id="contact-signal" href="https://signal.me/#p/+330000000000" target="_blank">
+        <span class="cc-icon"><img src="Signal.png.JPG" alt="Signal"></span>
+        <span class="cc-info">
+          <span class="cc-name">Signal</span>
+          <span class="cc-link" id="contact-signal-text">signal.me/#eu/...</span>
+        </span>
+        <span class="cc-chevron">›</span>
       </a>
-      <a class="long-case" id="contact-potato" href="https://potato.im/tonpseudo" target="_blank">
-        <span class="lc-left"><span class="lc-icon"><img src="Potato.png.PNG" alt="Potato"></span><span class="day">Potato</span></span>
-        <span class="time">@tonpseudo</span>
+      <a class="cc-card" id="contact-potato" href="https://potato.im/tonpseudo" target="_blank">
+        <span class="cc-icon"><img src="Potato.png.PNG" alt="Potato"></span>
+        <span class="cc-info">
+          <span class="cc-name">Potato</span>
+          <span class="cc-link" id="contact-potato-text">tato.im/tonpseudo</span>
+        </span>
+        <span class="cc-chevron">›</span>
       </a>
     </div>
+
+    <div class="cc-available"><span class="cc-dot"></span> Nous sommes disponibles 24/7</div>
   </div>
 </div>
 
@@ -2764,13 +2853,32 @@ function openContact(){
   hideNav();
   if (siteContent && siteContent.contacts){
     const c = siteContent.contacts;
+    const displayUrl = (url) => url.replace(/^https?:\/\//, '');
     if (c.telegramMain) document.getElementById('contact-tg-main').href = c.telegramMain;
-    if (c.telegramChannel) document.getElementById('contact-tg-channel').href = c.telegramChannel;
-    if (c.instagram) document.getElementById('contact-instagram').href = c.instagram;
-    if (c.snapchat) document.getElementById('contact-snapchat').href = c.snapchat;
-    if (c.whatsapp) document.getElementById('contact-whatsapp').href = c.whatsapp;
-    if (c.signal) document.getElementById('contact-signal').href = c.signal;
-    if (c.potato) document.getElementById('contact-potato').href = c.potato;
+    if (c.telegramChannel){
+      document.getElementById('contact-tg-channel').href = c.telegramChannel;
+      document.getElementById('contact-tg-channel-text').textContent = displayUrl(c.telegramChannel);
+    }
+    if (c.instagram){
+      document.getElementById('contact-instagram').href = c.instagram;
+      document.getElementById('contact-instagram-text').textContent = displayUrl(c.instagram);
+    }
+    if (c.snapchat){
+      document.getElementById('contact-snapchat').href = c.snapchat;
+      document.getElementById('contact-snapchat-text').textContent = displayUrl(c.snapchat);
+    }
+    if (c.whatsapp){
+      document.getElementById('contact-whatsapp').href = c.whatsapp;
+      document.getElementById('contact-whatsapp-text').textContent = displayUrl(c.whatsapp);
+    }
+    if (c.signal){
+      document.getElementById('contact-signal').href = c.signal;
+      document.getElementById('contact-signal-text').textContent = displayUrl(c.signal);
+    }
+    if (c.potato){
+      document.getElementById('contact-potato').href = c.potato;
+      document.getElementById('contact-potato-text').textContent = displayUrl(c.potato);
+    }
   }
   document.getElementById('contact-overlay').classList.add('show');
 }
