@@ -726,6 +726,7 @@ function showOrderDetail(id){
       <div class="muted">${(o.lines || []).join(', ')}</div>
       <div class="muted">Total : ${o.totalEur} € — ${o.fulfillment || 'livraison'}</div>
       <div class="muted">${o.address || ''}</div>
+      ${o.photoUrl ? `<a href="${o.photoUrl}" target="_blank"><img src="${o.photoUrl}" style="max-width:120px; border-radius:8px; margin-top:8px; display:block;"></a>` : ''}
       <div class="muted">${o.contact || ''}</div>
       <span class="status-badge ${o.status}">${o.status}</span>
       ${trackingBox}
