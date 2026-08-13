@@ -287,6 +287,7 @@
     <div class="subscreen active" id="contenu-menu">
       <div class="nav-list">
         <button class="nav-row" onclick="openContentSection('wallpaper')">Papier peint</button>
+        <button class="nav-row" onclick="openContentSection('categories')">Catégories produits</button>
         <button class="nav-row" onclick="openContentSection('hours')">Horaires de livraison</button>
         <button class="nav-row" onclick="openContentSection('meetup')">Meetup</button>
         <button class="nav-row" onclick="openContentSection('shipping')">Service d'envoi</button>
@@ -306,6 +307,16 @@
       <input id="c-wallpaper" placeholder="https://...">
       <img id="wallpaper-preview" src="" style="max-width:160px; border-radius:8px; margin-bottom:10px; display:none;">
       <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer</button>
+    </div>
+
+    <!-- Sous-écran : Catégories -->
+    <div class="subscreen" id="contenu-categories">
+      <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
+      <h2>Catégories produits</h2>
+      <p class="muted" style="margin-bottom:14px;">Ce sont les catégories affichées en cases cliquables sur la page d'accueil de la boutique. Le champ "Catégorie" de chaque produit doit correspondre exactement à un de ces noms.</p>
+      <div id="categories-editor"></div>
+      <button class="secondary" style="width:100%; margin-top:6px;" onclick="addCategoryField()">+ Ajouter une catégorie</button>
+      <button style="width:100%; margin-top:10px;" onclick="saveContent()">Enregistrer</button>
     </div>
 
     <!-- Sous-écran : Horaires -->
@@ -946,6 +957,30 @@ async function loadContent(){
       <textarea id="faq-a-${i}" rows="2">${item.a||''}</textarea>
     </div>
   `).join('');
+
+  renderCategoriesEditor(c.categories && c.categories.length ? c.categories : ['Catégorie 1', 'Catégorie 2']);
+}
+
+function renderCategoriesEditor(list){
+  document.getElementById('categories-editor').innerHTML = list.map((name, i) => `
+    <div style="display:flex; gap:8px; margin-bottom:10px;">
+      <input class="cat-field" style="flex:1; margin-bottom:0;" value="${(name||'').replace(/"/g,'&quot;')}" placeholder="Nom de la catégorie">
+      <button type="button" class="danger" style="flex-shrink:0;" onclick="this.parentElement.remove()">Retirer</button>
+    </div>
+  `).join('');
+}
+
+function addCategoryField(){
+  const editor = document.getElementById('categories-editor');
+  const div = document.createElement('div');
+  div.style.display = 'flex';
+  div.style.gap = '8px';
+  div.style.marginBottom = '10px';
+  div.innerHTML = `
+    <input class="cat-field" style="flex:1; margin-bottom:0;" placeholder="Nom de la catégorie">
+    <button type="button" class="danger" style="flex-shrink:0;" onclick="this.parentElement.remove()">Retirer</button>
+  `;
+  editor.appendChild(div);
 }
 
 async function saveContent(){
@@ -953,9 +988,13 @@ async function saveContent(){
     q: document.getElementById('faq-q-'+i).value,
     a: document.getElementById('faq-a-'+i).value,
   }));
+  const categories = Array.from(document.querySelectorAll('.cat-field'))
+    .map(input => input.value.trim())
+    .filter(Boolean);
   const body = {
     ...(currentContent || {}),
     wallpaperUrl: document.getElementById('c-wallpaper').value,
+    categories,
     hours: {
       lunMar: document.getElementById('c-lunmar').value,
       merJeu: document.getElementById('c-merjeu').value,

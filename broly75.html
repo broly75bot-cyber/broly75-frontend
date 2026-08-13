@@ -1161,7 +1161,7 @@
 
   .survey-block{
     background:rgba(21,20,23,0.7); backdrop-filter:blur(6px);
-    border:2px solid var(--line);
+    border:2px solid var(--lime);
     border-radius:16px;
     padding:22px;
     text-align:center;
@@ -1223,7 +1223,7 @@
 
   .review-link-block{
     background:rgba(21,20,23,0.7); backdrop-filter:blur(6px);
-    border:2px solid var(--line);
+    border:2px solid var(--lime);
     border-radius:16px;
     padding:22px;
     text-align:center;
@@ -1236,7 +1236,7 @@
   }
   .review-link-btn{
     display:inline-block;
-    background:var(--cyan);
+    background:var(--lime);
     color:var(--ink);
     text-decoration:none;
     padding:13px 26px;
@@ -1248,7 +1248,7 @@
 
   .rating-summary{
     background:rgba(21,20,23,0.7); backdrop-filter:blur(6px);
-    border:2px solid var(--line);
+    border:2px solid var(--lime);
     border-radius:16px;
     padding:22px;
     text-align:center;
@@ -1541,7 +1541,7 @@
     justify-content:space-between;
     align-items:center;
     background:rgba(21,20,23,0.7); backdrop-filter:blur(6px);
-    border:2px solid var(--line);
+    border:2px solid var(--lime);
     border-radius:14px;
     padding:14px 18px;
     text-decoration:none;
@@ -2531,8 +2531,8 @@ function orderViaTelegram(){
   else window.open(url, '_blank');
 }
 
-// Modifie ces noms de catégories comme tu veux — elles filtrent le catalogue selon le champ "cat" de chaque produit
-const CATEGORY_LIST = ['Catégorie 1', 'Catégorie 2'];
+// Modifiable depuis l'admin (onglet Contenu > Catégories produits) ; valeurs par défaut si rien n'est configuré
+let CATEGORY_LIST = ['Catégorie 1', 'Catégorie 2'];
 
 function renderCats(){
   const bar = document.getElementById('cats');
@@ -2851,6 +2851,11 @@ async function loadSiteContent(){
       if (wordmark) wordmark.style.display = 'none';
     }
     applySiteStyle(siteContent.style);
+    if (siteContent.categories && siteContent.categories.length){
+      CATEGORY_LIST = siteContent.categories;
+    }
+    renderCats();
+    renderGrid();
   } catch (err) {
     console.error('Impossible de charger le contenu du site', err);
   }
