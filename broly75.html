@@ -2273,7 +2273,7 @@
       <div class="option-card selected" data-mode="livraison" onclick="setFulfillment('livraison', this)">
         <div class="oc-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
         <div class="oc-info">
-          <div class="oc-title">Livraison locale</div>
+          <div class="oc-title">Service d'envoi</div>
           <div class="oc-sub">Remise en main propre ou dépôt local</div>
         </div>
         <div class="oc-chevron">›</div>
@@ -2281,8 +2281,8 @@
       <div class="option-card" data-mode="envoi" onclick="setFulfillment('envoi', this)">
         <div class="oc-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></div>
         <div class="oc-info">
-          <div class="oc-title">Envoi postal</div>
-          <div class="oc-sub">France & Europe, sous 5–10 jours</div>
+          <div class="oc-title">Horaires de livraison</div>
+          <div class="oc-sub">Choisis un créneau de passage</div>
         </div>
         <div class="oc-chevron">›</div>
       </div>
@@ -2295,24 +2295,34 @@
         <div class="oc-chevron">›</div>
       </div>
     </div>
-    <p class="warn" id="fulfillment-note" style="margin-top:-2px; margin-bottom:6px;">Remise en main propre ou dépôt local, sous 3–5 jours.</p>
 
-    <!-- ADRESSE -->
+    <!-- COORDONNÉES (toujours visible, quelle que soit l'option choisie) -->
     <div class="section-box">
       <div class="checkout-section-header">
         <div class="csh-step">2</div>
         <div>
-          <div class="csh-title" id="f-address-title">Adresse de livraison</div>
-          <div class="csh-sub" id="f-address-sub">Pour la remise de ta commande</div>
+          <div class="csh-title">Tes coordonnées</div>
+          <div class="csh-sub">Pour te recontacter au besoin</div>
         </div>
       </div>
       <div class="field-card">
         <label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></span> Nom complet</label>
         <input type="text" id="f-name" placeholder="Prénom et nom">
       </div>
-      <div class="field-card">
+      <div class="field-card" style="margin-bottom:0;">
         <label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.4 2.1L8.1 9.6a16 16 0 0 0 6.3 6.3l1.1-1.2a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2.1z"/></svg></span> Téléphone ou email</label>
         <input type="text" id="f-contact" placeholder="téléphone ou email">
+      </div>
+    </div>
+
+    <!-- ADRESSE (visible seulement si "Service d'envoi" est choisi) -->
+    <div class="section-box" id="delivery-address-section">
+      <div class="checkout-section-header">
+        <div class="csh-step">3</div>
+        <div>
+          <div class="csh-title" id="f-address-title">Adresse de livraison</div>
+          <div class="csh-sub" id="f-address-sub">Pour la remise de ta commande</div>
+        </div>
       </div>
       <div class="field-card">
         <label id="f-address-label"><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></span> Adresse</label>
@@ -2337,6 +2347,44 @@
         <img id="f-photo-preview" class="photo-upload-preview">
       </div>
     </div>
+
+    <!-- HORAIRE DE TOURNÉE (visible seulement si "Horaires de livraison" est choisi) -->
+    <div class="section-box" id="delivery-hours-section" style="display:none;">
+      <div class="checkout-section-header">
+        <div class="csh-step">3</div>
+        <div>
+          <div class="csh-title">Horaire de tournée</div>
+          <div class="csh-sub">Choisis un créneau de passage</div>
+        </div>
+      </div>
+      <div id="checkout-hours-options"></div>
+    </div>
+
+    <!-- LIEU DU RENDEZ-VOUS (visible seulement si "Point relais" est choisi) -->
+    <div class="section-box" id="delivery-meetup-section" style="display:none;">
+      <div class="checkout-section-header">
+        <div class="csh-step">3</div>
+        <div>
+          <div class="csh-title">Lieu du rendez-vous</div>
+        </div>
+      </div>
+      <div class="field-card">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="width:36px; height:36px; border-radius:10px; background:rgba(62,205,107,0.15); display:flex; align-items:center; justify-content:center; color:var(--lime); flex-shrink:0;">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          </span>
+          <span id="checkout-meetup-location" style="font-weight:700; font-size:15px;">—</span>
+        </div>
+      </div>
+      <div class="checkout-section-header" style="margin-top:14px;">
+        <div class="csh-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg></div>
+        <div><div class="csh-title">Disponibilités</div></div>
+      </div>
+      <div class="field-card" style="margin-bottom:0;">
+        <span id="checkout-meetup-hours" style="font-weight:700; font-size:15px;">—</span>
+      </div>
+    </div>
+
 
     <div class="section-label">Récapitulatif</div>
     <div class="recap-box" id="order-recap"></div>
@@ -2532,34 +2580,59 @@ function setFulfillment(mode, card){
   document.querySelectorAll('#fulfillment-toggle .option-card').forEach(c => c.classList.remove('selected'));
   card.classList.add('selected');
 
-  const title = document.getElementById('f-address-title');
-  const sub = document.getElementById('f-address-sub');
-  const label = document.getElementById('f-address-label');
-  const addr = document.getElementById('f-address');
-  const note = document.getElementById('fulfillment-note');
+  document.getElementById('delivery-address-section').style.display = mode === 'livraison' ? 'block' : 'none';
+  document.getElementById('delivery-hours-section').style.display = mode === 'envoi' ? 'block' : 'none';
+  document.getElementById('delivery-meetup-section').style.display = mode === 'retrait' ? 'block' : 'none';
 
   if (mode === 'envoi'){
-    title.textContent = 'Adresse postale';
-    sub.textContent = 'Pour l\'envoi postal';
-    label.textContent = 'Adresse';
-    addr.placeholder = 'Numéro et rue';
-    note.textContent = 'Envoi par transporteur partout où tu es — délai 5–10 jours selon la destination.';
+    renderHoursOptions();
   } else if (mode === 'retrait'){
-    title.textContent = 'Point relais';
-    sub.textContent = 'Indique le point relais souhaité';
-    label.textContent = 'Point relais';
-    addr.placeholder = 'Nom ou adresse du point relais le plus proche';
-    note.textContent = 'À récupérer toi-même en point relais, sous 2–4 jours.';
-  } else {
-    title.textContent = 'Adresse de livraison';
-    sub.textContent = 'Pour la remise de ta commande';
-    label.textContent = 'Adresse';
-    addr.placeholder = 'Numéro et rue';
-    note.textContent = 'Remise en main propre ou dépôt local, sous 3–5 jours.';
+    renderMeetupInfo();
   }
 }
 
+function renderHoursOptions(){
+  const container = document.getElementById('checkout-hours-options');
+  const hours = (siteContent && siteContent.hours) || {};
+  const slots = [
+    { key: 'lunMar', label: 'Lundi – Mardi', value: hours.lunMar },
+    { key: 'merJeu', label: 'Mercredi – Jeudi', value: hours.merJeu },
+    { key: 'ven', label: 'Vendredi', value: hours.ven },
+    { key: 'weekend', label: 'Week-end', value: hours.weekend },
+  ];
+  container.innerHTML = slots.map(s => `
+    <div class="option-card ${selectedHoursSlot === s.key ? 'selected' : ''}" onclick="selectHoursSlot('${s.key}', '${s.label}')" style="padding:12px 16px;">
+      <div class="oc-info">
+        <div class="oc-title" style="font-size:13.5px;">${s.label}</div>
+        <div class="oc-sub">${s.value || 'À compléter'}</div>
+      </div>
+      <div class="oc-chevron">›</div>
+    </div>
+  `).join('');
+}
+
+let selectedHoursSlot = null;
+let selectedHoursLabel = '';
+function selectHoursSlot(key, label){
+  selectedHoursSlot = key;
+  selectedHoursLabel = label;
+  renderHoursOptions();
+}
+
+function renderMeetupInfo(){
+  const meetup = (siteContent && siteContent.meetup) || {};
+  document.getElementById('checkout-meetup-location').textContent = meetup.location || 'À compléter';
+  document.getElementById('checkout-meetup-hours').textContent = meetup.hoursText || 'À compléter';
+}
+
 function buildFullAddress(){
+  if (fulfillmentMode === 'envoi'){
+    return selectedHoursLabel ? `Créneau souhaité : ${selectedHoursLabel}` : '';
+  }
+  if (fulfillmentMode === 'retrait'){
+    const meetup = (siteContent && siteContent.meetup) || {};
+    return `Point relais : ${meetup.location || 'à confirmer'} (${meetup.hoursText || 'horaires à confirmer'})`;
+  }
   const parts = [
     document.getElementById('f-address').value,
     [document.getElementById('f-city').value, document.getElementById('f-zip').value].filter(Boolean).join(' '),
@@ -3022,6 +3095,8 @@ async function openCheckout(){
   document.getElementById('validate-order-btn').style.display = 'block';
   document.getElementById('validate-order-btn').disabled = false;
   document.getElementById('validate-order-btn').textContent = 'Valider ma commande';
+  if (fulfillmentMode === 'envoi') renderHoursOptions();
+  if (fulfillmentMode === 'retrait') renderMeetupInfo();
   renderCheckoutItems();
   renderRecap();
 }
@@ -3030,12 +3105,18 @@ async function openCheckout(){
 function checkOrderFieldsValid(){
   const name = document.getElementById('f-name').value.trim();
   const contact = document.getElementById('f-contact').value.trim();
-  const address = document.getElementById('f-address').value.trim();
 
   if (cartItems().length === 0){ alert('Ton panier est vide.'); return false; }
   if (name.length < 2){ alert('Merci d\'indiquer ton nom complet.'); return false; }
   if (contact.length < 4){ alert('Merci d\'indiquer un téléphone ou un email valide.'); return false; }
-  if (fulfillmentMode !== 'retrait' && address.length < 4){ alert('Merci d\'indiquer ton adresse.'); return false; }
+  if (fulfillmentMode === 'livraison'){
+    const address = document.getElementById('f-address').value.trim();
+    if (address.length < 4){ alert('Merci d\'indiquer ton adresse.'); return false; }
+  }
+  if (fulfillmentMode === 'envoi' && !selectedHoursSlot){
+    alert('Merci de choisir un créneau de passage.');
+    return false;
+  }
   return true;
 }
 
