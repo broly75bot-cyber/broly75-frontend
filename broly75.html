@@ -585,8 +585,8 @@
   }
   .cat-card{
     position:relative;
-    aspect-ratio:16/9;
-    border-radius:14px;
+    aspect-ratio:2.4/1;
+    border-radius:12px;
     overflow:hidden;
     border:2px solid var(--line);
     background-size:cover;
@@ -595,7 +595,7 @@
     cursor:pointer;
     display:flex;
     align-items:flex-end;
-    padding:10px 12px;
+    padding:8px 10px;
   }
   .cat-card::after{
     content:'';
@@ -606,7 +606,7 @@
     position:relative; z-index:1;
     font-family:var(--font-body);
     font-weight:700;
-    font-size:13.5px;
+    font-size:12px;
     color:var(--paper);
   }
   .cat-card.active{
@@ -1307,8 +1307,8 @@
   }
 
   .info-block{
-    background:rgba(21,20,23,0.7); backdrop-filter:blur(6px);
-    border:2px solid var(--line);
+    background:rgba(6,10,8,0.6); backdrop-filter:blur(6px);
+    border:2px solid rgba(62,205,107,0.3);
     border-radius:16px;
     padding:18px;
     margin-bottom:22px;
@@ -1321,9 +1321,10 @@
   }
   .info-block-icon{
     width:40px; height:40px;
-    border-radius:50%;
-    background:rgba(212,255,61,0.1);
-    border:2px solid var(--lime);
+    border-radius:14px;
+    background:rgba(62,205,107,0.08);
+    border:2px solid #3ECD6B;
+    color:#3ECD6B;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -1332,8 +1333,8 @@
   }
   .long-info-box{
     position:relative;
-    background:var(--ink);
-    border:2px solid var(--line);
+    background:rgba(0,0,0,0.4);
+    border:2px solid rgba(62,205,107,0.25);
     border-radius:14px;
     padding:14px 16px;
     display:flex;
@@ -1349,10 +1350,12 @@
     display:flex;
     align-items:center;
     gap:8px;
+    color:#3ECD6B;
   }
+  .long-info-box .lib-label svg{ color:#3ECD6B; }
   .lib-badge{
-    background:var(--lime);
-    color:var(--ink);
+    background:#3ECD6B;
+    color:#05130A;
     font-family:var(--font-mono);
     font-size:10px;
     font-weight:700;
@@ -1366,7 +1369,7 @@
     font-weight:600;
     text-transform:uppercase;
     letter-spacing:0.06em;
-    color:var(--lime);
+    color:#3ECD6B;
     margin-bottom:14px;
   }
   .profile-card{
@@ -1578,23 +1581,23 @@
   .hours-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:10px;
+    gap:8px;
   }
   .hours-card{
-    background:var(--ink);
-    border:1px solid var(--line);
+    background:rgba(0,0,0,0.4);
+    border:1px solid rgba(62,205,107,0.25);
     border-radius:10px;
-    padding:12px;
+    padding:9px 10px;
   }
   .hours-card .day{
     font-family:var(--font-body);
     font-weight:700;
-    font-size:13px;
-    margin-bottom:4px;
+    font-size:11.5px;
+    margin-bottom:2px;
   }
   .hours-card .time{
     font-family:var(--font-mono);
-    font-size:12px;
+    font-size:11px;
     color:rgba(241,239,233,0.6);
   }
   .info-row{
