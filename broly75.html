@@ -1706,6 +1706,29 @@
     font-size:64px;
     color:var(--lime);
   }
+
+  /* ===== Écran affiché si l'app n'est pas ouverte depuis Telegram ===== */
+  #telegram-only{
+    display:none;
+    position:fixed; inset:0; z-index:2000;
+    background:#040604;
+    flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:40px 30px;
+  }
+  #telegram-only.show{ display:flex; }
+  #telegram-only .to-icon{
+    width:72px; height:72px; border-radius:20px; border:2px solid var(--lime); color:var(--lime);
+    display:flex; align-items:center; justify-content:center; margin-bottom:24px;
+    box-shadow:0 0 20px rgba(212,255,61,0.3);
+  }
+  #telegram-only h2{
+    font-family:var(--font-title); font-size:24px; text-transform:uppercase; color:var(--paper); margin-bottom:12px;
+  }
+  #telegram-only p{ font-size:14px; color:rgba(241,239,233,0.6); max-width:32ch; line-height:1.5; margin-bottom:26px; }
+  #telegram-only a{
+    display:inline-block; background:var(--lime); color:var(--ink); text-decoration:none;
+    padding:14px 28px; border-radius:26px; font-family:var(--font-body); font-weight:700; font-size:14px;
+  }
 </style>
 </head>
 <body>
@@ -1713,6 +1736,15 @@
 <div id="splash">
   <div class="splash-logo">BROLY<br>75</div>
   <div class="splash-tag">Chargement de la boutique...</div>
+</div>
+
+<div id="telegram-only">
+  <div class="to-icon">
+    <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M21.9 2.7c.3.2.4.6.3.9L18.9 20.8c-.1.4-.4.6-.7.7-.3.1-.6 0-.9-.2l-5-3.9-2.6 2.5c-.2.2-.5.3-.8.2-.3-.1-.5-.3-.5-.6l-.5-5.5-4.7-1.8c-.3-.1-.5-.4-.5-.7 0-.3.2-.6.5-.7L21.1 2.6c.3-.1.6-.1.8.1z"/></svg>
+  </div>
+  <h2>Réservé à Telegram</h2>
+  <p>Cette boutique fonctionne uniquement à l'intérieur de l'app Telegram. Ouvre-la depuis le bot pour continuer.</p>
+  <a href="https://t.me/Broly75bot">Ouvrir dans Telegram</a>
 </div>
 
 
@@ -2175,6 +2207,14 @@ const tg = window.Telegram?.WebApp;
 // ⚠️ Doit correspondre exactement à l'URL de ton backend Railway
 const BACKEND_URL = 'https://broly75-backend-production.up.railway.app';
 if (tg) { tg.ready(); tg.expand(); }
+
+// Bloque l'accès si l'app n'est pas ouverte depuis Telegram (pas de tg, ou pas d'initData)
+const isRealTelegram = !!(tg && tg.initData);
+if (!isRealTelegram){
+  document.getElementById('splash').classList.remove('hide');
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('telegram-only').classList.add('show');
+}
 
 // --- Exemples de produits à remplacer par ton vrai catalogue ---
 // Le catalogue est maintenant chargé depuis ton backend (modifiable via admin.html)
@@ -2792,6 +2832,7 @@ async function openCheckout(){
         contact: document.getElementById('f-contact').value,
         fulfillment: fulfillmentMode,
         telegramId: tg?.initDataUnsafe?.user?.id,
+        initData: tg?.initData || '',
       })
     });
     const data = await res.json();
@@ -2859,12 +2900,14 @@ function confirmOrder(){
   updateCartBar();
 }
 
-loadProductsFromBackend();
-loadSiteContent();
+if (isRealTelegram){
+  loadProductsFromBackend();
+  loadSiteContent();
 
-setTimeout(() => {
-  document.getElementById('splash').classList.add('hide');
-}, 1600);
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hide');
+  }, 1600);
+}
 </script>
 </body>
 </html>
