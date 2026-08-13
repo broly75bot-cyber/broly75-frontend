@@ -742,12 +742,13 @@
     overflow-y:auto;
     z-index:10;
   }
+  #checkout-overlay{ --co-g:#3ECD6B; --co-g-dim:rgba(62,205,107,0.3); --co-bg:rgba(6,10,8,0.6); }
   .sticky-total{
     position:sticky;
     top:0;
     z-index:5;
-    background:var(--lime);
-    color:var(--ink);
+    background:var(--co-g);
+    color:#05130A;
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -808,23 +809,32 @@
 
   .promo-row{
     display:flex;
-    gap:8px;
+    gap:10px;
     margin-bottom:6px;
   }
   .promo-row input{
     flex:1;
+    min-width:0;
     margin-bottom:0;
+    background:rgba(0,0,0,0.5);
+    border:1.5px solid var(--co-g-dim, rgba(62,205,107,0.3));
+    padding:15px 14px;
+    font-size:14px;
+    border-radius:10px;
   }
   .promo-row button{
-    background:var(--cyan);
-    color:var(--ink);
-    border:none;
-    padding:0 18px;
+    background:rgba(0,0,0,0.5);
+    color:rgba(241,239,233,0.5);
+    border:1.5px solid var(--co-g-dim, rgba(62,205,107,0.3));
+    padding:0 14px;
     border-radius:10px;
-    font-family:var(--font-mono);
-    font-weight:700;
-    font-size:12px;
-    text-transform:uppercase;
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:13.5px;
+    text-transform:none;
+    white-space:nowrap;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
   }
   .promo-status{
     font-size:12px;
@@ -832,7 +842,7 @@
     margin-bottom:16px;
     min-height:14px;
   }
-  .promo-status.ok{ color:var(--lime); }
+  .promo-status.ok{ color:var(--co-g, var(--lime)); }
   .promo-status.err{ color:var(--pink); }
 
   .fulfillment-3{
@@ -859,6 +869,156 @@
     border-color:var(--lime);
     color:var(--lime);
   }
+
+  /* ===== Panier repensé : en-têtes de section avec icône + cartes d'options ===== */
+  .checkout-section-header{
+    display:flex; align-items:center; gap:12px; margin:28px 0 14px;
+  }
+  .checkout-section-header .csh-step{
+    width:22px; height:22px; border-radius:50%; background:#fff; color:#05130A;
+    font-family:var(--font-mono); font-size:11px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .checkout-section-header .csh-icon{
+    width:44px; height:44px; border-radius:14px; border:2px solid var(--co-g); color:var(--co-g);
+    background:rgba(62,205,107,0.06); box-shadow:0 0 14px rgba(62,205,107,0.25);
+    display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;
+  }
+  .checkout-section-header .csh-title{
+    font-family:var(--font-mono); font-size:12px; font-weight:600; text-transform:uppercase;
+    letter-spacing:0.1em; color:var(--co-g);
+  }
+  .checkout-section-header .csh-sub{ font-size:12.5px; color:rgba(241,239,233,0.5); margin-top:2px; }
+
+  /* Case unifiée regroupant un en-tête de section et son contenu (ex. Code promo) */
+  .section-box{
+    background:var(--co-bg); backdrop-filter:blur(6px);
+    border:2px solid var(--co-g); border-radius:18px; padding:16px; margin-bottom:20px;
+    box-shadow:0 0 20px rgba(62,205,107,0.08);
+  }
+  .section-box .checkout-section-header{ margin:0 0 14px; }
+  .section-box .promo-row{ margin-bottom:0; }
+  .section-box .promo-status{ margin-bottom:0; margin-top:6px; }
+
+  .option-card{
+    display:flex; align-items:center; gap:14px;
+    background:var(--co-bg); backdrop-filter:blur(6px);
+    border:2px solid var(--co-g-dim); border-radius:16px; padding:14px 16px; margin-bottom:10px; cursor:pointer;
+  }
+  .option-card .oc-icon{
+    width:44px; height:44px; border-radius:12px; background:rgba(62,205,107,0.08); color:var(--co-g);
+    border:1.5px solid var(--co-g-dim);
+    display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0;
+  }
+  .option-card .oc-info{ flex:1; min-width:0; }
+  .option-card .oc-title{ font-weight:700; font-size:14.5px; color:var(--paper); }
+  .option-card .oc-sub{ font-size:12px; color:rgba(241,239,233,0.5); margin-top:2px; }
+  .option-card .oc-chevron{ color:rgba(241,239,233,0.4); font-size:19px; flex-shrink:0; }
+  .option-card.selected{ border-color:var(--co-g); background:rgba(62,205,107,0.1); box-shadow:0 0 16px rgba(62,205,107,0.2); }
+  .option-card.selected .oc-title{ color:var(--co-g); }
+  .option-card.selected .oc-icon{ background:var(--co-g); color:#05130A; border-color:var(--co-g); }
+  .option-card.selected .oc-chevron{ color:var(--co-g); }
+
+  .photo-upload-btn{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    border:2px dashed var(--co-g); color:var(--co-g); border-radius:14px; padding:14px;
+    font-weight:700; font-size:13px; cursor:pointer; background:none; width:100%; font-family:var(--font-body);
+  }
+  .photo-upload-preview{ max-width:120px; border-radius:10px; margin-top:10px; display:none; }
+
+  .checklist-item{
+    display:flex; align-items:center; gap:10px;
+    background:var(--co-bg); backdrop-filter:blur(6px);
+    border:2px solid var(--co-g-dim); border-radius:12px; padding:12px 14px; font-size:13px; margin-top:12px;
+  }
+  .checklist-item .ci-dot{ width:8px; height:8px; border-radius:50%; background:#E8A33D; flex-shrink:0; }
+  .checklist-item.done .ci-dot{ background:var(--co-g); }
+  .checklist-item .ci-chevron{ margin-left:auto; color:rgba(241,239,233,0.4); }
+
+  .coins-hint-line{ font-size:12px; color:rgba(241,239,233,0.6); margin-top:8px; display:flex; align-items:center; gap:6px; }
+  .coins-hint-line b{ color:var(--co-g); }
+
+  .field-card{
+    background:var(--co-bg); backdrop-filter:blur(6px);
+    border:2px solid var(--co-g-dim); border-radius:16px; padding:14px 16px; margin-bottom:10px;
+  }
+  .field-card label{
+    display:flex; align-items:center; gap:8px; margin-bottom:8px; color:rgba(241,239,233,0.6);
+    font-family:var(--font-body); font-size:12.5px; text-transform:none; letter-spacing:0;
+  }
+  .field-card .fc-icon{ display:inline-flex; align-items:center; }
+  .field-card input, .field-card textarea{
+    margin-bottom:0; background:rgba(0,0,0,0.4); border-color:var(--co-g-dim);
+  }
+  .field-card .form-grid{ gap:0 10px; }
+  .field-card .form-grid > div:first-child{ padding-right:5px; }
+  .field-card .form-grid > div:last-child{ padding-left:5px; }
+  .field-card .form-grid input{ margin-bottom:0; }
+
+  .items-carousel{
+    display:flex; overflow-x:auto; scroll-snap-type:x mandatory;
+    gap:12px; margin:0 -16px 12px; padding:0 16px 4px;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .items-carousel::-webkit-scrollbar{ display:none; }
+  .item-slide{
+    scroll-snap-align:center; flex:0 0 100%;
+    position:relative; border-radius:20px; overflow:hidden;
+    aspect-ratio:4/3; background-size:cover; background-position:center;
+    border:1.5px solid var(--co-g-dim, rgba(62,205,107,0.3));
+  }
+  .item-slide::after{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.85) 100%);
+  }
+  .item-slide .is-remove{
+    position:absolute; top:12px; right:12px; z-index:2;
+    width:34px; height:34px; border-radius:50%; background:rgba(229,85,92,0.9); color:#fff;
+    display:flex; align-items:center; justify-content:center; border:none; padding:0;
+  }
+  .item-slide .is-name{
+    position:absolute; top:14px; left:16px; right:56px; z-index:2;
+    font-weight:700; font-size:15px; color:#fff; text-shadow:0 1px 6px rgba(0,0,0,0.6);
+  }
+  .item-slide .is-info{
+    position:absolute; left:16px; right:16px; bottom:14px; z-index:2;
+    display:flex; justify-content:space-between; align-items:flex-end; gap:10px;
+  }
+  .item-slide .is-qty-price{ color:rgba(255,255,255,0.75); font-size:13px; }
+  .item-slide .is-total{ font-family:var(--font-mono); font-weight:800; font-size:22px; color:var(--co-g, var(--lime)); }
+  .item-slide .qty-stepper{ background:rgba(0,0,0,0.45); flex-shrink:0; }
+
+  .items-dots{ display:flex; justify-content:center; gap:6px; margin-bottom:20px; }
+  .items-dots span{ width:6px; height:6px; border-radius:50%; background:rgba(241,239,233,0.25); transition:all .2s; }
+  .items-dots span.active{ background:var(--co-g, var(--lime)); width:16px; border-radius:3px; }
+
+  .items-carousel .cart-empty{ flex:1 1 100%; width:100%; }
+
+  .cart-empty{ text-align:center; padding:16px 6px 6px; }
+  .cart-empty .ce-icon{
+    width:76px; height:76px; border-radius:20px; border:2px solid var(--co-g, var(--lime)); color:var(--co-g, var(--lime));
+    display:flex; align-items:center; justify-content:center; margin:0 auto 20px;
+    box-shadow:0 0 22px rgba(62,205,107,0.3);
+  }
+  .cart-empty h3{ font-family:var(--font-body); font-size:19px; font-weight:700; color:var(--paper); margin-bottom:8px; }
+  .cart-empty p{ font-size:13px; color:rgba(241,239,233,0.5); margin:0 auto 22px; max-width:26ch; line-height:1.4; }
+  .cart-empty button{
+    background:linear-gradient(135deg, var(--co-g, var(--lime)), #2ea854);
+    color:#05130A; border:none; padding:16px 30px; border-radius:30px;
+    font-family:var(--font-body); font-weight:700; font-size:14.5px;
+    box-shadow:0 0 22px rgba(62,205,107,0.4); width:100%;
+  }
+
+  .qty-stepper{
+    display:flex; align-items:center; border:1.5px solid var(--co-g-dim, rgba(62,205,107,0.3));
+    border-radius:10px; overflow:hidden; flex-shrink:0;
+  }
+  .qty-stepper button{
+    background:none; border:none; color:var(--co-g, var(--lime)); width:30px; height:30px;
+    font-size:16px; font-weight:700; padding:0; border-radius:0; display:flex; align-items:center; justify-content:center;
+  }
+  .qty-stepper button:active{ background:rgba(62,205,107,0.15); }
+  .qty-stepper .qty-value{ width:24px; text-align:center; font-family:var(--font-mono); font-size:13px; color:var(--paper); }
 
   .social-grid{
     display:grid;
@@ -1427,8 +1587,8 @@
   }
 
   .recap-box{
-    background:rgba(21,20,23,0.7); backdrop-filter:blur(6px);
-    border:2px solid var(--line);
+    background:var(--co-bg, rgba(6,10,8,0.6)); backdrop-filter:blur(6px);
+    border:2px solid var(--co-g-dim, var(--line));
     border-radius:14px;
     padding:16px;
     margin-top:8px;
@@ -1441,20 +1601,20 @@
     color:rgba(241,239,233,0.8);
   }
   .recap-line.total{
-    border-top:1px solid var(--line);
+    border-top:1px solid var(--co-g-dim, var(--line));
     margin-top:6px;
     padding-top:10px;
     font-family:var(--font-mono);
     font-weight:700;
-    color:var(--lime);
+    color:var(--co-g, var(--lime));
     font-size:15px;
   }
 
   .telegram-order-btn{
     width:100%;
-    background:#229ED9;
+    background:var(--co-bg, rgba(6,10,8,0.8));
     color:#fff;
-    border:none;
+    border:2px solid var(--co-g-dim, rgba(62,205,107,0.3));
     padding:15px;
     border-radius:30px;
     font-family:var(--font-body);
@@ -1855,11 +2015,11 @@
       <button class="close-btn" onclick="closeOverlay('cart-overlay')">Fermer</button>
     </div>
     <div id="cart-lines"></div>
-    <div class="totals">
+    <div class="totals" id="cart-totals-row">
       <span>Total</span>
       <span id="cart-modal-total">0 €</span>
     </div>
-    <button class="submit-btn" onclick="openCheckout()">Passer commande</button>
+    <button class="submit-btn" id="cart-submit-btn" onclick="openCheckout()">Passer commande</button>
   </div>
 </div>
 
@@ -1875,32 +2035,115 @@
       <button class="close-btn" onclick="closeOverlay('checkout-overlay')">Fermer</button>
     </div>
 
-    <div class="form-block">
-      <label>Code promo</label>
+    <!-- ARTICLES -->
+    <div class="section-box">
+      <div class="checkout-section-header">
+        <div class="csh-icon"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M2 3h2l2.6 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L21 7H6"/></svg></div>
+        <div>
+          <div class="csh-title">Tes articles</div>
+          <div class="csh-sub">Vérifie les quantités avant de commander</div>
+        </div>
+      </div>
+      <div class="items-carousel" id="checkout-items"></div>
+      <div class="items-dots" id="checkout-items-dots" style="margin-bottom:0;"></div>
+    </div>
+
+    <!-- CODE PROMO -->
+    <div class="section-box">
+      <div class="checkout-section-header">
+        <div class="csh-icon"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.59 13.41L13.41 20.59a2 2 0 0 1-2.82 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.3" fill="currentColor" stroke="none"/></svg></div>
+        <div>
+          <div class="csh-title">Code promo</div>
+          <div class="csh-sub">Entrer un code promo</div>
+        </div>
+      </div>
       <div class="promo-row">
-        <input type="text" id="f-promo" placeholder="Ex: BROLY10">
-        <button type="button" onclick="applyPromo()">Valider</button>
+        <input type="text" id="f-promo" placeholder="Entrer un code promo">
+        <button type="button" onclick="applyPromo()">Appliquer</button>
       </div>
       <div class="promo-status" id="promo-status"></div>
+    </div>
 
-      <label>Mode de livraison</label>
-      <div class="fulfillment-3" id="fulfillment-toggle">
-        <button type="button" class="active" onclick="setFulfillment('livraison', this)">Livraison<br>locale</button>
-        <button type="button" onclick="setFulfillment('envoi', this)">Envoi<br>postal</button>
-        <button type="button" onclick="setFulfillment('retrait', this)">Point<br>relais</button>
+    <!-- MÉTHODE DE LIVRAISON -->
+    <div class="checkout-section-header">
+      <div class="csh-step">1</div>
+      <div>
+        <div class="csh-title">Méthode de livraison</div>
+        <div class="csh-sub">Choisissez comment recevoir votre commande</div>
       </div>
-      <p class="warn" id="fulfillment-note" style="margin-top:-2px; margin-bottom:18px;">Remise en main propre ou dépôt local, sous 3–5 jours.</p>
+    </div>
+    <div id="fulfillment-toggle">
+      <div class="option-card selected" data-mode="livraison" onclick="setFulfillment('livraison', this)">
+        <div class="oc-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+        <div class="oc-info">
+          <div class="oc-title">Livraison locale</div>
+          <div class="oc-sub">Remise en main propre ou dépôt local</div>
+        </div>
+        <div class="oc-chevron">›</div>
+      </div>
+      <div class="option-card" data-mode="envoi" onclick="setFulfillment('envoi', this)">
+        <div class="oc-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></div>
+        <div class="oc-info">
+          <div class="oc-title">Envoi postal</div>
+          <div class="oc-sub">France & Europe, sous 5–10 jours</div>
+        </div>
+        <div class="oc-chevron">›</div>
+      </div>
+      <div class="option-card" data-mode="retrait" onclick="setFulfillment('retrait', this)">
+        <div class="oc-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/></svg></div>
+        <div class="oc-info">
+          <div class="oc-title">Point relais</div>
+          <div class="oc-sub">À récupérer toi-même, sous 2–4 jours</div>
+        </div>
+        <div class="oc-chevron">›</div>
+      </div>
+    </div>
+    <p class="warn" id="fulfillment-note" style="margin-top:-2px; margin-bottom:6px;">Remise en main propre ou dépôt local, sous 3–5 jours.</p>
 
-      <label>Nom complet</label>
-      <input type="text" id="f-name" placeholder="Prénom et nom">
-      <label id="f-address-label">Adresse de livraison</label>
-      <textarea id="f-address" rows="3" placeholder="Numéro, rue, ville, code postal"></textarea>
-      <label>Contact</label>
-      <input type="text" id="f-contact" placeholder="téléphone ou email">
+    <!-- ADRESSE -->
+    <div class="section-box">
+      <div class="checkout-section-header">
+        <div class="csh-step">2</div>
+        <div>
+          <div class="csh-title" id="f-address-title">Adresse de livraison</div>
+          <div class="csh-sub" id="f-address-sub">Pour la remise de ta commande</div>
+        </div>
+      </div>
+      <div class="field-card">
+        <label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></span> Nom complet</label>
+        <input type="text" id="f-name" placeholder="Prénom et nom">
+      </div>
+      <div class="field-card">
+        <label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.4 2.1L8.1 9.6a16 16 0 0 0 6.3 6.3l1.1-1.2a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2.1z"/></svg></span> Téléphone ou email</label>
+        <input type="text" id="f-contact" placeholder="téléphone ou email">
+      </div>
+      <div class="field-card">
+        <label id="f-address-label"><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></span> Adresse</label>
+        <input type="text" id="f-address" placeholder="Numéro et rue">
+      </div>
+      <div class="field-card">
+        <div class="form-grid">
+          <div><label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="9" height="18"/><rect x="15" y="10" width="5" height="11"/></svg></span> Ville</label><input type="text" id="f-city" placeholder="Ville"></div>
+          <div><label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span> Code postal</label><input type="text" id="f-zip" placeholder="00000"></div>
+        </div>
+      </div>
+      <div class="field-card">
+        <label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z" opacity="0"/><line x1="6" y1="8" x2="18" y2="8"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="6" y1="16" x2="13" y2="16"/></svg></span> Infos complémentaires <span style="text-transform:none; color:rgba(241,239,233,0.4);">(optionnel)</span></label>
+        <textarea id="f-notes" rows="2" placeholder="Étage, code d'accès, point de repère..."></textarea>
+      </div>
+
+      <div class="field-card" style="margin-bottom:0;">
+        <label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span> Photo du lieu <span style="text-transform:none; color:rgba(241,239,233,0.4);">(optionnel)</span></label>
+        <p class="warn" style="margin-top:-4px; margin-bottom:10px;">Aide le livreur à reconnaître l'endroit (façade, entrée, point relais).</p>
+        <button type="button" class="photo-upload-btn" onclick="document.getElementById('f-photo-input').click()"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="9.5" r="1.5" fill="currentColor" stroke="none"/><path d="M21 15l-5-5L5 21"/></svg> Ajouter une photo</button>
+        <input type="file" id="f-photo-input" accept="image/*" style="display:none;" onchange="handleAddressPhoto(event)">
+        <img id="f-photo-preview" class="photo-upload-preview">
+      </div>
     </div>
 
     <div class="section-label">Récapitulatif</div>
     <div class="recap-box" id="order-recap"></div>
+    <div class="coins-hint-line"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.6.7 1.5 1 2.5 1s2-.5 2-1.4c0-2.2-4.5-1-4.5-3.2 0-.9.9-1.4 2-1.4s1.9.3 2.5 1"/><line x1="12" y1="7" x2="12" y2="17"/></svg> Cette commande rapporte <b id="recap-coins">~0</b> coins à la livraison</div>
 
     <div class="btc-box" style="margin-top:22px;">
       <div class="eyebrow">Paiement bitcoin</div>
@@ -1912,7 +2155,7 @@
 
     <p class="warn" style="margin-top:14px;">On vérifie automatiquement ton paiement sur la blockchain — cette page se met à jour toute seule dès réception.</p>
 
-    <button class="telegram-order-btn" onclick="orderViaTelegram()">✈️ Commander via Telegram</button>
+    <button class="telegram-order-btn" onclick="orderViaTelegram()"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21.9 2.7c.3.2.4.6.3.9L18.9 20.8c-.1.4-.4.6-.7.7-.3.1-.6 0-.9-.2l-5-3.9-2.6 2.5c-.2.2-.5.3-.8.2-.3-.1-.5-.3-.5-.6l-.5-5.5-4.7-1.8c-.3-.1-.5-.4-.5-.7 0-.3.2-.6.5-.7L21.1 2.6c.3-.1.6-.1.8.1z"/></svg> Commander sur Telegram</button>
   </div>
 </div>
 
@@ -2068,28 +2311,57 @@ function applyPromo(){
   renderRecap();
 }
 
-function setFulfillment(mode, btn){
+function setFulfillment(mode, card){
   fulfillmentMode = mode;
-  document.querySelectorAll('#fulfillment-toggle button').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  document.querySelectorAll('#fulfillment-toggle .option-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
 
+  const title = document.getElementById('f-address-title');
+  const sub = document.getElementById('f-address-sub');
   const label = document.getElementById('f-address-label');
   const addr = document.getElementById('f-address');
   const note = document.getElementById('fulfillment-note');
 
   if (mode === 'envoi'){
-    label.textContent = 'Adresse postale complète';
-    addr.placeholder = 'Numéro, rue, ville, code postal, pays';
+    title.textContent = 'Adresse postale';
+    sub.textContent = 'Pour l\'envoi postal';
+    label.textContent = 'Adresse';
+    addr.placeholder = 'Numéro et rue';
     note.textContent = 'Envoi par transporteur partout où tu es — délai 5–10 jours selon la destination.';
   } else if (mode === 'retrait'){
-    label.textContent = 'Point relais souhaité';
+    title.textContent = 'Point relais';
+    sub.textContent = 'Indique le point relais souhaité';
+    label.textContent = 'Point relais';
     addr.placeholder = 'Nom ou adresse du point relais le plus proche';
     note.textContent = 'À récupérer toi-même en point relais, sous 2–4 jours.';
   } else {
-    label.textContent = 'Adresse de livraison';
-    addr.placeholder = 'Numéro, rue, ville, code postal';
+    title.textContent = 'Adresse de livraison';
+    sub.textContent = 'Pour la remise de ta commande';
+    label.textContent = 'Adresse';
+    addr.placeholder = 'Numéro et rue';
     note.textContent = 'Remise en main propre ou dépôt local, sous 3–5 jours.';
   }
+}
+
+function buildFullAddress(){
+  const parts = [
+    document.getElementById('f-address').value,
+    [document.getElementById('f-city').value, document.getElementById('f-zip').value].filter(Boolean).join(' '),
+    document.getElementById('f-notes').value,
+  ].filter(Boolean);
+  return parts.join(', ');
+}
+
+function handleAddressPhoto(event){
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const preview = document.getElementById('f-photo-preview');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
 }
 
 function renderRecap(){
@@ -2108,12 +2380,24 @@ function renderRecap(){
     ${discountLine}
     <div class="recap-line total"><span>Total</span><span>${total.toFixed(2)} €</span></div>
   `;
+  const coinsHint = document.getElementById('recap-coins');
+  if (coinsHint) coinsHint.textContent = '~10';
 }
 
 function orderViaTelegram(){
-  const items = cartItems().map(p => `${p.name} (${p.size}/${p.color})`).join(', ');
+  const items = cartItems().map(p => `${p.name} (${p.size}/${p.color})${p.qty > 1 ? ' x' + p.qty : ''}`).join(', ');
   const total = (cartTotal() * (1 - promoDiscount)).toFixed(2);
-  const text = encodeURIComponent(`Bonjour, je souhaite commander : ${items} — Total : ${total}€ — Mode : ${fulfillmentMode}`);
+  const name = document.getElementById('f-name').value;
+  const address = buildFullAddress();
+  const contact = document.getElementById('f-contact').value;
+  const details = [
+    `Bonjour, je souhaite commander : ${items}`,
+    `Total : ${total}€ — Mode : ${fulfillmentMode}`,
+    name ? `Nom : ${name}` : null,
+    address ? `Adresse : ${address}` : null,
+    contact ? `Contact : ${contact}` : null,
+  ].filter(Boolean).join('\n');
+  const text = encodeURIComponent(details);
   // ⚠️ Remplace 'tonbot' par le vrai username de ton bot Telegram
   const url = `https://t.me/tonbot?text=${text}`;
   if (tg?.openTelegramLink) tg.openTelegramLink(url);
@@ -2166,6 +2450,74 @@ function cartItems(){
   });
 }
 function cartTotal(){ return cartItems().reduce((s,p)=>s+p.price*p.qty,0); }
+
+function updateQty(id, delta){
+  if (!cart[id]) return;
+  cart[id].qty = Math.max(1, (cart[id].qty || 1) + delta);
+  renderCheckoutItems();
+  renderRecap();
+  updateCartBar();
+}
+
+function removeCartItem(id){
+  delete cart[id];
+  renderCheckoutItems();
+  renderRecap();
+  updateCartBar();
+  renderGrid();
+}
+
+function emptyCartStateHTML(closeOverlayId){
+  return `
+    <div class="cart-empty">
+      <div class="ce-icon"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8h12l-1 12a2 2 0 0 1-2 1.8H9a2 2 0 0 1-2-1.8L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></div>
+      <h3>Votre panier est vide</h3>
+      <p>Ajoutez des produits pour commencer vos achats</p>
+      <button type="button" onclick="closeOverlay('${closeOverlayId}')">Découvrir les produits</button>
+    </div>
+  `;
+}
+
+function renderCheckoutItems(){
+  const container = document.getElementById('checkout-items');
+  const dots = document.getElementById('checkout-items-dots');
+  if (!container) return;
+  const items = cartItems();
+
+  if (items.length === 0){
+    container.innerHTML = emptyCartStateHTML('checkout-overlay');
+    if (dots) dots.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = items.map(p => `
+    <div class="item-slide" style="background-image:url('${p.img || ''}')">
+      <button type="button" class="is-remove" onclick="removeCartItem(${p.id})">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+      </button>
+      <div class="is-name">${p.name}${p.size ? ' — ' + p.size : ''}${p.color ? ' / ' + p.color : ''}</div>
+      <div class="is-info">
+        <div>
+          <div class="is-qty-price">${p.qty} × ${p.price.toFixed(2)}€</div>
+          <div class="is-total">${(p.price * p.qty).toFixed(2)} €</div>
+        </div>
+        <div class="qty-stepper">
+          <button type="button" onclick="updateQty(${p.id}, -1)">−</button>
+          <span class="qty-value">${p.qty}</span>
+          <button type="button" onclick="updateQty(${p.id}, 1)">+</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  if (dots){
+    dots.innerHTML = items.map((_, i) => `<span class="${i === 0 ? 'active' : ''}"></span>`).join('');
+    container.onscroll = () => {
+      const idx = Math.round(container.scrollLeft / container.clientWidth);
+      dots.querySelectorAll('span').forEach((d, i) => d.classList.toggle('active', i === idx));
+    };
+  }
+}
 
 function updateCartBar(){
   const items = cartItems();
@@ -2413,8 +2765,10 @@ function openCart(){
       <span class="lname">${p.name} <span style="color:var(--cyan); font-family:var(--font-mono); font-size:11px;">— ${p.size} / ${p.color}</span></span>
       <span class="lprice">${p.price} €</span>
     </div>`).join('');
-  document.getElementById('cart-lines').innerHTML = lines || '<p class="sub">Panier vide.</p>';
+  document.getElementById('cart-lines').innerHTML = lines || emptyCartStateHTML('cart-overlay');
   document.getElementById('cart-modal-total').textContent = cartTotal() + ' €';
+  document.getElementById('cart-totals-row').style.display = lines ? 'flex' : 'none';
+  document.getElementById('cart-submit-btn').style.display = lines ? 'block' : 'none';
   document.getElementById('cart-overlay').classList.add('show');
 }
 
@@ -2424,6 +2778,7 @@ async function openCheckout(){
   document.getElementById('checkout-overlay').classList.add('show');
   document.getElementById('btc-amount').textContent = 'Calcul en cours...';
   document.getElementById('qrcode').innerHTML = '';
+  renderCheckoutItems();
   renderRecap();
 
   try {
@@ -2431,9 +2786,9 @@ async function openCheckout(){
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        itemIds: Object.keys(cart).map(Number),
+        itemIds: Object.keys(cart).flatMap(id => Array(cart[id].qty || 1).fill(Number(id))),
         name: document.getElementById('f-name').value,
-        address: document.getElementById('f-address').value,
+        address: buildFullAddress(),
         contact: document.getElementById('f-contact').value,
         fulfillment: fulfillmentMode,
         telegramId: tg?.initDataUnsafe?.user?.id,
@@ -2492,7 +2847,7 @@ function confirmOrder(){
   if (tg?.sendData) {
     tg.sendData(JSON.stringify({
       name: document.getElementById('f-name').value,
-      address: document.getElementById('f-address').value,
+      address: buildFullAddress(),
       contact: document.getElementById('f-contact').value,
       fulfillment: fulfillmentMode,
       items: cartItems().map(p=>p.name),
