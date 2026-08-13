@@ -2989,10 +2989,10 @@ function setActiveNav(el){
 
 // Modifie ces 6 questions/réponses avec tes vraies infos
 const FAQ_LIST = [
-  { q:'Comment recevoir ma commande ?', a:'Tu peux choisir la livraison à domicile, l\'envoi en point relais, ou le retrait sur place. Les méthodes disponibles et leurs délais sont affichés au moment de la commande.' },
-  { q:'Quels moyens de paiement sont acceptés ?', a:'Le paiement se fait en bitcoin, directement dans l\'app via l\'adresse et le QR code affichés à la commande.' },
-  { q:'Comment se passe un retrait sur place ?', a:'Choisis l\'option "Point relais" au moment de commander, puis contacte-nous via Telegram pour convenir de l\'heure et du lieu exacts.' },
-  { q:'Comment suivre ma commande ?', a:'Ouvre ton profil et consulte la section "Mes commandes" pour suivre son statut. Tu es aussi notifié automatiquement dès qu\'elle est marquée comme livrée.' },
+  { q:'Comment recevoir ma commande ?', a:'Au moment de commander, choisis le mode qui te convient : service d\'envoi (livraison à ton adresse), horaires de livraison (créneau de passage), ou point relais. Les délais et infos sont affichés directement dans l\'app.' },
+  { q:'Quels moyens de paiement sont acceptés ?', a:'Le paiement se fait en Bitcoin, directement dans l\'app via l\'adresse et le QR code affichés à la commande.' },
+  { q:'Comment se passe un point relais ?', a:'Choisis l\'option "Point relais" au moment de commander, trouve un point sur la carte (ou indique-le toi-même), puis récupère ta commande une fois qu\'elle y est déposée.' },
+  { q:'Comment suivre ma commande ?', a:'Tu es notifié automatiquement à chaque étape (en préparation, en cours de livraison, livrée). Tu peux aussi consulter le statut depuis ton profil.' },
   { q:'Que sont les coins bonus ?', a:'Les coins sont des points de fidélité gagnés à chaque commande livrée (10 coins par commande). Ils s\'affichent dans ton profil.' },
   { q:'Comment contacter le support ?', a:'Utilise le bouton Telegram dans la page Contact, ou écris-nous directement — on répond aussi vite que possible.' },
 ];
@@ -3211,7 +3211,11 @@ function openInfo(){
   }
 
   const list = document.getElementById('faq-list');
-  const faqData = (siteContent && siteContent.faq) || FAQ_LIST;
+  const contentFaq = (siteContent && siteContent.faq) || [];
+  const faqData = FAQ_LIST.map((item, i) => ({
+    q: (contentFaq[i] && contentFaq[i].q && contentFaq[i].q.trim()) || item.q,
+    a: (contentFaq[i] && contentFaq[i].a && contentFaq[i].a.trim()) || item.a,
+  }));
   list.innerHTML = faqData.map((item) => `
     <div class="faq-item">
       <div class="faq-q-row">
