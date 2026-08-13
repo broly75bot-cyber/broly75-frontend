@@ -108,6 +108,7 @@
   .status-badge{ font-family:'IBM Plex Mono', monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:0.03em; padding:3px 9px; border-radius:4px; }
   .status-badge.pending{ background:rgba(217,166,74,0.15); color:var(--warning); border:1px solid rgba(217,166,74,0.35); }
   .status-badge.paid{ background:rgba(91,147,224,0.15); color:var(--info); border:1px solid rgba(91,147,224,0.35); }
+  .status-badge.ready{ background:rgba(217,166,74,0.15); color:#E0B94F; border:1px solid rgba(217,166,74,0.35); }
   .status-badge.delivered{ background:rgba(79,174,124,0.15); color:var(--success); border:1px solid rgba(79,174,124,0.35); }
   .status-badge.shipped{ background:rgba(139,109,246,0.15); color:#A78BFA; border:1px solid rgba(139,109,246,0.35); }
   .tracking-box{ background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:12px; margin-top:10px; font-size:12.5px; }
@@ -741,18 +742,26 @@ function showOrderDetail(id){
   ` : '';
 
   let actionHtml = '';
+  const isPickup = o.fulfillment === 'retrait';
+
   if (o.status === 'pending' || o.status === 'paid'){
-    actionHtml = `
-      <div class="ship-form" style="margin-top:12px;">
-        <label>Transporteur (optionnel)</label>
-        <input id="ship-carrier" placeholder="Colissimo, Chronopost...">
-        <label>Numéro de suivi (optionnel)</label>
-        <input id="ship-number" placeholder="N° de suivi">
-        <label>Lien de suivi (optionnel)</label>
-        <input id="ship-url" placeholder="https://...">
-        <button style="width:100%;" onclick="markShipped('${o.id}')">Marquer en cours de livraison</button>
-      </div>
-    `;
+    actionHtml = `<button style="width:100%; margin-top:10px;" onclick="markReady('${o.id}')">Marquer prête${isPickup ? ' (à récupérer)' : ''}</button>`;
+  } else if (o.status === 'ready'){
+    if (isPickup){
+      actionHtml = `<button style="width:100%; margin-top:10px;" onclick="markDelivered('${o.id}')">Marquer comme récupérée (+10 coins)</button>`;
+    } else {
+      actionHtml = `
+        <div class="ship-form" style="margin-top:12px;">
+          <label>Transporteur (optionnel)</label>
+          <input id="ship-carrier" placeholder="Colissimo, Chronopost...">
+          <label>Numéro de suivi (optionnel)</label>
+          <input id="ship-number" placeholder="N° de suivi">
+          <label>Lien de suivi (optionnel)</label>
+          <input id="ship-url" placeholder="https://...">
+          <button style="width:100%;" onclick="markShipped('${o.id}')">Marquer en cours de livraison</button>
+        </div>
+      `;
+    }
   } else if (o.status === 'shipped'){
     actionHtml = `<button style="width:100%; margin-top:10px;" onclick="markDelivered('${o.id}')">Marquer comme livrée (+10 coins)</button>`;
   }
@@ -791,7 +800,7 @@ async function loadStats(){
     const orders = await res.json();
 
     const total = orders.reduce((sum, o) => sum + (o.totalEur || 0), 0);
-    const pending = orders.filter(o => o.status === 'pending' || o.status === 'paid' || o.status === 'shipped').length;
+    const pending = orders.filter(o => o.status === 'pending' || o.status === 'paid' || o.status === 'ready' || o.status === 'shipped').length;
     const delivered = orders.filter(o => o.status === 'delivered').length;
 
     document.getElementById('stat-total').textContent = total.toFixed(0) + ' €';
@@ -898,6 +907,15 @@ async function deleteReview(id){
   await fetch(`${BACKEND_URL}/api/reviews/${id}`, { method:'DELETE', headers:{ 'x-admin-key': adminKey } });
   closeReviewDetail();
   loadReviews();
+}
+
+async function markReady(orderId){
+  await fetch(`${BACKEND_URL}/api/order/${orderId}/status`, {
+    method: 'PUT', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+    body: JSON.stringify({ status: 'ready' }),
+  });
+  closeOrderDetail();
+  loadOrders();
 }
 
 async function markShipped(orderId){
