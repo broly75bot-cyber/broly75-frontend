@@ -1601,10 +1601,11 @@
     overflow:hidden;
     background:#fff;
     flex-shrink:0;
+    padding:5px;
   }
   .cc-icon img{
     width:100%; height:100%;
-    object-fit:cover;
+    object-fit:contain;
   }
   .cc-info{
     flex:1;
@@ -2069,7 +2070,7 @@
 
     <div class="cc-list">
       <a class="cc-card principal" id="contact-tg-main" href="https://t.me/+Pw26j3QCPTRjNzU8" target="_blank">
-        <span class="cc-icon"><img src="Telegram.png.WEBP" alt="Telegram"></span>
+        <span class="cc-icon"><img id="logo-telegram-img" src="Telegram.png.WEBP" alt="Telegram"></span>
         <span class="cc-info">
           <span class="cc-badge">★ Principal</span>
           <span class="cc-name">Telegram</span>
@@ -2078,7 +2079,7 @@
         <span class="cc-chevron">›</span>
       </a>
       <a class="cc-card" id="contact-tg-channel" href="https://t.me/toncanal" target="_blank">
-        <span class="cc-icon"><img src="Telegram.png.WEBP" alt="Telegram"></span>
+        <span class="cc-icon"><img id="logo-telegram-channel-img" src="Telegram.png.WEBP" alt="Telegram"></span>
         <span class="cc-info">
           <span class="cc-name">Canal Telegram</span>
           <span class="cc-link" id="contact-tg-channel-text">t.me/toncanal</span>
@@ -2086,7 +2087,7 @@
         <span class="cc-chevron">›</span>
       </a>
       <a class="cc-card" id="contact-instagram" href="https://instagram.com/tonpseudo" target="_blank">
-        <span class="cc-icon"><img src="instagram.png.JPG" alt="Instagram"></span>
+        <span class="cc-icon"><img id="logo-instagram-img" src="instagram.png.JPG" alt="Instagram"></span>
         <span class="cc-info">
           <span class="cc-name">Instagram</span>
           <span class="cc-link" id="contact-instagram-text">www.instagram.com/tonpseudo</span>
@@ -2094,7 +2095,7 @@
         <span class="cc-chevron">›</span>
       </a>
       <a class="cc-card" id="contact-snapchat" href="https://snapchat.com/add/tonpseudo" target="_blank">
-        <span class="cc-icon"><img src="Snapchat.png.PNG" alt="Snapchat"></span>
+        <span class="cc-icon"><img id="logo-snapchat-img" src="Snapchat.png.PNG" alt="Snapchat"></span>
         <span class="cc-info">
           <span class="cc-name">Snapchat</span>
           <span class="cc-link" id="contact-snapchat-text">www.snapchat.com/add/tonpseudo</span>
@@ -2102,7 +2103,7 @@
         <span class="cc-chevron">›</span>
       </a>
       <a class="cc-card" id="contact-whatsapp" href="https://wa.me/330000000000" target="_blank">
-        <span class="cc-icon"><img src="Whattsap.png.JPG" alt="WhatsApp"></span>
+        <span class="cc-icon"><img id="logo-whatsapp-img" src="Whattsap.png.JPG" alt="WhatsApp"></span>
         <span class="cc-info">
           <span class="cc-name">WhatsApp</span>
           <span class="cc-link" id="contact-whatsapp-text">+33 0 00 00 00 00</span>
@@ -2110,7 +2111,7 @@
         <span class="cc-chevron">›</span>
       </a>
       <a class="cc-card" id="contact-signal" href="https://signal.me/#p/+330000000000" target="_blank">
-        <span class="cc-icon"><img src="Signal.png.JPG" alt="Signal"></span>
+        <span class="cc-icon"><img id="logo-signal-img" src="Signal.png.JPG" alt="Signal"></span>
         <span class="cc-info">
           <span class="cc-name">Signal</span>
           <span class="cc-link" id="contact-signal-text">signal.me/#eu/...</span>
@@ -2118,7 +2119,7 @@
         <span class="cc-chevron">›</span>
       </a>
       <a class="cc-card" id="contact-potato" href="https://potato.im/tonpseudo" target="_blank">
-        <span class="cc-icon"><img src="Potato.png.PNG" alt="Potato"></span>
+        <span class="cc-icon"><img id="logo-potato-img" src="Potato.png.PNG" alt="Potato"></span>
         <span class="cc-info">
           <span class="cc-name">Potato</span>
           <span class="cc-link" id="contact-potato-text">tato.im/tonpseudo</span>
@@ -3218,6 +3219,18 @@ function openContact(){
       document.getElementById('contact-potato').href = c.potato;
       document.getElementById('contact-potato-text').textContent = displayUrl(c.potato);
     }
+  }
+  const logos = siteContent && siteContent.contactLogos;
+  if (logos){
+    if (logos.telegram){
+      document.getElementById('logo-telegram-img').src = logos.telegram;
+      document.getElementById('logo-telegram-channel-img').src = logos.telegram;
+    }
+    if (logos.instagram) document.getElementById('logo-instagram-img').src = logos.instagram;
+    if (logos.snapchat) document.getElementById('logo-snapchat-img').src = logos.snapchat;
+    if (logos.whatsapp) document.getElementById('logo-whatsapp-img').src = logos.whatsapp;
+    if (logos.signal) document.getElementById('logo-signal-img').src = logos.signal;
+    if (logos.potato) document.getElementById('logo-potato-img').src = logos.potato;
   }
   document.getElementById('contact-overlay').classList.add('show');
 }

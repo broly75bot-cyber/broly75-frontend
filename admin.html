@@ -466,20 +466,52 @@
     <div class="subscreen" id="contenu-contacts">
       <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
       <h2>Réseaux & contacts</h2>
-      <label>Telegram principal (lien)</label>
+
+      <label>Telegram (lien principal + logo utilisé pour Telegram principal et Canal)</label>
       <input id="c-tg-main">
+      <input type="file" id="logo-telegram-file" accept="image/*" onchange="uploadContactLogo(this,'telegram')">
+      <div class="muted" id="logo-telegram-status"></div>
+      <img id="logo-telegram-preview" src="" style="max-width:60px; border-radius:12px; margin:6px 0 12px; display:none;">
+      <input type="hidden" id="logo-telegram-url">
+
       <label>Canal Telegram (lien)</label>
-      <input id="c-tg-channel">
+      <input id="c-tg-channel" style="margin-bottom:16px;">
+
       <label>Instagram (lien)</label>
       <input id="c-instagram">
+      <input type="file" id="logo-instagram-file" accept="image/*" onchange="uploadContactLogo(this,'instagram')">
+      <div class="muted" id="logo-instagram-status"></div>
+      <img id="logo-instagram-preview" src="" style="max-width:60px; border-radius:12px; margin:6px 0 12px; display:none;">
+      <input type="hidden" id="logo-instagram-url">
+
       <label>Snapchat (lien)</label>
       <input id="c-snapchat">
+      <input type="file" id="logo-snapchat-file" accept="image/*" onchange="uploadContactLogo(this,'snapchat')">
+      <div class="muted" id="logo-snapchat-status"></div>
+      <img id="logo-snapchat-preview" src="" style="max-width:60px; border-radius:12px; margin:6px 0 12px; display:none;">
+      <input type="hidden" id="logo-snapchat-url">
+
       <label>WhatsApp (lien)</label>
       <input id="c-whatsapp">
+      <input type="file" id="logo-whatsapp-file" accept="image/*" onchange="uploadContactLogo(this,'whatsapp')">
+      <div class="muted" id="logo-whatsapp-status"></div>
+      <img id="logo-whatsapp-preview" src="" style="max-width:60px; border-radius:12px; margin:6px 0 12px; display:none;">
+      <input type="hidden" id="logo-whatsapp-url">
+
       <label>Signal (lien)</label>
       <input id="c-signal">
+      <input type="file" id="logo-signal-file" accept="image/*" onchange="uploadContactLogo(this,'signal')">
+      <div class="muted" id="logo-signal-status"></div>
+      <img id="logo-signal-preview" src="" style="max-width:60px; border-radius:12px; margin:6px 0 12px; display:none;">
+      <input type="hidden" id="logo-signal-url">
+
       <label>Potato (lien)</label>
       <input id="c-potato">
+      <input type="file" id="logo-potato-file" accept="image/*" onchange="uploadContactLogo(this,'potato')">
+      <div class="muted" id="logo-potato-status"></div>
+      <img id="logo-potato-preview" src="" style="max-width:60px; border-radius:12px; margin:6px 0 12px; display:none;">
+      <input type="hidden" id="logo-potato-url">
+
       <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
@@ -958,6 +990,31 @@ async function uploadPhoto(input){
 }
 
 
+async function uploadContactLogo(input, platform){
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById(`logo-${platform}-status`);
+  status.textContent = 'Envoi en cours...';
+  const formData = new FormData();
+  formData.append('photo', file);
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/upload`, {
+      method: 'POST',
+      headers: { 'x-admin-key': adminKey },
+      body: formData,
+    });
+    const data = await res.json();
+    if (!res.ok) { status.textContent = '❌ ' + (data.error || 'Erreur upload'); return; }
+    document.getElementById(`logo-${platform}-url`).value = data.url;
+    const preview = document.getElementById(`logo-${platform}-preview`);
+    preview.src = data.url;
+    preview.style.display = 'block';
+    status.textContent = '✅ Logo envoyé — pense à enregistrer';
+  } catch (err) {
+    status.textContent = '❌ Erreur réseau';
+  }
+}
+
 async function uploadWallpaper(input){
   const file = input.files[0];
   if (!file) return;
@@ -1079,6 +1136,15 @@ async function loadContent(){
   document.getElementById('c-whatsapp').value = c.contacts?.whatsapp || '';
   document.getElementById('c-signal').value = c.contacts?.signal || '';
   document.getElementById('c-potato').value = c.contacts?.potato || '';
+
+  const logos = c.contactLogos || {};
+  ['telegram','instagram','snapchat','whatsapp','signal','potato'].forEach(platform => {
+    const url = logos[platform] || '';
+    document.getElementById(`logo-${platform}-url`).value = url;
+    const preview = document.getElementById(`logo-${platform}-preview`);
+    preview.src = url;
+    preview.style.display = url ? 'block' : 'none';
+  });
 
   document.getElementById('faq-editor').innerHTML = (c.faq || []).map((item, i) => `
     <div class="faq-edit-item">
@@ -1211,6 +1277,14 @@ async function saveContent(){
       whatsapp: document.getElementById('c-whatsapp').value,
       signal: document.getElementById('c-signal').value,
       potato: document.getElementById('c-potato').value,
+    },
+    contactLogos: {
+      telegram: document.getElementById('logo-telegram-url').value,
+      instagram: document.getElementById('logo-instagram-url').value,
+      snapchat: document.getElementById('logo-snapchat-url').value,
+      whatsapp: document.getElementById('logo-whatsapp-url').value,
+      signal: document.getElementById('logo-signal-url').value,
+      potato: document.getElementById('logo-potato-url').value,
     },
   };
   let res;
