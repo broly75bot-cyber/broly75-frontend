@@ -979,12 +979,20 @@ async function saveContent(){
       potato: document.getElementById('c-potato').value,
     },
   };
-  const res = await fetch(`${BACKEND_URL}/api/content`, {
-    method:'PUT', headers:{ 'Content-Type':'application/json', 'x-admin-key': adminKey }, body: JSON.stringify(body)
-  });
+  let res;
+  try {
+    res = await fetch(`${BACKEND_URL}/api/content`, {
+      method:'PUT', headers:{ 'Content-Type':'application/json', 'x-admin-key': adminKey }, body: JSON.stringify(body)
+    });
+  } catch (err) {
+    console.error('Erreur réseau saveContent', err);
+    alert('Impossible d\'enregistrer (connexion au serveur). Vérifie ta connexion et réessaie.');
+    return;
+  }
   const status = document.getElementById('content-status');
   status.textContent = res.ok ? '✅ Enregistré' : '❌ Erreur';
-  setTimeout(() => status.textContent = '', 2000);
+  status.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => status.textContent = '', 2500);
   currentContent = body;
 }
 
