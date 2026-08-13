@@ -109,6 +109,11 @@
   .status-badge.pending{ background:rgba(217,166,74,0.15); color:var(--warning); border:1px solid rgba(217,166,74,0.35); }
   .status-badge.paid{ background:rgba(91,147,224,0.15); color:var(--info); border:1px solid rgba(91,147,224,0.35); }
   .status-badge.delivered{ background:rgba(79,174,124,0.15); color:var(--success); border:1px solid rgba(79,174,124,0.35); }
+  .status-badge.shipped{ background:rgba(139,109,246,0.15); color:#A78BFA; border:1px solid rgba(139,109,246,0.35); }
+  .tracking-box{ background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:12px; margin-top:10px; font-size:12.5px; }
+  .tracking-box .tb-row{ display:flex; justify-content:space-between; padding:4px 0; color:var(--text-muted); }
+  .tracking-box .tb-row b{ color:var(--text); font-weight:600; }
+  .ship-form input{ margin-bottom:8px; }
 
   .product-card{ display:flex; gap:12px; }
   .product-card img{ width:56px; height:64px; object-fit:cover; border-radius:6px; flex-shrink:0; background:var(--surface-2); border:1px solid var(--border); }
@@ -570,6 +575,32 @@ async function loadOrders(){
 function showOrderDetail(id){
   const o = allOrders.find(x => x.id == id);
   if (!o) return;
+
+  const trackingBox = (o.trackingCarrier || o.trackingNumber || o.trackingUrl) ? `
+    <div class="tracking-box">
+      ${o.trackingCarrier ? `<div class="tb-row"><span>Transporteur</span><b>${o.trackingCarrier}</b></div>` : ''}
+      ${o.trackingNumber ? `<div class="tb-row"><span>N° de suivi</span><b>${o.trackingNumber}</b></div>` : ''}
+      ${o.trackingUrl ? `<div class="tb-row"><span>Lien</span><a href="${o.trackingUrl}" target="_blank" style="color:var(--info);">Suivre le colis</a></div>` : ''}
+    </div>
+  ` : '';
+
+  let actionHtml = '';
+  if (o.status === 'pending' || o.status === 'paid'){
+    actionHtml = `
+      <div class="ship-form" style="margin-top:12px;">
+        <label>Transporteur (optionnel)</label>
+        <input id="ship-carrier" placeholder="Colissimo, Chronopost...">
+        <label>Numéro de suivi (optionnel)</label>
+        <input id="ship-number" placeholder="N° de suivi">
+        <label>Lien de suivi (optionnel)</label>
+        <input id="ship-url" placeholder="https://...">
+        <button style="width:100%;" onclick="markShipped('${o.id}')">Marquer en cours de livraison</button>
+      </div>
+    `;
+  } else if (o.status === 'shipped'){
+    actionHtml = `<button style="width:100%; margin-top:10px;" onclick="markDelivered('${o.id}')">Marquer comme livrée (+10 coins)</button>`;
+  }
+
   document.getElementById('order-detail-content').innerHTML = `
     <div class="card ${o.status === 'delivered' ? 'delivered' : ''}">
       <div class="row-between"><span class="muted">${o.id}</span><span class="muted">${new Date(o.createdAt).toLocaleString('fr-FR')}</span></div>
@@ -579,7 +610,8 @@ function showOrderDetail(id){
       <div class="muted">${o.address || ''}</div>
       <div class="muted">${o.contact || ''}</div>
       <span class="status-badge ${o.status}">${o.status}</span>
-      ${o.status !== 'delivered' ? `<button style="width:100%; margin-top:10px;" onclick="markDelivered('${o.id}')">Marquer comme livrée (+10 coins)</button>` : ''}
+      ${trackingBox}
+      ${actionHtml}
     </div>
   `;
   document.querySelectorAll('#tab-commandes .subscreen').forEach(s => s.classList.remove('active'));
@@ -597,7 +629,7 @@ async function loadStats(){
     const orders = await res.json();
 
     const total = orders.reduce((sum, o) => sum + (o.totalEur || 0), 0);
-    const pending = orders.filter(o => o.status === 'pending' || o.status === 'paid').length;
+    const pending = orders.filter(o => o.status === 'pending' || o.status === 'paid' || o.status === 'shipped').length;
     const delivered = orders.filter(o => o.status === 'delivered').length;
 
     document.getElementById('stat-total').textContent = total.toFixed(0) + ' €';
@@ -706,8 +738,23 @@ async function deleteReview(id){
   loadReviews();
 }
 
+async function markShipped(orderId){
+  const carrier = document.getElementById('ship-carrier').value;
+  const number = document.getElementById('ship-number').value;
+  const url = document.getElementById('ship-url').value;
+  await fetch(`${BACKEND_URL}/api/order/${orderId}/status`, {
+    method: 'PUT', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+    body: JSON.stringify({ status: 'shipped', trackingCarrier: carrier, trackingNumber: number, trackingUrl: url }),
+  });
+  closeOrderDetail();
+  loadOrders();
+}
+
 async function markDelivered(orderId){
-  await fetch(`${BACKEND_URL}/api/order/${orderId}/delivered`, { method:'PUT', headers:{ 'x-admin-key': adminKey } });
+  await fetch(`${BACKEND_URL}/api/order/${orderId}/status`, {
+    method: 'PUT', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+    body: JSON.stringify({ status: 'delivered' }),
+  });
   closeOrderDetail();
   loadOrders();
 }
