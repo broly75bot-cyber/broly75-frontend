@@ -288,6 +288,7 @@
       <div class="nav-list">
         <button class="nav-row" onclick="openContentSection('wallpaper')">Papier peint</button>
         <button class="nav-row" onclick="openContentSection('categories')">Catégories produits</button>
+        <button class="nav-row" onclick="openContentSection('labels')">Intitulés des cases</button>
         <button class="nav-row" onclick="openContentSection('hours')">Horaires de livraison</button>
         <button class="nav-row" onclick="openContentSection('meetup')">Meetup</button>
         <button class="nav-row" onclick="openContentSection('shipping')">Service d'envoi</button>
@@ -316,6 +317,30 @@
       <p class="muted" style="margin-bottom:14px;">Ce sont les catégories affichées en cases cliquables sur la page d'accueil de la boutique. Le champ "Catégorie" de chaque produit doit correspondre exactement à un de ces noms.</p>
       <div id="categories-editor"></div>
       <button class="secondary" style="width:100%; margin-top:6px;" onclick="addCategoryField()">+ Ajouter une catégorie</button>
+      <button style="width:100%; margin-top:10px;" onclick="saveContent()">Enregistrer</button>
+    </div>
+
+    <!-- Sous-écran : Intitulés des cases -->
+    <div class="subscreen" id="contenu-labels">
+      <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
+      <h2>Intitulés des cases</h2>
+      <p class="muted" style="margin-bottom:14px;">Change le titre et le sous-titre des 3 cartes de méthode de livraison dans le panier de la boutique.</p>
+
+      <label>Carte 1 — Titre</label>
+      <input id="lb-livraison-title" placeholder="Service d'envoi">
+      <label>Carte 1 — Sous-titre</label>
+      <input id="lb-livraison-sub" placeholder="Remise en main propre ou dépôt local">
+
+      <label style="margin-top:10px;">Carte 2 — Titre</label>
+      <input id="lb-envoi-title" placeholder="Horaires de livraison">
+      <label>Carte 2 — Sous-titre</label>
+      <input id="lb-envoi-sub" placeholder="Choisis un créneau de passage">
+
+      <label style="margin-top:10px;">Carte 3 — Titre</label>
+      <input id="lb-retrait-title" placeholder="Point relais">
+      <label>Carte 3 — Sous-titre</label>
+      <input id="lb-retrait-sub" placeholder="À récupérer toi-même, sous 2–4 jours">
+
       <button style="width:100%; margin-top:10px;" onclick="saveContent()">Enregistrer</button>
     </div>
 
@@ -964,6 +989,14 @@ async function loadContent(){
   `).join('');
 
   renderCategoriesEditor(c.categories && c.categories.length ? c.categories : ['Catégorie 1', 'Catégorie 2']);
+
+  const lb = c.labels || {};
+  document.getElementById('lb-livraison-title').value = lb.livraisonTitle || '';
+  document.getElementById('lb-livraison-sub').value = lb.livraisonSub || '';
+  document.getElementById('lb-envoi-title').value = lb.envoiTitle || '';
+  document.getElementById('lb-envoi-sub').value = lb.envoiSub || '';
+  document.getElementById('lb-retrait-title').value = lb.retraitTitle || '';
+  document.getElementById('lb-retrait-sub').value = lb.retraitSub || '';
 }
 
 function renderCategoriesEditor(list){
@@ -996,10 +1029,19 @@ async function saveContent(){
   const categories = Array.from(document.querySelectorAll('.cat-field'))
     .map(input => input.value.trim())
     .filter(Boolean);
+  const labels = {
+    livraisonTitle: document.getElementById('lb-livraison-title').value,
+    livraisonSub: document.getElementById('lb-livraison-sub').value,
+    envoiTitle: document.getElementById('lb-envoi-title').value,
+    envoiSub: document.getElementById('lb-envoi-sub').value,
+    retraitTitle: document.getElementById('lb-retrait-title').value,
+    retraitSub: document.getElementById('lb-retrait-sub').value,
+  };
   const body = {
     ...(currentContent || {}),
     wallpaperUrl: document.getElementById('c-wallpaper').value,
     categories,
+    labels,
     hours: {
       lunMar: document.getElementById('c-lunmar').value,
       merJeu: document.getElementById('c-merjeu').value,

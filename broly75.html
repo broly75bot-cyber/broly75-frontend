@@ -2303,24 +2303,24 @@
       <div class="option-card" data-mode="livraison" onclick="setFulfillment('livraison', this)">
         <div class="oc-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
         <div class="oc-info">
-          <div class="oc-title">Service d'envoi</div>
-          <div class="oc-sub">Remise en main propre ou dépôt local</div>
+          <div class="oc-title" id="label-livraison-title">Service d'envoi</div>
+          <div class="oc-sub" id="label-livraison-sub">Remise en main propre ou dépôt local</div>
         </div>
         <div class="oc-chevron">›</div>
       </div>
       <div class="option-card" data-mode="envoi" onclick="setFulfillment('envoi', this)">
         <div class="oc-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></div>
         <div class="oc-info">
-          <div class="oc-title">Horaires de livraison</div>
-          <div class="oc-sub">Choisis un créneau de passage</div>
+          <div class="oc-title" id="label-envoi-title">Horaires de livraison</div>
+          <div class="oc-sub" id="label-envoi-sub">Choisis un créneau de passage</div>
         </div>
         <div class="oc-chevron">›</div>
       </div>
       <div class="option-card" data-mode="retrait" onclick="setFulfillment('retrait', this)">
         <div class="oc-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/></svg></div>
         <div class="oc-info">
-          <div class="oc-title">Point relais</div>
-          <div class="oc-sub">À récupérer toi-même, sous 2–4 jours</div>
+          <div class="oc-title" id="label-retrait-title">Point relais</div>
+          <div class="oc-sub" id="label-retrait-sub">À récupérer toi-même, sous 2–4 jours</div>
         </div>
         <div class="oc-chevron">›</div>
       </div>
@@ -3215,11 +3215,23 @@ async function loadSiteContent(){
     if (siteContent.categories && siteContent.categories.length){
       CATEGORY_LIST = siteContent.categories;
     }
+    applyDeliveryLabels(siteContent.labels);
     renderCats();
     renderGrid();
   } catch (err) {
     console.error('Impossible de charger le contenu du site', err);
   }
+}
+
+function applyDeliveryLabels(labels){
+  if (!labels) return;
+  const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.textContent = val; };
+  set('label-livraison-title', labels.livraisonTitle);
+  set('label-livraison-sub', labels.livraisonSub);
+  set('label-envoi-title', labels.envoiTitle);
+  set('label-envoi-sub', labels.envoiSub);
+  set('label-retrait-title', labels.retraitTitle);
+  set('label-retrait-sub', labels.retraitSub);
 }
 
 function openInfo(){
