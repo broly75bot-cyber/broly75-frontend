@@ -2340,7 +2340,7 @@
         <input type="text" id="f-name" placeholder="Prénom et nom" spellcheck="false" autocorrect="off">
       </div>
       <div class="field-card" style="margin-bottom:0;">
-        <label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.4 2.1L8.1 9.6a16 16 0 0 0 6.3 6.3l1.1-1.2a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2.1z"/></svg></span> Téléphone ou email</label>
+        <label><span class="fc-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.4 2.1L8.1 9.6a16 16 0 0 0 6.3 6.3l1.1-1.2a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2.1z"/></svg></span> Téléphone ou email <span style="text-transform:none; color:rgba(241,239,233,0.4);">(optionnel)</span></label>
         <input type="text" id="f-contact" placeholder="téléphone ou email" spellcheck="false" autocorrect="off">
       </div>
     </div>
@@ -2488,7 +2488,6 @@
 
     <div class="section-label">Récapitulatif</div>
     <div class="recap-box" id="order-recap"></div>
-    <div class="coins-hint-line"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.6.7 1.5 1 2.5 1s2-.5 2-1.4c0-2.2-4.5-1-4.5-3.2 0-.9.9-1.4 2-1.4s1.9.3 2.5 1"/><line x1="12" y1="7" x2="12" y2="17"/></svg> Cette commande rapporte <b id="recap-coins">~0</b> coins à la livraison</div>
 
     <button class="submit-btn" id="validate-order-btn" style="margin-top:22px;" onclick="validateAndCreateOrder()">Valider ma commande</button>
 
@@ -2827,9 +2826,8 @@ function renderRecap(){
     ${lines}
     ${discountLine}
     <div class="recap-line total"><span>Total</span><span>${total.toFixed(2)} €</span></div>
+    <div class="coins-hint-line" style="margin-top:10px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.6.7 1.5 1 2.5 1s2-.5 2-1.4c0-2.2-4.5-1-4.5-3.2 0-.9.9-1.4 2-1.4s1.9.3 2.5 1"/><line x1="12" y1="7" x2="12" y2="17"/></svg> Cette commande rapporte <b>~10</b> coins à la livraison</div>
   `;
-  const coinsHint = document.getElementById('recap-coins');
-  if (coinsHint) coinsHint.textContent = '~10';
 }
 
 function orderViaTelegram(){
@@ -3290,12 +3288,10 @@ async function openCheckout(){
 // Vérifie que les infos nécessaires sont vraiment renseignées avant d'envoyer quoi que ce soit
 function checkOrderFieldsValid(){
   const name = document.getElementById('f-name').value.trim();
-  const contact = document.getElementById('f-contact').value.trim();
 
   if (cartItems().length === 0){ alert('Ton panier est vide.'); return false; }
   if (!fulfillmentMode){ alert('Merci de choisir un mode de livraison.'); return false; }
   if (name.length < 2){ alert('Merci d\'indiquer ton nom complet.'); return false; }
-  if (contact.length < 4){ alert('Merci d\'indiquer un téléphone ou un email valide.'); return false; }
   if (fulfillmentMode === 'livraison'){
     if (remiseMode === 'personnelle'){
       const address = document.getElementById('f-address').value.trim();
