@@ -3327,6 +3327,8 @@ async function validateAndCreateOrder(){
         contact: document.getElementById('f-contact').value,
         fulfillment: fulfillmentMode,
         telegramId: tg?.initDataUnsafe?.user?.id,
+        telegramName: [tg?.initDataUnsafe?.user?.first_name, tg?.initDataUnsafe?.user?.last_name].filter(Boolean).join(' '),
+        telegramUsername: tg?.initDataUnsafe?.user?.username || '',
         initData: tg?.initData || '',
       })
     });

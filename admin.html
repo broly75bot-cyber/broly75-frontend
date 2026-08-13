@@ -574,7 +574,7 @@ async function loadOrders(){
     container.innerHTML = allOrders.map(o => `
       <button class="nav-row" onclick="showOrderDetail('${o.id}')">
         <span>
-          <span style="display:block;">${o.name || 'Sans nom'}</span>
+          <span style="display:block;">${o.name || 'Sans nom'}${(o.previousOrdersCount || 0) > 0 ? ' <span title="Client fidèle" style="color:var(--warning);">★</span>' : ''}</span>
           <span class="muted">${new Date(o.createdAt).toLocaleDateString('fr-FR')} · ${o.totalEur} €</span>
         </span>
         <span class="nav-row-hint"><span class="status-badge ${o.status}">${o.status}</span></span>
@@ -615,7 +615,12 @@ function showOrderDetail(id){
   document.getElementById('order-detail-content').innerHTML = `
     <div class="card ${o.status === 'delivered' ? 'delivered' : ''}">
       <div class="row-between"><span class="muted">${o.id}</span><span class="muted">${new Date(o.createdAt).toLocaleString('fr-FR')}</span></div>
-      <div style="font-weight:700; margin-top:6px;">${o.name || 'Sans nom'}</div>
+      <div style="font-weight:700; margin-top:6px; display:flex; align-items:center; gap:6px;">
+        ${o.name || 'Sans nom'}
+        ${(o.previousOrdersCount || 0) > 0 ? '<span title="Client fidèle" style="color:var(--warning);">★</span>' : ''}
+      </div>
+      ${(o.telegramUsername || o.telegramName) ? `<div class="muted">Telegram : ${o.telegramUsername ? '@' + o.telegramUsername : o.telegramName}</div>` : ''}
+      <div class="muted">${(o.previousOrdersCount || 0) > 0 ? `Client fidèle — ${o.previousOrdersCount} commande${o.previousOrdersCount > 1 ? 's' : ''} précédente${o.previousOrdersCount > 1 ? 's' : ''}` : 'Nouveau client'}</div>
       <div class="muted">${(o.lines || []).join(', ')}</div>
       <div class="muted">Total : ${o.totalEur} € — ${o.fulfillment || 'livraison'}</div>
       <div class="muted">${o.address || ''}</div>
