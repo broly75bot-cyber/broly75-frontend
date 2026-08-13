@@ -1321,6 +1321,13 @@
     line-height:1.55;
     margin-bottom:6px;
   }
+  .review-media{
+    max-width:100%;
+    border-radius:10px;
+    margin-top:8px;
+    margin-bottom:8px;
+    display:block;
+  }
   .review-date{
     font-family:var(--font-mono);
     font-size:10px;
@@ -2104,7 +2111,7 @@
         <span onclick="setSurveyStar(4)">★</span>
         <span onclick="setSurveyStar(5)">★</span>
       </div>
-      <textarea id="survey-comment" rows="3" placeholder="Un commentaire à ajouter ? (facultatif)"></textarea>
+      <textarea id="survey-comment" rows="3" placeholder="Ton commentaire (10 caractères minimum)"></textarea>
       <button class="survey-submit" onclick="submitSurvey()">Envoyer mon avis</button>
       <div class="survey-thanks" id="survey-thanks">Merci pour ton retour !</div>
     </div>
@@ -2620,7 +2627,7 @@ function askAboutProduct(){
   const color = selectedColor || 'couleur non précisée';
   const text = `Bonjour, je suis intéressé par ${p.name} (${color}, ${size}). Est-ce disponible ?`;
   // ⚠️ Remplace 'tonbot' par le vrai nom d'utilisateur de ton bot — seul un chat de bot permet un message pré-rempli
-  const url = `https://t.me/tonbot?text=${encodeURIComponent(text)}`;
+  const url = `https://t.me/Broly75bot?text=${encodeURIComponent(text)}`;
   if (tg?.openTelegramLink) tg.openTelegramLink(url);
   else window.open(url, '_blank');
 }
@@ -2838,7 +2845,7 @@ function orderViaTelegram(){
   ].filter(Boolean).join('\n');
   const text = encodeURIComponent(details);
   // ⚠️ Remplace 'tonbot' par le vrai username de ton bot Telegram
-  const url = `https://t.me/tonbot?text=${text}`;
+  const url = `https://t.me/Broly75bot?text=${text}`;
   if (tg?.openTelegramLink) tg.openTelegramLink(url);
   else window.open(url, '_blank');
 }
@@ -3016,12 +3023,22 @@ function setSurveyStar(n){
   });
 }
 
-function submitSurvey(){
+async function submitSurvey(){
   if (surveyRating === 0){ alert('Choisis une note avant d\'envoyer.'); return; }
-  const comment = document.getElementById('survey-comment').value;
-  // Le sondage est envoyé à ton bot Telegram (visible dans tes messages avec le bot)
-  if (tg?.sendData){
-    tg.sendData(JSON.stringify({ type:'survey', rating: surveyRating, comment }));
+  const comment = document.getElementById('survey-comment').value.trim();
+  if (comment.length < 10){ alert('Merci d\'écrire un commentaire un peu plus détaillé (10 caractères minimum).'); return; }
+  const authorName = tg?.initDataUnsafe?.user?.first_name || 'Client';
+  try {
+    const res = await fetch(BACKEND_URL + '/api/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rating: surveyRating, comment, authorName }),
+    });
+    const data = await res.json();
+    if (!res.ok){ alert(data.error || 'Impossible d\'envoyer ton avis.'); return; }
+  } catch (err) {
+    alert('Impossible d\'envoyer ton avis — vérifie ta connexion et réessaie.');
+    return;
   }
   document.getElementById('survey-thanks').style.display = 'block';
   document.getElementById('survey-comment').value = '';
@@ -3108,24 +3125,35 @@ function openContact(){
   document.getElementById('contact-overlay').classList.add('show');
 }
 
-function openAvis(){
+async function openAvis(){
   hideNav();
   const list = document.getElementById('review-list');
-  if (!list.dataset.loaded){
-    list.innerHTML = REVIEW_LIST.map(r => `
-      <div class="review-card">
-        <div class="review-top">
-          <span class="review-name">${r.name}</span>
-          <span class="review-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span>
+  list.innerHTML = '<p class="warn">Chargement des avis...</p>';
+  try {
+    const res = await fetch(BACKEND_URL + '/api/reviews');
+    const reviews = await res.json();
+    if (reviews.length === 0){
+      list.innerHTML = '<p class="warn">Aucun avis publié pour le moment — sois le premier à en laisser un !</p>';
+      document.getElementById('avg-score').textContent = '—';
+      document.getElementById('review-count').textContent = 'Aucun avis pour le moment';
+    } else {
+      list.innerHTML = reviews.map(r => `
+        <div class="review-card">
+          <div class="review-top">
+            <span class="review-name">${r.authorName}</span>
+            <span class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+          </div>
+          <div class="review-text">${r.comment}</div>
+          ${r.mediaUrl ? `<img class="review-media" src="${r.mediaUrl}">` : ''}
+          <div class="review-date">${new Date(r.createdAt).toLocaleDateString('fr-FR')}</div>
         </div>
-        <div class="review-text">${r.text}</div>
-        <div class="review-date">${r.date}</div>
-      </div>
-    `).join('');
-    list.dataset.loaded = 'true';
-    const avg = (REVIEW_LIST.reduce((s,r)=>s+r.stars,0) / REVIEW_LIST.length).toFixed(1);
-    document.getElementById('avg-score').textContent = avg;
-    document.getElementById('review-count').textContent = `Basé sur ${REVIEW_LIST.length} avis`;
+      `).join('');
+      const avg = (reviews.reduce((s,r)=>s+r.rating,0) / reviews.length).toFixed(1);
+      document.getElementById('avg-score').textContent = avg;
+      document.getElementById('review-count').textContent = `Basé sur ${reviews.length} avis`;
+    }
+  } catch (err) {
+    list.innerHTML = '<p class="warn">Impossible de charger les avis pour le moment.</p>';
   }
   document.getElementById('avis-overlay').classList.add('show');
 }
