@@ -2608,6 +2608,7 @@ function addFromDetail(){
   if (!selectedSize){ alert('Choisis une taille avant d\'ajouter au panier.'); return; }
   if (!selectedColor){ alert('Choisis une couleur avant d\'ajouter au panier.'); return; }
   cart[currentProduct.id] = { qty:1, size:selectedSize, color:selectedColor };
+  saveCartToStorage();
   updateCartBar();
   closeOverlay('product-overlay');
   if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
@@ -2625,6 +2626,19 @@ function askAboutProduct(){
 }
 
 let cart = {};
+
+// Le panier reste enregistré sur l'appareil même si on ferme complètement l'app
+function saveCartToStorage(){
+  try { localStorage.setItem('broly75_cart', JSON.stringify(cart)); } catch (err) { console.error('Impossible de sauvegarder le panier', err); }
+}
+function loadCartFromStorage(){
+  try {
+    const saved = localStorage.getItem('broly75_cart');
+    if (saved) cart = JSON.parse(saved);
+  } catch (err) { console.error('Impossible de charger le panier', err); }
+}
+loadCartFromStorage();
+
 let activeCat = 'Tout';
 let currentOrderId = null;
 let fulfillmentMode = null;
@@ -2873,6 +2887,7 @@ function cartTotal(){ return cartItems().reduce((s,p)=>s+p.price*p.qty,0); }
 function updateQty(id, delta){
   if (!cart[id]) return;
   cart[id].qty = Math.max(1, (cart[id].qty || 1) + delta);
+  saveCartToStorage();
   renderCheckoutItems();
   renderRecap();
   updateCartBar();
@@ -2880,6 +2895,7 @@ function updateQty(id, delta){
 
 function removeCartItem(id){
   delete cart[id];
+  saveCartToStorage();
   renderCheckoutItems();
   renderRecap();
   updateCartBar();
@@ -3350,6 +3366,7 @@ function confirmOrder(){
     }));
   }
   cart = {};
+  saveCartToStorage();
   document.querySelectorAll('.card.added').forEach(c=>{c.classList.remove('added'); c.querySelector('.add').textContent='+';});
   updateCartBar();
 }
@@ -3357,6 +3374,7 @@ function confirmOrder(){
 if (isRealTelegram){
   loadProductsFromBackend();
   loadSiteContent();
+  updateCartBar();
 
   setTimeout(() => {
     document.getElementById('splash').classList.add('hide');
