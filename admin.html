@@ -782,7 +782,11 @@
       <div id="admin-log-list"><p class="muted">Chargement...</p></div>
 
       <h2 style="margin-top:20px;">Sauvegarde</h2>
-      <p class="muted" style="margin-bottom:10px;">Une copie de toutes tes données (produits, contenu, commandes, avis) part automatiquement une fois par jour sur ton canal des commandes, en pièce jointe. Tu peux aussi la déclencher toi-même :</p>
+      <p class="muted" style="margin-bottom:10px;">Une copie de toutes tes données (produits, contenu, commandes, avis) part automatiquement une fois par jour, en pièce jointe.</p>
+      <label>Identifiant du canal de sauvegarde</label>
+      <input id="s-backup-channel" placeholder="-1004466451606">
+      <p class="muted" style="margin-top:6px; margin-bottom:10px;">Laisse vide pour utiliser le canal des commandes par défaut. L'identifiant se récupère comme celui du canal des commandes (voir ton assistant si besoin).</p>
+      <button onclick="saveBackupChannel()" style="width:100%; margin-bottom:10px;">Enregistrer ce canal</button>
       <button onclick="triggerBackup()" style="width:100%;">Sauvegarder maintenant</button>
     </div>
 
@@ -890,6 +894,7 @@ function openSettingsSection(name){
   if (name === 'security'){
     document.getElementById('s-lock-minutes').value = getLockMinutes();
     loadAdminLog();
+    loadBackupChannel();
   }
   if (name === 'crypto'){
     loadCryptoWallets();
@@ -898,6 +903,34 @@ function openSettingsSection(name){
     loadCoinsPerOrder();
   }
 }
+async function loadBackupChannel(){
+  let content = currentContent;
+  if (!content){
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/content`);
+      content = await res.json();
+      currentContent = content;
+    } catch (err) { return; }
+  }
+  document.getElementById('s-backup-channel').value = content.backupChannelId || '';
+}
+
+async function saveBackupChannel(){
+  const backupChannelId = document.getElementById('s-backup-channel').value.trim();
+  const body = { ...(currentContent || {}), backupChannelId };
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/content`, {
+      method: 'PUT', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) { alert('Erreur lors de l\'enregistrement.'); return; }
+    currentContent = body;
+    alert('Canal de sauvegarde enregistré.');
+  } catch (err) {
+    alert('Impossible d\'enregistrer — vérifie ta connexion.');
+  }
+}
+
 async function triggerBackup(){
   try {
     const res = await fetch(`${BACKEND_URL}/api/backup-now`, { method: 'POST', headers: { 'x-admin-key': adminKey } });
