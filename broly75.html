@@ -1057,7 +1057,7 @@
   .mode-toggle-3 .mt-icon{
     width:40px; height:40px; border-radius:12px; background:rgba(62,205,107,0.08);
     color:rgba(241,239,233,0.6); display:flex; align-items:center; justify-content:center;
-    margin:0 auto 8px;
+    margin:0 auto 8px; font-size:18px; font-weight:700;
   }
   .mode-toggle-3 .mt-label{ font-size:11.5px; font-weight:600; color:var(--paper); }
   .mode-toggle-3 .mt-card.active{ border-color:var(--lime); background:rgba(62,205,107,0.08); }
@@ -2653,15 +2653,35 @@
     <div class="section-label" id="label-recap-title">Récapitulatif</div>
     <div class="recap-box" id="order-recap"></div>
 
-    <button class="submit-btn" id="validate-order-btn" style="margin-top:22px;" onclick="validateAndCreateOrder()">Valider ma commande</button>
+    <div class="remise-label" style="margin-top:14px;">Moyen de paiement</div>
+    <div class="mode-toggle-3" id="crypto-toggle" style="grid-template-columns:repeat(4, 1fr);">
+      <div class="mt-card active" data-crypto="BTC" onclick="setCrypto('BTC', this)">
+        <div class="mt-icon">₿</div>
+        <div class="mt-label">Bitcoin</div>
+      </div>
+      <div class="mt-card" data-crypto="ETH" onclick="setCrypto('ETH', this)">
+        <div class="mt-icon">Ξ</div>
+        <div class="mt-label">Ethereum</div>
+      </div>
+      <div class="mt-card" data-crypto="LTC" onclick="setCrypto('LTC', this)">
+        <div class="mt-icon">Ł</div>
+        <div class="mt-label">Litecoin</div>
+      </div>
+      <div class="mt-card" data-crypto="USDT" onclick="setCrypto('USDT', this)">
+        <div class="mt-icon">₮</div>
+        <div class="mt-label">USDT</div>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="validate-order-btn" style="margin-top:10px;" onclick="validateAndCreateOrder()">Valider ma commande</button>
 
     <div id="post-validate-section" style="display:none;">
       <div class="btc-box" style="margin-top:22px;">
-        <div class="eyebrow">Paiement bitcoin</div>
+        <div class="eyebrow" id="crypto-eyebrow">Paiement bitcoin</div>
         <div id="qrcode"></div>
         <div class="btc-addr" id="btc-address">bc1q_exemple_adresse_a_remplacer_00000</div>
         <div class="btc-amount" id="btc-amount">0.00000000 BTC</div>
-        <p class="warn">Adresse d'exemple — à remplacer par ta vraie adresse avant mise en ligne. Le montant en BTC doit être recalculé selon le taux du jour.</p>
+        <p class="warn">Adresse d'exemple — à remplacer par ta vraie adresse avant mise en ligne. Le montant doit être recalculé selon le taux du jour.</p>
       </div>
 
       <p class="warn" style="margin-top:14px;">On vérifie automatiquement ton paiement sur la blockchain — cette page se met à jour toute seule dès réception.</p>
@@ -3658,6 +3678,16 @@ function checkOrderFieldsValid(){
   return true;
 }
 
+let selectedCrypto = 'BTC';
+function setCrypto(c, card){
+  selectedCrypto = c;
+  document.querySelectorAll('#crypto-toggle .mt-card').forEach(el => el.classList.remove('active'));
+  card.classList.add('active');
+}
+
+const CRYPTO_LABELS = { BTC: 'Bitcoin', ETH: 'Ethereum', LTC: 'Litecoin', USDT: 'USDT (Tron)' };
+const CRYPTO_DECIMALS = { BTC: 8, ETH: 6, LTC: 6, USDT: 2 };
+
 async function validateAndCreateOrder(){
   if (!checkOrderFieldsValid()) return;
 
@@ -3675,6 +3705,7 @@ async function validateAndCreateOrder(){
         address: buildFullAddress(),
         contact: document.getElementById('f-contact').value,
         fulfillment: fulfillmentMode,
+        crypto: selectedCrypto,
         telegramId: tg?.initDataUnsafe?.user?.id,
         telegramName: [tg?.initDataUnsafe?.user?.first_name, tg?.initDataUnsafe?.user?.last_name].filter(Boolean).join(' '),
         telegramUsername: tg?.initDataUnsafe?.user?.username || '',
@@ -3691,12 +3722,15 @@ async function validateAndCreateOrder(){
     }
 
     currentOrderId = data.orderId;
-    document.getElementById('btc-address').textContent = data.btcAddress;
-    document.getElementById('btc-amount').textContent = data.expectedBtc.toFixed(8) + ' BTC';
-    document.getElementById('sticky-total-amount').textContent = data.expectedBtc.toFixed(8) + ' BTC';
+    const decimals = CRYPTO_DECIMALS[data.crypto] || 8;
+    const amountLabel = `${data.expectedAmount.toFixed(decimals)} ${data.crypto}`;
+    document.getElementById('crypto-eyebrow').textContent = `Paiement ${CRYPTO_LABELS[data.crypto] || data.crypto}`;
+    document.getElementById('btc-address').textContent = data.walletAddress;
+    document.getElementById('btc-amount').textContent = amountLabel;
+    document.getElementById('sticky-total-amount').textContent = amountLabel;
     document.getElementById('qrcode').innerHTML = '';
     new QRCode(document.getElementById('qrcode'), {
-      text: data.btcAddress,
+      text: data.walletAddress,
       width:150, height:150,
       colorDark:'#0B0B0D', colorLight:'#F1EFE9'
     });
