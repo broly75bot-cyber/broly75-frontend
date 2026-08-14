@@ -851,6 +851,20 @@
 // ⚠️ Doit correspondre exactement à l'URL de ton backend Railway
 const BACKEND_URL = 'https://broly75-backend-production.up.railway.app';
 let adminKey = '';
+
+// ✔️ dès la 1ère commande déjà validée par ce client, ★ à partir de la 2ème (fidèle)
+function clientBadgeHtml(previousOrdersCount){
+  const n = previousOrdersCount || 0;
+  if (n >= 2) return ' <span title="Client fidèle" style="color:var(--warning);">★</span>';
+  if (n === 1) return ' <span title="Achat déjà validé une fois" style="color:var(--success);">✔️</span>';
+  return '';
+}
+function clientStatusLabel(previousOrdersCount){
+  const n = previousOrdersCount || 0;
+  if (n >= 2) return `Client fidèle — ${n} commandes précédentes`;
+  if (n === 1) return 'Achat déjà validé une fois';
+  return 'Nouveau client';
+}
 let allProducts = [];
 
 // ⚠️ Verrouillage automatique de l'admin après inactivité — durée réglable dans Réglages
@@ -1294,7 +1308,7 @@ function renderOrdersList(){
   container.innerHTML = list.map(o => `
     <button class="nav-row" onclick="showOrderDetail('${o.id}')">
       <span>
-        <span style="display:block;">${o.name || 'Sans nom'}${(o.previousOrdersCount || 0) > 0 ? ' <span title="Client fidèle" style="color:var(--warning);">★</span>' : ''}</span>
+        <span style="display:block;">${o.name || 'Sans nom'}${clientBadgeHtml(o.previousOrdersCount)}</span>
         <span class="muted">${new Date(o.createdAt).toLocaleDateString('fr-FR')} · ${o.totalEur} €</span>
       </span>
       <span class="nav-row-hint"><span class="status-badge ${o.status}">${o.status}</span></span>
@@ -1344,11 +1358,11 @@ function showOrderDetail(id){
       <div class="row-between"><span class="muted">${o.id}</span><span class="muted">${new Date(o.createdAt).toLocaleString('fr-FR')}</span></div>
       <div style="font-weight:700; margin-top:6px; display:flex; align-items:center; gap:6px;">
         ${o.name || 'Sans nom'}
-        ${(o.previousOrdersCount || 0) > 0 ? '<span title="Client fidèle" style="color:var(--warning);">★</span>' : ''}
+        ${clientBadgeHtml(o.previousOrdersCount)}
       </div>
       ${(o.telegramUsername || o.telegramName) ? `<div class="muted">Telegram : ${o.telegramUsername ? '@' + o.telegramUsername : o.telegramName}</div>` : ''}
       ${o.telegramId ? `<div class="muted">ID : ${o.telegramId}${o.voucherCode ? ` · 🎫 Code ${o.crypto} : ${o.voucherCode}` : ''}</div>` : ''}
-      <div class="muted">${(o.previousOrdersCount || 0) > 0 ? `Client fidèle — ${o.previousOrdersCount} commande${o.previousOrdersCount > 1 ? 's' : ''} précédente${o.previousOrdersCount > 1 ? 's' : ''}` : 'Nouveau client'}</div>
+      <div class="muted">${clientStatusLabel(o.previousOrdersCount)}</div>
       <div class="muted">${(o.lines || []).join(', ')}</div>
       <div class="muted">Total : ${o.totalEur} € — ${o.fulfillment || 'livraison'}</div>
       <div class="muted">${o.address || ''}</div>
