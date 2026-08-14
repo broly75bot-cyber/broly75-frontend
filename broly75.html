@@ -2103,6 +2103,7 @@
         <span class="avatar-edit-hint">Ajouter une photo</span>
       </div>
       <input type="file" id="avatar-upload" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
+      <div class="profile-badge" id="vip-badge" style="display:none; background:var(--lime); color:#04130A; border-color:var(--lime);">★ VIP</div>
       <div class="profile-badge">Membre</div>
       <div class="profile-name" id="profile-name">Ton nom Telegram</div>
       <div class="profile-email" id="profile-email">ton.email@exemple.com</div>
@@ -3171,11 +3172,13 @@ function renderGrid(){
   const grid = document.getElementById('grid');
   const list = products.filter(p =>
     (activeType === 'Tout' || p.cat === activeType) &&
-    (activeBrand === 'Tout' || p.brand === activeBrand)
+    (activeBrand === 'Tout' || p.brand === activeBrand) &&
+    (!p.vipEarlyAccess || isVipUser)
   );
   grid.innerHTML = list.map(p => `
     <div class="card" id="card-${p.id}" onclick="openProduct(${p.id})">
       <div class="tag">${p.tag}</div>
+      ${p.vipEarlyAccess ? '<div class="tag" style="right:8px; left:auto; background:var(--lime); color:#04130A;">★ VIP</div>' : ''}
       <img src="${p.img}" alt="${p.name}">
       <div class="name">${p.name}</div>
       <div class="meta">
@@ -3405,6 +3408,7 @@ async function openProfile(){
       document.getElementById('orders-count').textContent = data.ordersCount + (data.ordersCount > 1 ? ' commandes' : ' commande');
       const date = new Date(data.memberSince);
       document.getElementById('member-since').textContent = date.toLocaleDateString('fr-FR', { month:'short', year:'numeric' });
+      document.getElementById('vip-badge').style.display = data.vip ? 'inline-block' : 'none';
     } catch (err) {
       console.error('Impossible de charger le profil', err);
     }
@@ -3907,6 +3911,7 @@ async function checkVipStatus(){
     const data = await res.json();
     isVipUser = !!data.vip;
     document.getElementById('vip-payment-toggle').style.display = isVipUser ? 'block' : 'none';
+    renderGrid();
   } catch (err) {
     console.error('Impossible de vérifier le statut VIP', err);
   }

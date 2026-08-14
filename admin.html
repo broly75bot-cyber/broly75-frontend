@@ -304,6 +304,10 @@
         <input type="checkbox" id="pf-featured" style="width:auto;">
         Mis en avant dans "Ça pourrait aussi te plaire"
       </label>
+      <label style="display:flex; align-items:center; gap:8px; margin-top:8px; font-weight:400;">
+        <input type="checkbox" id="pf-vip-early" style="width:auto;">
+        ★ Avant-première VIP (invisible pour les autres clients)
+      </label>
       <div class="product-actions">
         <button onclick="saveProduct()">Enregistrer</button>
         <button class="secondary" onclick="closeProductForm()">Annuler</button>
@@ -820,6 +824,12 @@
       <input id="vip-add-name" placeholder="Ex : Jean D.">
       <button onclick="addVip()" style="width:100%; margin-top:10px;">Certifier ce client VIP</button>
 
+      <h2 style="margin-top:20px;">Avantages VIP</h2>
+      <label>Réduction automatique sur toutes leurs commandes (%)</label>
+      <input id="vip-discount" type="number" min="0" max="100" placeholder="5">
+      <p class="muted" style="margin-top:6px; margin-bottom:10px;">Appliquée automatiquement, sans code à taper. S'ils utilisent aussi un code promo, seule la meilleure des deux réductions s'applique (pas de cumul).</p>
+      <button onclick="saveVipDiscount()" style="width:100%;">Enregistrer ce taux</button>
+
       <h2 style="margin-top:20px;">Clients VIP actuels</h2>
       <div id="vip-list"><p class="muted">Chargement...</p></div>
     </div>
@@ -925,6 +935,7 @@ function openSettingsSection(name){
   }
   if (name === 'vip'){
     loadVipList();
+    loadVipDiscount();
   }
   if (name === 'loyalty'){
     loadCoinsPerOrder();
@@ -1048,6 +1059,34 @@ async function saveCryptoWallets(){
     currentContent = body;
     alert('Adresses crypto enregistrées.');
     closeSettingsSection();
+  } catch (err) {
+    alert('Impossible d\'enregistrer — vérifie ta connexion.');
+  }
+}
+
+async function loadVipDiscount(){
+  let content = currentContent;
+  if (!content){
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/content`);
+      content = await res.json();
+      currentContent = content;
+    } catch (err) { return; }
+  }
+  document.getElementById('vip-discount').value = content.vipDiscountPercent ?? '';
+}
+
+async function saveVipDiscount(){
+  const vipDiscountPercent = Math.max(0, Number(document.getElementById('vip-discount').value) || 0);
+  const body = { ...(currentContent || {}), vipDiscountPercent };
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/content`, {
+      method: 'PUT', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) { alert('Erreur lors de l\'enregistrement.'); return; }
+    currentContent = body;
+    alert(`${vipDiscountPercent}% de réduction automatique pour les VIP.`);
   } catch (err) {
     alert('Impossible d\'enregistrer — vérifie ta connexion.');
   }
@@ -1547,6 +1586,7 @@ function openProductForm(){
   ['pf-id','pf-name','pf-price','pf-tag','pf-img','pf-desc','pf-material','pf-colors','pf-sizes','pf-stock']
     .forEach(id => document.getElementById(id).value = '');
   document.getElementById('pf-featured').checked = false;
+  document.getElementById('pf-vip-early').checked = false;
   document.getElementById('pf-cat-new').value = '';
   document.getElementById('pf-brand-new').value = '';
   populateProductDropdowns('', '');
@@ -1577,6 +1617,7 @@ preview.style.display = p.img ? 'block' : 'none';
   document.getElementById('pf-sizes').value = (p.sizes || []).join(', ');
   document.getElementById('pf-stock').value = p.stock || '';
   document.getElementById('pf-featured').checked = !!p.featured;
+  document.getElementById('pf-vip-early').checked = !!p.vipEarlyAccess;
   document.getElementById('product-form').style.display = 'block';
   document.getElementById('product-form').scrollIntoView({behavior:'smooth'});
 }
@@ -1699,6 +1740,7 @@ async function saveProduct(){
     stock: document.getElementById('pf-stock').value,
     brand: brandNew || document.getElementById('pf-brand').value,
     featured: document.getElementById('pf-featured').checked,
+    vipEarlyAccess: document.getElementById('pf-vip-early').checked,
   };
   const url = id ? `${BACKEND_URL}/api/products/${id}` : `${BACKEND_URL}/api/products`;
   const method = id ? 'PUT' : 'POST';
