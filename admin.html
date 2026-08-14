@@ -336,7 +336,7 @@
         <button class="nav-row" onclick="openContentSection('labels')">Intitulés des cases</button>
         <button class="nav-row" onclick="openContentSection('statusmsg')">Messages automatiques (commandes)</button>
         <button class="nav-row" onclick="openContentSection('promo')">Codes promo</button>
-        <button class="nav-row" onclick="openContentSection('rewards')">Récompenses coins</button>
+        <button class="nav-row" onclick="openContentSection('rewards')">Récompenses Ƶeni</button>
         <button class="nav-row" onclick="openContentSection('hours')">Horaires de livraison</button>
         <button class="nav-row" onclick="openContentSection('meetup')">Meetup</button>
         <button class="nav-row" onclick="openContentSection('shipping')">Service d'envoi</button>
@@ -536,9 +536,9 @@
 
       <h2 style="margin-top:18px;">Livrée / récupérée</h2>
       <label>Service d'envoi</label>
-      <textarea id="msg-delivered-livraison" rows="2" placeholder="📍 Ta commande est arrivée ! Merci pour ta confiance 🙏 Tu as gagné {coins} coins."></textarea>
+      <textarea id="msg-delivered-livraison" rows="2" placeholder="📍 Ta commande est arrivée ! Merci pour ta confiance 🙏 Tu as gagné {coins} Ƶeni."></textarea>
       <label style="margin-top:10px;">Horaires de livraison</label>
-      <textarea id="msg-delivered-envoi" rows="2" placeholder="📍 Ta commande est arrivée ! Merci pour ta confiance 🙏 Tu as gagné {coins} coins."></textarea>
+      <textarea id="msg-delivered-envoi" rows="2" placeholder="📍 Ta commande est arrivée ! Merci pour ta confiance 🙏 Tu as gagné {coins} Ƶeni."></textarea>
       <label style="margin-top:10px;">Point relais</label>
       <textarea id="msg-delivered-retrait" rows="2" placeholder="✅ Commande récupérée avec succès ! Merci pour ta confiance 🙏 Tu as gagné {coins} coins."></textarea>
 
@@ -558,8 +558,8 @@
 
     <div class="subscreen" id="contenu-rewards">
       <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
-      <h2>Récompenses coins</h2>
-      <p class="muted" style="margin-bottom:14px;">Définis ce que tes clients peuvent obtenir en échangeant leurs coins. Chaque échange génère un code promo à usage unique.</p>
+      <h2>Récompenses Ƶeni</h2>
+      <p class="muted" style="margin-bottom:14px;">Définis ce que tes clients peuvent obtenir en échangeant leurs Ƶeni. Chaque échange génère un code promo à usage unique.</p>
 
       <div id="rewards-editor"></div>
       <button class="secondary" style="width:100%; margin-top:6px;" onclick="addRewardField()">+ Ajouter une récompense</button>
@@ -687,7 +687,7 @@
         <button class="nav-row" onclick="openSettingsSection('crypto')">Paiement crypto</button>
         <button class="nav-row" onclick="openSettingsSection('vip')">Clients VIP</button>
         <button class="nav-row" onclick="openSettingsSection('gifts')">Cadeaux par niveau</button>
-        <button class="nav-row" onclick="openSettingsSection('loyalty')">Fidélité (coins)</button>
+        <button class="nav-row" onclick="openSettingsSection('loyalty')">Fidélité (Ƶeni)</button>
       </div>
     </div>
 
@@ -860,8 +860,8 @@
 
     <div class="subscreen" id="reglages-loyalty">
       <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
-      <h2>Fidélité (coins)</h2>
-      <label>Coins gagnés par commande livrée</label>
+      <h2>Fidélité (Ƶeni)</h2>
+      <label>Ƶeni gagnés par commande livrée</label>
       <input id="s-coins-per-order" type="number" min="0" placeholder="10">
       <p class="muted" style="margin-top:6px;">Ce nombre est attribué automatiquement au client dès qu'une commande passe au statut "Livrée".</p>
       <button onclick="saveCoinsPerOrder()" style="width:100%; margin-top:10px;">Enregistrer</button>
@@ -1294,7 +1294,7 @@ function renderRewardsEditor(list){
       <label>Nom de la récompense</label>
       <input class="reward-label" value="${(r.label||'').replace(/"/g,'&quot;')}" placeholder="5% de réduction">
       <div class="form-grid">
-        <div><label>Coût (coins)</label><input class="reward-cost" type="number" min="1" value="${r.coinsCost ?? ''}" placeholder="50"></div>
+        <div><label>Coût (Ƶeni)</label><input class="reward-cost" type="number" min="1" value="${r.coinsCost ?? ''}" placeholder="50"></div>
         <div><label>Réduction (%)</label><input class="reward-discount" type="number" min="0" max="100" value="${r.discountPercent ?? ''}" placeholder="5"></div>
       </div>
       <button type="button" class="danger" style="width:100%; margin-top:4px;" onclick="this.closest('.reward-edit-card').remove()">Retirer</button>
@@ -1311,7 +1311,7 @@ function addRewardField(){
     <label>Nom de la récompense</label>
     <input class="reward-label" placeholder="5% de réduction">
     <div class="form-grid">
-      <div><label>Coût (coins)</label><input class="reward-cost" type="number" min="1" placeholder="50"></div>
+      <div><label>Coût (Ƶeni)</label><input class="reward-cost" type="number" min="1" placeholder="50"></div>
       <div><label>Réduction (%)</label><input class="reward-discount" type="number" min="0" max="100" placeholder="5"></div>
     </div>
     <button type="button" class="danger" style="width:100%; margin-top:4px;" onclick="this.closest('.reward-edit-card').remove()">Retirer</button>
@@ -1396,7 +1396,7 @@ function showOrderDetail(id){
     actionHtml = `<button style="width:100%; margin-top:10px;" onclick="markReady('${o.id}')">Marquer prête${isPickup ? ' (à récupérer)' : ''}</button>`;
   } else if (o.status === 'ready'){
     if (isPickup){
-      actionHtml = `<button style="width:100%; margin-top:10px;" onclick="markDelivered('${o.id}')">Marquer comme récupérée (+10 coins)</button>`;
+      actionHtml = `<button style="width:100%; margin-top:10px;" onclick="markDelivered('${o.id}')">Marquer comme récupérée (+10 Ƶeni)</button>`;
     } else {
       actionHtml = `
         <div class="ship-form" style="margin-top:12px;">
@@ -1411,7 +1411,7 @@ function showOrderDetail(id){
       `;
     }
   } else if (o.status === 'shipped'){
-    actionHtml = `<button style="width:100%; margin-top:10px;" onclick="markDelivered('${o.id}')">Marquer comme livrée (+10 coins)</button>`;
+    actionHtml = `<button style="width:100%; margin-top:10px;" onclick="markDelivered('${o.id}')">Marquer comme livrée (+10 Ƶeni)</button>`;
   }
 
   document.getElementById('order-detail-content').innerHTML = `

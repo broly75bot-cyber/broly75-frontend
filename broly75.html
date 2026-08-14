@@ -2111,12 +2111,12 @@
 
     <div class="coins-card">
       <div class="coins-count" id="coins-count">0</div>
-      <div class="coins-label">Coins</div>
-      <div class="coins-hint">Gagnez <b id="coins-hint-amount">10 coins</b> par commande livrée</div>
+      <div class="coins-label">Ƶeni</div>
+      <div class="coins-hint">Gagnez <b id="coins-hint-amount">10 Ƶeni</b> par commande livrée</div>
     </div>
 
     <div class="info-block" id="rewards-block" style="display:none;">
-      <div class="info-block-title">Échanger mes coins</div>
+      <div class="info-block-title">Échanger mes Ƶeni</div>
       <div id="rewards-list"></div>
     </div>
 
@@ -3086,7 +3086,7 @@ function renderRecap(){
     ${lines}
     ${discountLine}
     <div class="recap-line total"><span>Total</span><span>${total.toFixed(2)} €</span></div>
-    <div class="coins-hint-line" style="margin-top:10px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.6.7 1.5 1 2.5 1s2-.5 2-1.4c0-2.2-4.5-1-4.5-3.2 0-.9.9-1.4 2-1.4s1.9.3 2.5 1"/><line x1="12" y1="7" x2="12" y2="17"/></svg> Cette commande rapporte <b>~10</b> coins à la livraison</div>
+    <div class="coins-hint-line" style="margin-top:10px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 15.5c.6.7 1.5 1 2.5 1s2-.5 2-1.4c0-2.2-4.5-1-4.5-3.2 0-.9.9-1.4 2-1.4s1.9.3 2.5 1"/><line x1="12" y1="7" x2="12" y2="17"/></svg> Cette commande rapporte <b>~10</b> Ƶeni à la livraison</div>
   `;
 }
 
@@ -3313,7 +3313,7 @@ const FAQ_LIST = [
   { q:'Quels moyens de paiement sont acceptés ?', a:'Le paiement se fait en Bitcoin, directement dans l\'app via l\'adresse et le QR code affichés à la commande.' },
   { q:'Comment se passe un point relais ?', a:'Choisis l\'option "Point relais" au moment de commander, trouve un point sur la carte (ou indique-le toi-même), puis récupère ta commande une fois qu\'elle y est déposée.' },
   { q:'Comment suivre ma commande ?', a:'Tu es notifié automatiquement à chaque étape (en préparation, en cours de livraison, livrée). Tu peux aussi consulter le statut depuis ton profil.' },
-  { q:'Que sont les coins bonus ?', a:'Les coins sont des points de fidélité gagnés à chaque commande livrée (10 coins par commande). Ils s\'affichent dans ton profil.' },
+  { q:'Que sont les Ƶeni et les niveaux client ?', a:'Les Ƶeni sont des points de fidélité gagnés à chaque commande livrée, à échanger contre des récompenses depuis ton profil. En plus, chaque commande livrée te fait progresser : ✔️ dès ta 2e commande, ★ à partir de la 3e (client fidèle). Le statut VIP peut aussi t\'être accordé et débloque des avantages exclusifs (réduction automatique, avant-premières sur les nouveautés, et plus encore).' },
   { q:'Comment contacter le support ?', a:'Utilise le bouton Telegram dans la page Contact, ou écris-nous directement — on répond aussi vite que possible.' },
 ];
 
@@ -3400,7 +3400,7 @@ async function openProfile(){
   hideNav();
   document.querySelectorAll('#lang-grid .lang-btn').forEach(b => b.classList.toggle('active', b.textContent.includes(currentLang === 'FR' ? 'Français' : currentLang === 'EN' ? 'English' : 'Español')));
   const tgUser = tg?.initDataUnsafe?.user;
-  document.getElementById('coins-hint-amount').textContent = `${siteContent?.coinsPerOrder ?? 10} coins`;
+  document.getElementById('coins-hint-amount').textContent = `${siteContent?.coinsPerOrder ?? 10} Ƶeni`;
   let currentCoins = 0;
   if (tgUser){
     document.getElementById('profile-name').textContent = tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '');
@@ -3441,7 +3441,7 @@ function renderRewards(currentCoins){
     <div class="reward-card">
       <div>
         <div class="rw-label">${r.label}</div>
-        <div class="rw-cost">${r.coinsCost} coins</div>
+        <div class="rw-cost">${r.coinsCost} Ƶeni</div>
       </div>
       <button ${currentCoins < r.coinsCost ? 'disabled' : ''} onclick="redeemReward(${i})">Échanger</button>
     </div>
@@ -3458,11 +3458,11 @@ async function redeemReward(index){
       body: JSON.stringify({ rewardIndex: index, telegramId: tgUser.id, initData: tg?.initData || '' }),
     });
     const data = await res.json();
-    if (!res.ok){ alert(data.error || 'Impossible d\'échanger tes coins.'); return; }
+    if (!res.ok){ alert(data.error || 'Impossible d\'échanger tes Ƶeni.'); return; }
     alert(`Code obtenu : ${data.code}\nEntre-le dans le champ "Code promo" au moment de payer pour en profiter.`);
     openProfile();
   } catch (err) {
-    alert('Impossible d\'échanger tes coins — vérifie ta connexion.');
+    alert('Impossible d\'échanger tes Ƶeni — vérifie ta connexion.');
   }
 }
 
