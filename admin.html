@@ -741,6 +741,10 @@
       <input id="s-lock-minutes" type="number" min="1" placeholder="15">
       <p class="muted" style="margin-top:6px;">L'admin se ferme automatiquement et redemande le mot de passe si tu ne l'utilises pas pendant ce temps. Réglage propre à cet appareil/navigateur.</p>
       <button onclick="saveLockMinutes()" style="width:100%; margin-top:10px;">Enregistrer</button>
+
+      <h2 style="margin-top:20px;">Journal des connexions</h2>
+      <p class="muted" style="margin-bottom:10px;">Les 200 dernières tentatives de connexion à l'admin (réussies ou non), avec l'adresse IP et l'heure.</p>
+      <div id="admin-log-list"><p class="muted">Chargement...</p></div>
     </div>
 
     <div class="subscreen" id="reglages-crypto">
@@ -846,12 +850,32 @@ function openSettingsSection(name){
   document.getElementById('reglages-' + name).classList.add('active');
   if (name === 'security'){
     document.getElementById('s-lock-minutes').value = getLockMinutes();
+    loadAdminLog();
   }
   if (name === 'crypto'){
     loadCryptoWallets();
   }
   if (name === 'loyalty'){
     loadCoinsPerOrder();
+  }
+}
+async function loadAdminLog(){
+  const list = document.getElementById('admin-log-list');
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin-log`, { headers: { 'x-admin-key': adminKey } });
+    const log = await res.json();
+    if (!log.length){
+      list.innerHTML = '<p class="muted">Aucune tentative enregistrée pour le moment.</p>';
+      return;
+    }
+    list.innerHTML = log.map(entry => `
+      <div class="row-between" style="padding:8px 0; border-bottom:1px solid var(--line); font-size:13px;">
+        <span>${entry.success ? '✅' : '❌'} ${entry.ip}</span>
+        <span class="muted">${new Date(entry.at).toLocaleString('fr-FR')}</span>
+      </div>
+    `).join('');
+  } catch (err) {
+    list.innerHTML = '<p class="muted">Impossible de charger le journal.</p>';
   }
 }
 function saveLockMinutes(){
