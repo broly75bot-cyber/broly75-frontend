@@ -296,6 +296,8 @@
         <button class="nav-row" onclick="openContentSection('categories')">Ordre des catégories</button>
         <button class="nav-row" onclick="openContentSection('labels')">Intitulés des cases</button>
         <button class="nav-row" onclick="openContentSection('statusmsg')">Messages automatiques (commandes)</button>
+        <button class="nav-row" onclick="openContentSection('promo')">Codes promo</button>
+        <button class="nav-row" onclick="openContentSection('rewards')">Récompenses coins</button>
         <button class="nav-row" onclick="openContentSection('hours')">Horaires de livraison</button>
         <button class="nav-row" onclick="openContentSection('meetup')">Meetup</button>
         <button class="nav-row" onclick="openContentSection('shipping')">Service d'envoi</button>
@@ -449,6 +451,10 @@
       <label style="margin-top:10px;">Bouton "Ajouter" (au panier)</label>
       <input id="lb-pd-add-btn" placeholder="Ajouter">
 
+      <h2 style="margin-top:20px;">Page Contact</h2>
+      <label>Bandeau de disponibilité</label>
+      <input id="lb-cc-available" placeholder="Nous sommes disponibles 24/7">
+
       <button style="width:100%; margin-top:14px;" onclick="saveContent()">Enregistrer</button>
     </div>
 
@@ -477,11 +483,33 @@
 
       <h2 style="margin-top:18px;">Livrée / récupérée</h2>
       <label>Service d'envoi</label>
-      <textarea id="msg-delivered-livraison" rows="2" placeholder="📍 Ta commande est arrivée ! Merci pour ta confiance 🙏 Tu as gagné 10 coins."></textarea>
+      <textarea id="msg-delivered-livraison" rows="2" placeholder="📍 Ta commande est arrivée ! Merci pour ta confiance 🙏 Tu as gagné {coins} coins."></textarea>
       <label style="margin-top:10px;">Horaires de livraison</label>
-      <textarea id="msg-delivered-envoi" rows="2" placeholder="📍 Ta commande est arrivée ! Merci pour ta confiance 🙏 Tu as gagné 10 coins."></textarea>
+      <textarea id="msg-delivered-envoi" rows="2" placeholder="📍 Ta commande est arrivée ! Merci pour ta confiance 🙏 Tu as gagné {coins} coins."></textarea>
       <label style="margin-top:10px;">Point relais</label>
-      <textarea id="msg-delivered-retrait" rows="2" placeholder="✅ Commande récupérée avec succès ! Merci pour ta confiance 🙏 Tu as gagné 10 coins."></textarea>
+      <textarea id="msg-delivered-retrait" rows="2" placeholder="✅ Commande récupérée avec succès ! Merci pour ta confiance 🙏 Tu as gagné {coins} coins."></textarea>
+
+      <button style="width:100%; margin-top:14px;" onclick="saveContent()">Enregistrer</button>
+    </div>
+
+    <div class="subscreen" id="contenu-promo">
+      <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
+      <h2>Codes promo</h2>
+      <p class="muted" style="margin-bottom:14px;">Crée, modifie ou désactive tes codes promo. Le client les entre dans le panier, la réduction est vérifiée automatiquement à la commande.</p>
+
+      <div id="promo-editor"></div>
+      <button class="secondary" style="width:100%; margin-top:6px;" onclick="addPromoField()">+ Ajouter un code promo</button>
+
+      <button style="width:100%; margin-top:14px;" onclick="saveContent()">Enregistrer</button>
+    </div>
+
+    <div class="subscreen" id="contenu-rewards">
+      <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
+      <h2>Récompenses coins</h2>
+      <p class="muted" style="margin-bottom:14px;">Définis ce que tes clients peuvent obtenir en échangeant leurs coins. Chaque échange génère un code promo à usage unique.</p>
+
+      <div id="rewards-editor"></div>
+      <button class="secondary" style="width:100%; margin-top:6px;" onclick="addRewardField()">+ Ajouter une récompense</button>
 
       <button style="width:100%; margin-top:14px;" onclick="saveContent()">Enregistrer</button>
     </div>
@@ -514,8 +542,12 @@
     <div class="subscreen" id="contenu-shipping">
       <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
       <h2>Service d'envoi</h2>
-      <label>Montant minimum</label>
-      <input id="c-shipping-min">
+      <label>Montant minimum de commande (€)</label>
+      <input id="c-shipping-min" type="number" min="0" placeholder="100">
+      <label style="display:flex; align-items:center; gap:8px; margin-top:10px; font-weight:400;">
+        <input type="checkbox" id="c-shipping-enforce" style="width:auto;">
+        Bloquer vraiment les commandes en dessous de ce montant (pas juste l'afficher)
+      </label>
       <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
@@ -600,6 +632,7 @@
         <button class="nav-row" onclick="openSettingsSection('announcement')">Bloc annonce / promo</button>
         <button class="nav-row" onclick="openSettingsSection('security')">Sécurité</button>
         <button class="nav-row" onclick="openSettingsSection('crypto')">Paiement crypto</button>
+        <button class="nav-row" onclick="openSettingsSection('loyalty')">Fidélité (coins)</button>
       </div>
     </div>
 
@@ -702,6 +735,15 @@
       <button onclick="saveCryptoWallets()" style="width:100%; margin-top:14px;">Enregistrer</button>
     </div>
 
+    <div class="subscreen" id="reglages-loyalty">
+      <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
+      <h2>Fidélité (coins)</h2>
+      <label>Coins gagnés par commande livrée</label>
+      <input id="s-coins-per-order" type="number" min="0" placeholder="10">
+      <p class="muted" style="margin-top:6px;">Ce nombre est attribué automatiquement au client dès qu'une commande passe au statut "Livrée".</p>
+      <button onclick="saveCoinsPerOrder()" style="width:100%; margin-top:10px;">Enregistrer</button>
+    </div>
+
     <div class="muted" id="style-status" style="text-align:center; margin-top:8px;"></div>
   </div>
 </div>
@@ -790,6 +832,9 @@ function openSettingsSection(name){
   if (name === 'crypto'){
     loadCryptoWallets();
   }
+  if (name === 'loyalty'){
+    loadCoinsPerOrder();
+  }
 }
 function saveLockMinutes(){
   const minutes = Math.max(1, Number(document.getElementById('s-lock-minutes').value) || 15);
@@ -853,6 +898,105 @@ async function saveCryptoWallets(){
   } catch (err) {
     alert('Impossible d\'enregistrer — vérifie ta connexion.');
   }
+}
+
+async function loadCoinsPerOrder(){
+  let content = currentContent;
+  if (!content){
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/content`);
+      content = await res.json();
+      currentContent = content;
+    } catch (err) { return; }
+  }
+  document.getElementById('s-coins-per-order').value = content.coinsPerOrder ?? 10;
+}
+
+async function saveCoinsPerOrder(){
+  const coinsPerOrder = Math.max(0, Number(document.getElementById('s-coins-per-order').value) || 0);
+  const body = { ...(currentContent || {}), coinsPerOrder };
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/content`, {
+      method: 'PUT', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) { alert('Erreur lors de l\'enregistrement.'); return; }
+    currentContent = body;
+    alert(`${coinsPerOrder} coins par commande livrée.`);
+    closeSettingsSection();
+  } catch (err) {
+    alert('Impossible d\'enregistrer — vérifie ta connexion.');
+  }
+}
+
+function renderPromoEditor(list){
+  document.getElementById('promo-editor').innerHTML = list.map((p) => `
+    <div class="promo-card" style="border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:12px;">
+      <div class="form-grid">
+        <div><label>Code</label><input class="promo-code" value="${(p.code||'').replace(/"/g,'&quot;')}" placeholder="BROLY10" style="text-transform:uppercase;"></div>
+        <div><label>Réduction (%)</label><input class="promo-discount" type="number" min="0" max="100" value="${p.discount ?? ''}" placeholder="10"></div>
+      </div>
+      <div class="row-between" style="margin-top:8px;">
+        <label style="display:flex; align-items:center; gap:6px; font-weight:400; font-size:13px;">
+          <input type="checkbox" class="promo-enabled" ${p.enabled !== false ? 'checked' : ''} style="width:auto; margin:0;">
+          Actif
+        </label>
+        <button type="button" class="danger" onclick="this.closest('.promo-card').remove()">Retirer</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addPromoField(){
+  const editor = document.getElementById('promo-editor');
+  const div = document.createElement('div');
+  div.className = 'promo-card';
+  div.style.cssText = 'border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:12px;';
+  div.innerHTML = `
+    <div class="form-grid">
+      <div><label>Code</label><input class="promo-code" placeholder="BROLY10" style="text-transform:uppercase;"></div>
+      <div><label>Réduction (%)</label><input class="promo-discount" type="number" min="0" max="100" placeholder="10"></div>
+    </div>
+    <div class="row-between" style="margin-top:8px;">
+      <label style="display:flex; align-items:center; gap:6px; font-weight:400; font-size:13px;">
+        <input type="checkbox" class="promo-enabled" checked style="width:auto; margin:0;">
+        Actif
+      </label>
+      <button type="button" class="danger" onclick="this.closest('.promo-card').remove()">Retirer</button>
+    </div>
+  `;
+  editor.appendChild(div);
+}
+
+function renderRewardsEditor(list){
+  document.getElementById('rewards-editor').innerHTML = list.map((r) => `
+    <div class="reward-edit-card" style="border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:12px;">
+      <label>Nom de la récompense</label>
+      <input class="reward-label" value="${(r.label||'').replace(/"/g,'&quot;')}" placeholder="5% de réduction">
+      <div class="form-grid">
+        <div><label>Coût (coins)</label><input class="reward-cost" type="number" min="1" value="${r.coinsCost ?? ''}" placeholder="50"></div>
+        <div><label>Réduction (%)</label><input class="reward-discount" type="number" min="0" max="100" value="${r.discountPercent ?? ''}" placeholder="5"></div>
+      </div>
+      <button type="button" class="danger" style="width:100%; margin-top:4px;" onclick="this.closest('.reward-edit-card').remove()">Retirer</button>
+    </div>
+  `).join('');
+}
+
+function addRewardField(){
+  const editor = document.getElementById('rewards-editor');
+  const div = document.createElement('div');
+  div.className = 'reward-edit-card';
+  div.style.cssText = 'border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:12px;';
+  div.innerHTML = `
+    <label>Nom de la récompense</label>
+    <input class="reward-label" placeholder="5% de réduction">
+    <div class="form-grid">
+      <div><label>Coût (coins)</label><input class="reward-cost" type="number" min="1" placeholder="50"></div>
+      <div><label>Réduction (%)</label><input class="reward-discount" type="number" min="0" max="100" placeholder="5"></div>
+    </div>
+    <button type="button" class="danger" style="width:100%; margin-top:4px;" onclick="this.closest('.reward-edit-card').remove()">Retirer</button>
+  `;
+  editor.appendChild(div);
 }
 
 function closeSettingsSection(){
@@ -1346,7 +1490,8 @@ async function loadContent(){
   document.getElementById('c-weekend').value = c.hours?.weekend || '';
   document.getElementById('c-meetup-location').value = c.meetup?.location || '';
   document.getElementById('c-meetup-hours').value = c.meetup?.hoursText || '';
-  document.getElementById('c-shipping-min').value = c.shipping?.minOrder || '';
+  document.getElementById('c-shipping-min').value = c.shipping?.minOrderAmount ?? '';
+  document.getElementById('c-shipping-enforce').checked = !!c.shipping?.enforceMin;
   document.getElementById('c-tg-main').value = c.contacts?.telegramMain || '';
   document.getElementById('c-tg-channel').value = c.contacts?.telegramChannel || '';
   document.getElementById('c-instagram').value = c.contacts?.instagram || '';
@@ -1374,6 +1519,8 @@ async function loadContent(){
   `).join('');
 
   renderOrderEditor('type-order-editor', c.typeOrder || []);
+  renderPromoEditor(c.promoCodes || []);
+  renderRewardsEditor(c.rewards || []);
   renderOrderEditor('brand-order-editor', c.brandOrder || []);
 
   const sm = c.statusMessages || {};
@@ -1431,6 +1578,7 @@ async function loadContent(){
   document.getElementById('lb-pd-size-title').value = lb.pdSizeTitle || '';
   document.getElementById('lb-pd-suggest-title').value = lb.pdSuggestTitle || '';
   document.getElementById('lb-pd-add-btn').value = lb.pdAddBtn || '';
+  document.getElementById('lb-cc-available').value = lb.contactAvailableText || '';
 }
 
 function renderOrderEditor(containerId, list){
@@ -1463,6 +1611,16 @@ async function saveContent(){
   const typeOrder = Array.from(document.querySelectorAll('#type-order-editor .order-field'))
     .map(input => input.value.trim())
     .filter(Boolean);
+  const promoCodes = Array.from(document.querySelectorAll('.promo-card')).map(card => ({
+    code: card.querySelector('.promo-code').value.trim().toUpperCase(),
+    discount: Number(card.querySelector('.promo-discount').value) || 0,
+    enabled: card.querySelector('.promo-enabled').checked,
+  })).filter(p => p.code);
+  const rewards = Array.from(document.querySelectorAll('.reward-edit-card')).map(card => ({
+    label: card.querySelector('.reward-label').value.trim(),
+    coinsCost: Number(card.querySelector('.reward-cost').value) || 0,
+    discountPercent: Number(card.querySelector('.reward-discount').value) || 0,
+  })).filter(r => r.label && r.coinsCost > 0);
   const brandOrder = Array.from(document.querySelectorAll('#brand-order-editor .order-field'))
     .map(input => input.value.trim())
     .filter(Boolean);
@@ -1515,11 +1673,14 @@ async function saveContent(){
     pdSizeTitle: document.getElementById('lb-pd-size-title').value,
     pdSuggestTitle: document.getElementById('lb-pd-suggest-title').value,
     pdAddBtn: document.getElementById('lb-pd-add-btn').value,
+    contactAvailableText: document.getElementById('lb-cc-available').value,
   };
   const body = {
     ...(currentContent || {}),
     wallpaperUrl: document.getElementById('c-wallpaper').value,
     typeOrder,
+    promoCodes,
+    rewards,
     brandOrder,
     labels,
     statusMessages,
@@ -1534,7 +1695,10 @@ async function saveContent(){
       available: true,
       hoursText: document.getElementById('c-meetup-hours').value,
     },
-    shipping: { minOrder: document.getElementById('c-shipping-min').value },
+    shipping: {
+      minOrderAmount: Number(document.getElementById('c-shipping-min').value) || 0,
+      enforceMin: document.getElementById('c-shipping-enforce').checked,
+    },
     faq,
     contacts: {
       telegramMain: document.getElementById('c-tg-main').value,

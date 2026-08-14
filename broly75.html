@@ -1563,6 +1563,18 @@
     margin-bottom:22px;
     box-shadow:0 0 20px rgba(62,205,107,0.15);
   }
+  .reward-card{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:rgba(0,0,0,0.3); border:1.5px solid var(--co-g-dim, rgba(62,205,107,0.3));
+    border-radius:12px; padding:12px 14px; margin-bottom:10px;
+  }
+  .reward-card .rw-label{ font-size:13.5px; font-weight:600; }
+  .reward-card .rw-cost{ font-family:var(--font-mono); font-size:11px; color:rgba(241,239,233,0.5); margin-top:2px; }
+  .reward-card button{
+    flex-shrink:0; background:var(--lime); color:var(--ink); border:none; border-radius:20px;
+    padding:8px 14px; font-family:var(--font-body); font-weight:700; font-size:12.5px; cursor:pointer;
+  }
+  .reward-card button:disabled{ background:rgba(241,239,233,0.15); color:rgba(241,239,233,0.4); cursor:not-allowed; }
   .coins-count{
     font-family:var(--font-title);
     font-size:38px;
@@ -2099,7 +2111,12 @@
     <div class="coins-card">
       <div class="coins-count" id="coins-count">0</div>
       <div class="coins-label">Coins</div>
-      <div class="coins-hint">Gagnez <b>10 coins</b> par commande livrée</div>
+      <div class="coins-hint">Gagnez <b id="coins-hint-amount">10 coins</b> par commande livrée</div>
+    </div>
+
+    <div class="info-block" id="rewards-block" style="display:none;">
+      <div class="info-block-title">Échanger mes coins</div>
+      <div id="rewards-list"></div>
     </div>
 
     <div class="mini-box-row">
@@ -2206,7 +2223,7 @@
       </a>
     </div>
 
-    <div class="cc-available"><span class="cc-dot"></span> Nous sommes disponibles 24/7</div>
+    <div class="cc-available"><span class="cc-dot"></span> <span id="label-cc-available">Nous sommes disponibles 24/7</span></div>
   </div>
 </div>
 
@@ -2861,21 +2878,36 @@ function toggleLike(id, btn){
   if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 }
 
-const VALID_PROMOS = { 'BROLY10': 0.10, 'WELCOME5': 0.05 };
-
-function applyPromo(){
+async function applyPromo(){
   const input = document.getElementById('f-promo');
   const status = document.getElementById('promo-status');
   const code = input.value.trim().toUpperCase();
-  if (VALID_PROMOS[code]){
-    promoCode = code;
-    promoDiscount = VALID_PROMOS[code];
-    status.textContent = `Code appliqué — ${promoDiscount*100}% de réduction`;
-    status.className = 'promo-status ok';
-  } else {
+  if (!code){
+    promoCode = null; promoDiscount = 0;
+    status.textContent = ''; status.className = 'promo-status';
+    renderRecap();
+    return;
+  }
+  status.textContent = 'Vérification...';
+  status.className = 'promo-status';
+  try {
+    const codes = (siteContent && siteContent.promoCodes) || [];
+    const match = codes.find(p => p.code === code && p.enabled !== false);
+    if (match){
+      promoCode = code;
+      promoDiscount = match.discount / 100;
+      status.textContent = `Code appliqué — ${match.discount}% de réduction`;
+      status.className = 'promo-status ok';
+    } else {
+      promoCode = null;
+      promoDiscount = 0;
+      status.textContent = 'Code invalide';
+      status.className = 'promo-status err';
+    }
+  } catch (err) {
     promoCode = null;
     promoDiscount = 0;
-    status.textContent = 'Code invalide';
+    status.textContent = 'Impossible de vérifier le code pour le moment';
     status.className = 'promo-status err';
   }
   renderRecap();
@@ -3330,6 +3362,8 @@ if (reviewLinkEl) reviewLinkEl.href = 'https://t.me/Broly75avis';
 async function openProfile(){
   hideNav();
   const tgUser = tg?.initDataUnsafe?.user;
+  document.getElementById('coins-hint-amount').textContent = `${siteContent?.coinsPerOrder ?? 10} coins`;
+  let currentCoins = 0;
   if (tgUser){
     document.getElementById('profile-name').textContent = tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '');
     if (tgUser.photo_url){
@@ -3342,6 +3376,7 @@ async function openProfile(){
     try {
       const res = await fetch(`${BACKEND_URL}/api/user/${tgUser.id}`);
       const data = await res.json();
+      currentCoins = data.coins;
       document.getElementById('coins-count').textContent = data.coins;
       document.getElementById('orders-count').textContent = data.ordersCount + (data.ordersCount > 1 ? ' commandes' : ' commande');
       const date = new Date(data.memberSince);
@@ -3350,7 +3385,46 @@ async function openProfile(){
       console.error('Impossible de charger le profil', err);
     }
   }
+  renderRewards(currentCoins);
   document.getElementById('profile-overlay').classList.add('show');
+}
+
+function renderRewards(currentCoins){
+  const rewards = (siteContent && siteContent.rewards) || [];
+  const block = document.getElementById('rewards-block');
+  const list = document.getElementById('rewards-list');
+  if (!rewards.length){
+    block.style.display = 'none';
+    return;
+  }
+  block.style.display = 'block';
+  list.innerHTML = rewards.map((r, i) => `
+    <div class="reward-card">
+      <div>
+        <div class="rw-label">${r.label}</div>
+        <div class="rw-cost">${r.coinsCost} coins</div>
+      </div>
+      <button ${currentCoins < r.coinsCost ? 'disabled' : ''} onclick="redeemReward(${i})">Échanger</button>
+    </div>
+  `).join('');
+}
+
+async function redeemReward(index){
+  const tgUser = tg?.initDataUnsafe?.user;
+  if (!tgUser) return;
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/redeem-reward`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rewardIndex: index, telegramId: tgUser.id, initData: tg?.initData || '' }),
+    });
+    const data = await res.json();
+    if (!res.ok){ alert(data.error || 'Impossible d\'échanger tes coins.'); return; }
+    alert(`Code obtenu : ${data.code}\nEntre-le dans le champ "Code promo" au moment de payer pour en profiter.`);
+    openProfile();
+  } catch (err) {
+    alert('Impossible d\'échanger tes coins — vérifie ta connexion.');
+  }
 }
 
 function handleAvatarUpload(event){
@@ -3612,6 +3686,7 @@ function applyDeliveryLabels(labels){
   set('label-pd-size-title', labels.pdSizeTitle);
   set('label-pd-suggest-title', labels.pdSuggestTitle);
   set('label-pd-add-btn', labels.pdAddBtn);
+  set('label-cc-available', labels.contactAvailableText);
   set('f-address-title', labels.addressTitle);
   set('f-address-sub', labels.addressSub);
 }
@@ -3629,7 +3704,7 @@ function openInfo(){
     const m = siteContent.meetup || {};
     document.getElementById('meetup-location').textContent = m.location || 'À compléter';
     document.getElementById('meetup-hours').textContent = m.hoursText || 'À compléter';
-    document.getElementById('shipping-min-badge').textContent = 'Minimum ' + (siteContent.shipping?.minOrder || '—');
+    document.getElementById('shipping-min-badge').textContent = siteContent.shipping?.minOrderAmount ? `Minimum ${siteContent.shipping.minOrderAmount} €` : '—';
   }
 
   const list = document.getElementById('faq-list');
@@ -3684,6 +3759,11 @@ function checkOrderFieldsValid(){
   const name = document.getElementById('f-name').value.trim();
 
   if (cartItems().length === 0){ alert('Ton panier est vide.'); return false; }
+  const minOrderAmount = siteContent?.shipping?.minOrderAmount || 0;
+  if (siteContent?.shipping?.enforceMin && minOrderAmount > 0 && cartTotal() < minOrderAmount){
+    alert(`Montant minimum de commande : ${minOrderAmount} €. Ton panier est à ${cartTotal().toFixed(2)} €.`);
+    return false;
+  }
   if (!fulfillmentMode){ alert('Merci de choisir un mode de livraison.'); return false; }
   if (name.length < 2){ alert('Merci d\'indiquer ton nom complet.'); return false; }
   if (fulfillmentMode === 'livraison'){
@@ -3731,6 +3811,7 @@ async function validateAndCreateOrder(){
         contact: document.getElementById('f-contact').value,
         fulfillment: fulfillmentMode,
         crypto: selectedCrypto,
+        promoCode: promoCode || '',
         telegramId: tg?.initDataUnsafe?.user?.id,
         telegramName: [tg?.initDataUnsafe?.user?.first_name, tg?.initDataUnsafe?.user?.last_name].filter(Boolean).join(' '),
         telegramUsername: tg?.initDataUnsafe?.user?.username || '',
