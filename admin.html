@@ -431,6 +431,24 @@
       <label>Titre "Questions fréquentes"</label>
       <input id="lb-info-faq-title" placeholder="Questions fréquentes">
 
+      <h2 style="margin-top:20px;">Fiche produit</h2>
+      <label>Titre "Description"</label>
+      <input id="lb-pd-desc-title" placeholder="Description">
+      <label style="margin-top:10px;">Bouton "Livraison"</label>
+      <input id="lb-pd-fulfil-livraison" placeholder="Livraison">
+      <label style="margin-top:10px;">Bouton "À récupérer sur place"</label>
+      <input id="lb-pd-fulfil-retrait" placeholder="À récupérer sur place">
+      <label style="margin-top:10px;">Note sous ces boutons</label>
+      <input id="lb-pd-fulfil-note" placeholder="(Prix selon le mode de remise)">
+      <label style="margin-top:10px;">Titre "Couleur"</label>
+      <input id="lb-pd-color-title" placeholder="Couleur">
+      <label style="margin-top:10px;">Titre "Taille"</label>
+      <input id="lb-pd-size-title" placeholder="Taille">
+      <label style="margin-top:10px;">Titre "Ça pourrait aussi te plaire"</label>
+      <input id="lb-pd-suggest-title" placeholder="Ça pourrait aussi te plaire">
+      <label style="margin-top:10px;">Bouton "Ajouter" (au panier)</label>
+      <input id="lb-pd-add-btn" placeholder="Ajouter">
+
       <button style="width:100%; margin-top:14px;" onclick="saveContent()">Enregistrer</button>
     </div>
 
@@ -1405,6 +1423,14 @@ async function loadContent(){
   document.getElementById('lb-info-meetuphours-title').value = lb.infoMeetupHoursTitle || '';
   document.getElementById('lb-info-shipping-title').value = lb.infoShippingTitle || '';
   document.getElementById('lb-info-faq-title').value = lb.infoFaqTitle || '';
+  document.getElementById('lb-pd-desc-title').value = lb.pdDescTitle || '';
+  document.getElementById('lb-pd-fulfil-livraison').value = lb.pdFulfilLivraison || '';
+  document.getElementById('lb-pd-fulfil-retrait').value = lb.pdFulfilRetrait || '';
+  document.getElementById('lb-pd-fulfil-note').value = lb.pdFulfilNote || '';
+  document.getElementById('lb-pd-color-title').value = lb.pdColorTitle || '';
+  document.getElementById('lb-pd-size-title').value = lb.pdSizeTitle || '';
+  document.getElementById('lb-pd-suggest-title').value = lb.pdSuggestTitle || '';
+  document.getElementById('lb-pd-add-btn').value = lb.pdAddBtn || '';
 }
 
 function renderOrderEditor(containerId, list){
@@ -1481,6 +1507,14 @@ async function saveContent(){
     infoMeetupHoursTitle: document.getElementById('lb-info-meetuphours-title').value,
     infoShippingTitle: document.getElementById('lb-info-shipping-title').value,
     infoFaqTitle: document.getElementById('lb-info-faq-title').value,
+    pdDescTitle: document.getElementById('lb-pd-desc-title').value,
+    pdFulfilLivraison: document.getElementById('lb-pd-fulfil-livraison').value,
+    pdFulfilRetrait: document.getElementById('lb-pd-fulfil-retrait').value,
+    pdFulfilNote: document.getElementById('lb-pd-fulfil-note').value,
+    pdColorTitle: document.getElementById('lb-pd-color-title').value,
+    pdSizeTitle: document.getElementById('lb-pd-size-title').value,
+    pdSuggestTitle: document.getElementById('lb-pd-suggest-title').value,
+    pdAddBtn: document.getElementById('lb-pd-add-btn').value,
   };
   const body = {
     ...(currentContent || {}),
