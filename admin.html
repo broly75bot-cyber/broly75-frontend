@@ -1201,7 +1201,7 @@ async function loadStats(){
 
     // Chiffre d'affaires réel = uniquement les commandes qui ont été réellement payées
     // (une commande "en attente" jamais payée n'est pas une vente, donc pas comptée ici).
-    const paidOrders = orders.filter(o => ['paid', 'ready', 'shipped', 'delivered'].includes(o.status));
+    const paidOrders = orders.filter(o => o.status === 'delivered');
     const now = new Date();
     const currentMonthKey = `${now.getFullYear()}-${now.getMonth()}`;
     const monthNames = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
