@@ -275,6 +275,10 @@
       <label>Marque</label>
       <select id="pf-brand"></select>
       <input id="pf-brand-new" placeholder="Ou tape une nouvelle marque ici" style="margin-top:-4px;">
+      <label style="display:flex; align-items:center; gap:8px; margin-top:12px; font-weight:400;">
+        <input type="checkbox" id="pf-featured" style="width:auto;">
+        Mis en avant dans "Ça pourrait aussi te plaire"
+      </label>
       <div class="product-actions">
         <button onclick="saveProduct()">Enregistrer</button>
         <button class="secondary" onclick="closeProductForm()">Annuler</button>
@@ -1283,6 +1287,7 @@ function openProductForm(){
   document.getElementById('pf-title').textContent = 'Nouveau produit';
   ['pf-id','pf-name','pf-price','pf-tag','pf-img','pf-desc','pf-material','pf-colors','pf-sizes','pf-stock']
     .forEach(id => document.getElementById(id).value = '');
+  document.getElementById('pf-featured').checked = false;
   document.getElementById('pf-cat-new').value = '';
   document.getElementById('pf-brand-new').value = '';
   populateProductDropdowns('', '');
@@ -1312,6 +1317,7 @@ preview.style.display = p.img ? 'block' : 'none';
   document.getElementById('pf-colors').value = (p.colors || []).join(', ');
   document.getElementById('pf-sizes').value = (p.sizes || []).join(', ');
   document.getElementById('pf-stock').value = p.stock || '';
+  document.getElementById('pf-featured').checked = !!p.featured;
   document.getElementById('product-form').style.display = 'block';
   document.getElementById('product-form').scrollIntoView({behavior:'smooth'});
 }
@@ -1433,6 +1439,7 @@ async function saveProduct(){
     sizes: document.getElementById('pf-sizes').value.split(',').map(s => s.trim()).filter(Boolean),
     stock: document.getElementById('pf-stock').value,
     brand: brandNew || document.getElementById('pf-brand').value,
+    featured: document.getElementById('pf-featured').checked,
   };
   const url = id ? `${BACKEND_URL}/api/products/${id}` : `${BACKEND_URL}/api/products`;
   const method = id ? 'PUT' : 'POST';
