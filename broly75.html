@@ -3577,15 +3577,41 @@ function closeReviewModal(){
 
 let siteContent = null;
 
+function hexToRgba(hex, alpha){
+  if (!hex) return null;
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0,2), 16);
+  const g = parseInt(h.substring(2,4), 16);
+  const b = parseInt(h.substring(4,6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function applyZoneColor(el, hex){
+  if (!el || !hex) return;
+  el.style.setProperty('--lime', hex);
+  el.style.setProperty('--co-g', hex);
+  el.style.setProperty('--co-g-dim', hexToRgba(hex, 0.3));
+}
+
 function applySiteStyle(style){
   if (!style) return;
   const root = document.documentElement;
   if (style.colors){
     if (style.colors.ink) root.style.setProperty('--ink', style.colors.ink);
     if (style.colors.paper) root.style.setProperty('--paper', style.colors.paper);
-    if (style.colors.lime) root.style.setProperty('--lime', style.colors.lime);
     if (style.colors.pink) root.style.setProperty('--pink', style.colors.pink);
     if (style.colors.cyan) root.style.setProperty('--cyan', style.colors.cyan);
+
+    // 4 zones indépendantes — chacune peut avoir sa propre couleur d'accent.
+    // "Accueil/Produits" (zoneHome) est la couleur de base, appliquée sur tout le document ;
+    // les 3 autres zones l'écrasent localement dans leur conteneur uniquement.
+    const zoneHome = style.colors.zoneHome || style.colors.lime;
+    applyZoneColor(root, zoneHome);
+    applyZoneColor(document.getElementById('checkout-overlay'), style.colors.zonePanier || zoneHome);
+    applyZoneColor(document.getElementById('avis-overlay'), style.colors.zoneAvis || zoneHome);
+    applyZoneColor(document.getElementById('review-modal'), style.colors.zoneAvis || zoneHome);
+    applyZoneColor(document.getElementById('contact-overlay'), style.colors.zoneContact || zoneHome);
+    applyZoneColor(document.getElementById('profile-overlay'), style.colors.zoneContact || zoneHome);
   }
   if (style.fonts){
     const families = [];

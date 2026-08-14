@@ -679,12 +679,22 @@
         <div><label>Texte (paper)</label><input type="color" id="s-color-paper"></div>
       </div>
       <div class="form-grid">
-        <div><label>Accent principal (lime)</label><input type="color" id="s-color-lime"></div>
         <div><label>Accent secondaire (pink)</label><input type="color" id="s-color-pink"></div>
+        <div><label>Accent tertiaire (cyan)</label><input type="color" id="s-color-cyan"></div>
       </div>
-      <label>Accent tertiaire (cyan)</label>
-      <input type="color" id="s-color-cyan">
-      <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
+
+      <h2 style="margin-top:20px;">Accent par zone</h2>
+      <p class="muted" style="margin-bottom:10px;">Chaque zone du site peut avoir sa propre couleur d'accent (bordures, boutons, icônes).</p>
+      <label>Accueil / Produits</label>
+      <input type="color" id="s-color-zone-home">
+      <label style="margin-top:10px;">Panier</label>
+      <input type="color" id="s-color-zone-panier">
+      <label style="margin-top:10px;">Avis</label>
+      <input type="color" id="s-color-zone-avis">
+      <label style="margin-top:10px;">Contact / Profil</label>
+      <input type="color" id="s-color-zone-contact">
+
+      <button onclick="saveStyleSettings()" style="width:100%; margin-top:14px;">Enregistrer</button>
     </div>
 
     <!-- Sous-écran : Polices -->
@@ -1874,9 +1884,14 @@ async function loadStyleSettings(){
   const colors = s.colors || {};
   document.getElementById('s-color-ink').value = colors.ink || '#0B0B0D';
   document.getElementById('s-color-paper').value = colors.paper || '#F1EFE9';
-  document.getElementById('s-color-lime').value = colors.lime || '#D4FF3D';
   document.getElementById('s-color-pink').value = colors.pink || '#FF2E88';
   document.getElementById('s-color-cyan').value = colors.cyan || '#00E5FF';
+
+  const baseZone = colors.zoneHome || colors.lime || '#3ECD6B';
+  document.getElementById('s-color-zone-home').value = baseZone;
+  document.getElementById('s-color-zone-panier').value = colors.zonePanier || baseZone;
+  document.getElementById('s-color-zone-avis').value = colors.zoneAvis || baseZone;
+  document.getElementById('s-color-zone-contact').value = colors.zoneContact || baseZone;
 
   const fonts = s.fonts || {};
   if (fonts.title) document.getElementById('s-font-title').value = fonts.title;
@@ -1926,9 +1941,12 @@ async function saveStyleSettings(){
     colors: {
       ink: document.getElementById('s-color-ink').value,
       paper: document.getElementById('s-color-paper').value,
-      lime: document.getElementById('s-color-lime').value,
       pink: document.getElementById('s-color-pink').value,
       cyan: document.getElementById('s-color-cyan').value,
+      zoneHome: document.getElementById('s-color-zone-home').value,
+      zonePanier: document.getElementById('s-color-zone-panier').value,
+      zoneAvis: document.getElementById('s-color-zone-avis').value,
+      zoneContact: document.getElementById('s-color-zone-contact').value,
     },
     fonts: {
       title: document.getElementById('s-font-title').value,
