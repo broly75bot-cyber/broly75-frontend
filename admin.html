@@ -455,6 +455,20 @@
       <label>Bandeau de disponibilité</label>
       <input id="lb-cc-available" placeholder="Nous sommes disponibles 24/7">
 
+      <h2 style="margin-top:20px;">Menu du bas</h2>
+      <div class="form-grid">
+        <div><label>Accueil</label><input id="lb-nav-accueil" placeholder="Accueil"></div>
+        <div><label>Infos</label><input id="lb-nav-infos" placeholder="Infos"></div>
+      </div>
+      <div class="form-grid">
+        <div><label>Panier</label><input id="lb-nav-panier" placeholder="Panier"></div>
+        <div><label>Avis</label><input id="lb-nav-avis" placeholder="Avis"></div>
+      </div>
+      <div class="form-grid">
+        <div><label>Contact</label><input id="lb-nav-contact" placeholder="Contact"></div>
+        <div><label>Profil</label><input id="lb-nav-profil" placeholder="Profil"></div>
+      </div>
+
       <button style="width:100%; margin-top:14px;" onclick="saveContent()">Enregistrer</button>
     </div>
 
@@ -1579,6 +1593,12 @@ async function loadContent(){
   document.getElementById('lb-pd-suggest-title').value = lb.pdSuggestTitle || '';
   document.getElementById('lb-pd-add-btn').value = lb.pdAddBtn || '';
   document.getElementById('lb-cc-available').value = lb.contactAvailableText || '';
+  document.getElementById('lb-nav-accueil').value = lb.navAccueil || '';
+  document.getElementById('lb-nav-infos').value = lb.navInfos || '';
+  document.getElementById('lb-nav-panier').value = lb.navPanier || '';
+  document.getElementById('lb-nav-avis').value = lb.navAvis || '';
+  document.getElementById('lb-nav-contact').value = lb.navContact || '';
+  document.getElementById('lb-nav-profil').value = lb.navProfil || '';
 }
 
 function renderOrderEditor(containerId, list){
@@ -1674,6 +1694,12 @@ async function saveContent(){
     pdSuggestTitle: document.getElementById('lb-pd-suggest-title').value,
     pdAddBtn: document.getElementById('lb-pd-add-btn').value,
     contactAvailableText: document.getElementById('lb-cc-available').value,
+    navAccueil: document.getElementById('lb-nav-accueil').value,
+    navInfos: document.getElementById('lb-nav-infos').value,
+    navPanier: document.getElementById('lb-nav-panier').value,
+    navAvis: document.getElementById('lb-nav-avis').value,
+    navContact: document.getElementById('lb-nav-contact').value,
+    navProfil: document.getElementById('lb-nav-profil').value,
   };
   const body = {
     ...(currentContent || {}),
