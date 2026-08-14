@@ -239,6 +239,15 @@
     </div>
 
     <div class="subscreen active" id="commandes-menu">
+      <input id="orders-search" placeholder="Rechercher par nom, pseudo ou n° de commande" oninput="renderOrdersList()" style="margin-bottom:10px;">
+      <select id="orders-status-filter" onchange="renderOrdersList()" style="margin-bottom:14px;">
+        <option value="">Tous les statuts</option>
+        <option value="pending">En attente</option>
+        <option value="paid">Payée</option>
+        <option value="ready">Prête</option>
+        <option value="shipped">Expédiée</option>
+        <option value="delivered">Livrée</option>
+      </select>
       <div class="nav-list" id="orders-container"></div>
     </div>
 
@@ -771,6 +780,10 @@
       <h2 style="margin-top:20px;">Journal des connexions</h2>
       <p class="muted" style="margin-bottom:10px;">Les 200 dernières tentatives de connexion à l'admin (réussies ou non), avec l'adresse IP et l'heure.</p>
       <div id="admin-log-list"><p class="muted">Chargement...</p></div>
+
+      <h2 style="margin-top:20px;">Sauvegarde</h2>
+      <p class="muted" style="margin-bottom:10px;">Une copie de toutes tes données (produits, contenu, commandes, avis) part automatiquement une fois par jour sur ton canal des commandes, en pièce jointe. Tu peux aussi la déclencher toi-même :</p>
+      <button onclick="triggerBackup()" style="width:100%;">Sauvegarder maintenant</button>
     </div>
 
     <div class="subscreen" id="reglages-crypto">
@@ -885,6 +898,16 @@ function openSettingsSection(name){
     loadCoinsPerOrder();
   }
 }
+async function triggerBackup(){
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/backup-now`, { method: 'POST', headers: { 'x-admin-key': adminKey } });
+    if (res.ok) alert('Sauvegarde envoyée sur ton canal Telegram des commandes.');
+    else alert('Erreur lors de la sauvegarde.');
+  } catch (err) {
+    alert('Impossible de lancer la sauvegarde — vérifie ta connexion.');
+  }
+}
+
 async function loadAdminLog(){
   const list = document.getElementById('admin-log-list');
   try {
@@ -1092,17 +1115,37 @@ async function loadOrders(){
     const res = await fetch(`${BACKEND_URL}/api/orders`, { headers: { 'x-admin-key': adminKey } });
     if (res.status === 401){ alert('Mot de passe incorrect'); location.reload(); return; }
     allOrders = await res.json();
-    if (allOrders.length === 0){ container.innerHTML = '<p class="empty">Aucune commande pour le moment.</p>'; return; }
-    container.innerHTML = allOrders.map(o => `
-      <button class="nav-row" onclick="showOrderDetail('${o.id}')">
-        <span>
-          <span style="display:block;">${o.name || 'Sans nom'}${(o.previousOrdersCount || 0) > 0 ? ' <span title="Client fidèle" style="color:var(--warning);">★</span>' : ''}</span>
-          <span class="muted">${new Date(o.createdAt).toLocaleDateString('fr-FR')} · ${o.totalEur} €</span>
-        </span>
-        <span class="nav-row-hint"><span class="status-badge ${o.status}">${o.status}</span></span>
-      </button>
-    `).join('');
+    renderOrdersList();
   } catch (err) { container.innerHTML = '<p class="empty">Erreur de chargement.</p>'; }
+}
+
+function renderOrdersList(){
+  const container = document.getElementById('orders-container');
+  const search = (document.getElementById('orders-search')?.value || '').trim().toLowerCase();
+  const statusFilter = document.getElementById('orders-status-filter')?.value || '';
+
+  let list = allOrders;
+  if (statusFilter) list = list.filter(o => o.status === statusFilter);
+  if (search) {
+    list = list.filter(o =>
+      (o.name || '').toLowerCase().includes(search) ||
+      (o.id || '').toLowerCase().includes(search) ||
+      (o.telegramUsername || '').toLowerCase().includes(search)
+    );
+  }
+
+  if (allOrders.length === 0){ container.innerHTML = '<p class="empty">Aucune commande pour le moment.</p>'; return; }
+  if (list.length === 0){ container.innerHTML = '<p class="empty">Aucune commande ne correspond à ta recherche.</p>'; return; }
+
+  container.innerHTML = list.map(o => `
+    <button class="nav-row" onclick="showOrderDetail('${o.id}')">
+      <span>
+        <span style="display:block;">${o.name || 'Sans nom'}${(o.previousOrdersCount || 0) > 0 ? ' <span title="Client fidèle" style="color:var(--warning);">★</span>' : ''}</span>
+        <span class="muted">${new Date(o.createdAt).toLocaleDateString('fr-FR')} · ${o.totalEur} €</span>
+      </span>
+      <span class="nav-row-hint"><span class="status-badge ${o.status}">${o.status}</span></span>
+    </button>
+  `).join('');
 }
 
 function showOrderDetail(id){

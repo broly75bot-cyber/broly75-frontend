@@ -2038,7 +2038,7 @@
   <div class="overlay-inner">
     <div class="close-row">
       <h2 id="type-filter-h2">Type de vêtement</h2>
-      <button class="close-btn" onclick="closeOverlay('type-filter-overlay')">Fermer</button>
+      <button class="close-btn" onclick="closeOverlay('type-filter-overlay')" data-i18n="close">Fermer</button>
     </div>
     <div class="filter-list" id="type-filter-list"></div>
   </div>
@@ -2049,7 +2049,7 @@
   <div class="overlay-inner">
     <div class="close-row">
       <h2 id="brand-filter-h2">Marque</h2>
-      <button class="close-btn" onclick="closeOverlay('brand-filter-overlay')">Fermer</button>
+      <button class="close-btn" onclick="closeOverlay('brand-filter-overlay')" data-i18n="close">Fermer</button>
     </div>
     <div class="filter-list" id="brand-filter-list"></div>
   </div>
@@ -2093,7 +2093,7 @@
   <div class="overlay-inner">
     <div class="close-row">
       <h2>Profil</h2>
-      <button class="close-btn" onclick="closeOverlay('profile-overlay')">Fermer</button>
+      <button class="close-btn" onclick="closeOverlay('profile-overlay')" data-i18n="close">Fermer</button>
     </div>
 
     <div class="profile-card">
@@ -2135,15 +2135,9 @@
     <div class="info-block">
       <div class="info-block-title">Langue</div>
       <div class="lang-grid" id="lang-grid">
-        <button class="lang-btn active" onclick="setLang(this,'FR')">🇫🇷 FR</button>
-        <button class="lang-btn" onclick="setLang(this,'EN')">🇬🇧 EN</button>
-        <button class="lang-btn" onclick="setLang(this,'ES')">🇪🇸 ES</button>
-        <button class="lang-btn" onclick="setLang(this,'DE')">🇩🇪 DE</button>
-        <button class="lang-btn" onclick="setLang(this,'IT')">🇮🇹 IT</button>
-        <button class="lang-btn" onclick="setLang(this,'PT')">🇵🇹 PT</button>
-        <button class="lang-btn" onclick="setLang(this,'AR')">🇸🇦 AR</button>
-        <button class="lang-btn" onclick="setLang(this,'NL')">🇳🇱 NL</button>
-        <button class="lang-btn" onclick="setLang(this,'TR')">🇹🇷 TR</button>
+        <button class="lang-btn active" onclick="setLang(this,'FR')">🇫🇷 Français</button>
+        <button class="lang-btn" onclick="setLang(this,'EN')">🇬🇧 English</button>
+        <button class="lang-btn" onclick="setLang(this,'ES')">🇪🇸 Español</button>
       </div>
     </div>
 
@@ -2160,7 +2154,7 @@
   <div class="overlay-inner">
     <div class="close-row">
       <h2>Contact</h2>
-      <button class="close-btn" onclick="closeOverlay('contact-overlay')">Fermer</button>
+      <button class="close-btn" onclick="closeOverlay('contact-overlay')" data-i18n="close">Fermer</button>
     </div>
 
     <div class="cc-list">
@@ -2232,7 +2226,7 @@
   <div class="overlay-inner">
     <div class="close-row">
       <h2>Avis</h2>
-      <button class="close-btn" onclick="closeOverlay('avis-overlay')">Fermer</button>
+      <button class="close-btn" onclick="closeOverlay('avis-overlay')" data-i18n="close">Fermer</button>
     </div>
 
     <div class="checkout-section-header">
@@ -2318,7 +2312,7 @@
   <div class="overlay-inner">
     <div class="close-row">
       <h2>Infos</h2>
-      <button class="close-btn" onclick="closeOverlay('info-overlay')">Fermer</button>
+      <button class="close-btn" onclick="closeOverlay('info-overlay')" data-i18n="close">Fermer</button>
     </div>
 
     <div class="info-block">
@@ -2418,7 +2412,7 @@
   <div class="overlay-inner">
     <div class="close-row">
       <h2>Panier</h2>
-      <button class="close-btn" onclick="closeOverlay('cart-overlay')">Fermer</button>
+      <button class="close-btn" onclick="closeOverlay('cart-overlay')" data-i18n="close">Fermer</button>
     </div>
     <div id="cart-lines"></div>
     <div class="totals" id="cart-totals-row">
@@ -2438,7 +2432,7 @@
   <div class="overlay-inner">
     <div class="close-row">
       <h2>Commande</h2>
-      <button class="close-btn" onclick="closeOverlay('checkout-overlay')">Fermer</button>
+      <button class="close-btn" onclick="closeOverlay('checkout-overlay')" data-i18n="close">Fermer</button>
     </div>
 
     <!-- ARTICLES -->
@@ -3114,7 +3108,7 @@ function openTypeFilter(){
   const types = sortByCustomOrder(detected, siteContent?.typeOrder);
   const list = document.getElementById('type-filter-list');
   list.innerHTML = [
-    `<button class="nav-row ${activeType==='Tout'?'selected-row':''}" onclick="pickType('Tout')">Tous les styles</button>`,
+    `<button class="nav-row ${activeType==='Tout'?'selected-row':''}" onclick="pickType('Tout')">${t('allStyles')}</button>`,
     ...types.map(t => `<button class="nav-row ${activeType===t?'selected-row':''}" onclick="pickType('${t}')">${t}</button>`)
   ].join('');
   document.getElementById('type-filter-overlay').classList.add('show');
@@ -3134,7 +3128,7 @@ function openBrandFilter(){
   const brands = sortByCustomOrder(detected, siteContent?.brandOrder);
   const list = document.getElementById('brand-filter-list');
   list.innerHTML = [
-    `<button class="nav-row ${activeBrand==='Tout'?'selected-row':''}" onclick="pickBrand('Tout')">Toutes les marques</button>`,
+    `<button class="nav-row ${activeBrand==='Tout'?'selected-row':''}" onclick="pickBrand('Tout')">${t('allBrands')}</button>`,
     ...brands.map(b => `<button class="nav-row ${activeBrand===b?'selected-row':''}" onclick="pickBrand('${b}')">${b}</button>`)
   ].join('');
   document.getElementById('brand-filter-overlay').classList.add('show');
@@ -3203,7 +3197,7 @@ function emptyCartStateHTML(closeOverlayId){
       <div class="ce-icon"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8h12l-1 12a2 2 0 0 1-2 1.8H9a2 2 0 0 1-2-1.8L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></div>
       <h3>Votre panier est vide</h3>
       <p>Ajoutez des produits pour commencer vos achats</p>
-      <button type="button" onclick="closeOverlay('${closeOverlayId}')">Découvrir les produits</button>
+      <button type="button" onclick="closeOverlay('${closeOverlayId}')">${t('discoverProducts')}</button>
     </div>
   `;
 }
@@ -3363,6 +3357,7 @@ if (reviewLinkEl) reviewLinkEl.href = 'https://t.me/Broly75avis';
 
 async function openProfile(){
   hideNav();
+  document.querySelectorAll('#lang-grid .lang-btn').forEach(b => b.classList.toggle('active', b.textContent.includes(currentLang === 'FR' ? 'Français' : currentLang === 'EN' ? 'English' : 'Español')));
   const tgUser = tg?.initDataUnsafe?.user;
   document.getElementById('coins-hint-amount').textContent = `${siteContent?.coinsPerOrder ?? 10} coins`;
   let currentCoins = 0;
@@ -3441,9 +3436,58 @@ function handleAvatarUpload(event){
   reader.readAsDataURL(file);
 }
 
+// ===== Traduction (textes fixes uniquement — ce que l'admin tape lui-même n'est jamais traduit) =====
+const TRANSLATIONS = {
+  FR: {
+    close: 'Fermer',
+    allStyles: 'Tous les styles',
+    allBrands: 'Toutes les marques',
+    discoverProducts: 'Découvrir les produits',
+    cartEmpty: 'Ton panier est vide.',
+    chooseFulfillment: 'Merci de choisir un mode de livraison.',
+    validateOrder: 'Valider ma commande',
+    checking: 'Vérification...',
+  },
+  EN: {
+    close: 'Close',
+    allStyles: 'All styles',
+    allBrands: 'All brands',
+    discoverProducts: 'Discover products',
+    cartEmpty: 'Your cart is empty.',
+    chooseFulfillment: 'Please choose a delivery method.',
+    validateOrder: 'Confirm my order',
+    checking: 'Checking...',
+  },
+  ES: {
+    close: 'Cerrar',
+    allStyles: 'Todos los estilos',
+    allBrands: 'Todas las marcas',
+    discoverProducts: 'Descubrir productos',
+    cartEmpty: 'Tu carrito está vacío.',
+    chooseFulfillment: 'Elige un modo de entrega, por favor.',
+    validateOrder: 'Confirmar mi pedido',
+    checking: 'Verificando...',
+  },
+};
+let currentLang = localStorage.getItem('broly75_lang') || 'FR';
+
+function t(key){
+  return (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS.FR[key] || key;
+}
+
+function applyTranslations(){
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+}
+
 function setLang(el, code){
+  currentLang = code;
+  localStorage.setItem('broly75_lang', code);
   document.querySelectorAll('#lang-grid .lang-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
+  applyTranslations();
+  renderCats(); // les filtres "Tous les styles/marques" sont générés dynamiquement
 }
 
 function openContact(){
@@ -3657,6 +3701,7 @@ async function loadSiteContent(){
     applySiteStyle(siteContent.style);
     applyDeliveryLabels(siteContent.labels);
     applyEnabledCryptos(siteContent.cryptoWallets);
+    applyTranslations();
     renderCats();
     renderGrid();
   } catch (err) {
@@ -3792,13 +3837,13 @@ async function openCheckout(){
 function checkOrderFieldsValid(){
   const name = document.getElementById('f-name').value.trim();
 
-  if (cartItems().length === 0){ alert('Ton panier est vide.'); return false; }
+  if (cartItems().length === 0){ alert(t('cartEmpty')); return false; }
   const minOrderAmount = siteContent?.shipping?.minOrderAmount || 0;
   if (siteContent?.shipping?.enforceMin && minOrderAmount > 0 && cartTotal() < minOrderAmount){
     alert(`Montant minimum de commande : ${minOrderAmount} €. Ton panier est à ${cartTotal().toFixed(2)} €.`);
     return false;
   }
-  if (!fulfillmentMode){ alert('Merci de choisir un mode de livraison.'); return false; }
+  if (!fulfillmentMode){ alert(t('chooseFulfillment')); return false; }
   if (name.length < 2){ alert('Merci d\'indiquer ton nom complet.'); return false; }
   if (fulfillmentMode === 'livraison'){
     if (remiseMode === 'personnelle'){
