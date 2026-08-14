@@ -295,6 +295,7 @@
         <button class="nav-row" onclick="openContentSection('wallpaper')">Papier peint</button>
         <button class="nav-row" onclick="openContentSection('categories')">Ordre des catégories</button>
         <button class="nav-row" onclick="openContentSection('labels')">Intitulés des cases</button>
+        <button class="nav-row" onclick="openContentSection('statusmsg')">Messages automatiques (commandes)</button>
         <button class="nav-row" onclick="openContentSection('hours')">Horaires de livraison</button>
         <button class="nav-row" onclick="openContentSection('meetup')">Meetup</button>
         <button class="nav-row" onclick="openContentSection('shipping')">Service d'envoi</button>
@@ -429,6 +430,33 @@
       <input id="lb-info-shipping-title" placeholder="Service d'envoi">
       <label>Titre "Questions fréquentes"</label>
       <input id="lb-info-faq-title" placeholder="Questions fréquentes">
+
+      <button style="width:100%; margin-top:14px;" onclick="saveContent()">Enregistrer</button>
+    </div>
+
+    <!-- Sous-écran : Messages automatiques -->
+    <div class="subscreen" id="contenu-statusmsg">
+      <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
+      <h2>Messages automatiques</h2>
+      <p class="muted" style="margin-bottom:14px;">Le client reçoit automatiquement un de ces messages sur Telegram dès que tu changes le statut d'une commande. Laisse un champ vide pour garder le texte par défaut. Pour "Expédiée", le transporteur/n° de suivi/lien sont ajoutés automatiquement à la fin si tu les as renseignés.</p>
+
+      <label>Commande payée</label>
+      <textarea id="msg-paid" rows="2" placeholder="✅ Ta commande a bien été validée, elle est en cours de préparation !"></textarea>
+
+      <label style="margin-top:10px;">Prête — sur place / point relais</label>
+      <textarea id="msg-ready-pickup" rows="2" placeholder="🎉 Ta commande est prête ! Tu peux venir la récupérer."></textarea>
+
+      <label style="margin-top:10px;">Prête — livraison / envoi</label>
+      <textarea id="msg-ready-delivery" rows="2" placeholder="📦 Ta commande est prête, elle va bientôt partir !"></textarea>
+
+      <label style="margin-top:10px;">En cours de livraison</label>
+      <textarea id="msg-shipped" rows="2" placeholder="🚚 Ta commande est en cours de livraison !"></textarea>
+
+      <label style="margin-top:10px;">Récupérée — sur place / point relais</label>
+      <textarea id="msg-delivered-pickup" rows="2" placeholder="✅ Commande récupérée avec succès ! Merci pour ta confiance 🙏 Tu as gagné 10 coins."></textarea>
+
+      <label style="margin-top:10px;">Arrivée — livraison / envoi</label>
+      <textarea id="msg-delivered-delivery" rows="2" placeholder="📍 Ta commande est arrivée ! Merci pour ta confiance 🙏 Tu as gagné 10 coins."></textarea>
 
       <button style="width:100%; margin-top:14px;" onclick="saveContent()">Enregistrer</button>
     </div>
@@ -1212,6 +1240,14 @@ async function loadContent(){
   renderOrderEditor('type-order-editor', c.typeOrder || []);
   renderOrderEditor('brand-order-editor', c.brandOrder || []);
 
+  const sm = c.statusMessages || {};
+  document.getElementById('msg-paid').value = sm.paid || '';
+  document.getElementById('msg-ready-pickup').value = sm.readyPickup || '';
+  document.getElementById('msg-ready-delivery').value = sm.readyDelivery || '';
+  document.getElementById('msg-shipped').value = sm.shipped || '';
+  document.getElementById('msg-delivered-pickup').value = sm.deliveredPickup || '';
+  document.getElementById('msg-delivered-delivery').value = sm.deliveredDelivery || '';
+
   const lb = c.labels || {};
   document.getElementById('lb-cat1-name').value = lb.cat1Name || '';
   document.getElementById('lb-cat2-name').value = lb.cat2Name || '';
@@ -1283,6 +1319,14 @@ async function saveContent(){
   const brandOrder = Array.from(document.querySelectorAll('#brand-order-editor .order-field'))
     .map(input => input.value.trim())
     .filter(Boolean);
+  const statusMessages = {
+    paid: document.getElementById('msg-paid').value,
+    readyPickup: document.getElementById('msg-ready-pickup').value,
+    readyDelivery: document.getElementById('msg-ready-delivery').value,
+    shipped: document.getElementById('msg-shipped').value,
+    deliveredPickup: document.getElementById('msg-delivered-pickup').value,
+    deliveredDelivery: document.getElementById('msg-delivered-delivery').value,
+  };
   const labels = {
     cat1Name: document.getElementById('lb-cat1-name').value,
     cat2Name: document.getElementById('lb-cat2-name').value,
@@ -1320,6 +1364,7 @@ async function saveContent(){
     typeOrder,
     brandOrder,
     labels,
+    statusMessages,
     hours: {
       lunMar: document.getElementById('c-lunmar').value,
       merJeu: document.getElementById('c-merjeu').value,
