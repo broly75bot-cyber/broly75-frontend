@@ -287,6 +287,12 @@
 <img id="pf-img-preview" src="" style="max-width:120px; border-radius:8px; margin:8px 0; display:none;">
 <div class="muted" id="pf-img-status"></div>
 
+      <label>Vidéo <span style="text-transform:none; color:rgba(0,0,0,0.35);">(optionnel, en plus de la photo)</span></label>
+<input type="file" id="pf-video-file" accept="video/*" onchange="uploadVideo(this)">
+<input type="hidden" id="pf-video">
+<video id="pf-video-preview" src="" controls style="max-width:160px; border-radius:8px; margin:8px 0; display:none;"></video>
+<div class="muted" id="pf-video-status"></div>
+
       <label>Description</label>
       <textarea id="pf-desc" rows="3"></textarea>
       <label>Matière</label>
@@ -1671,8 +1677,10 @@ function populateProductDropdowns(selectedCat, selectedBrand){
 
 function openProductForm(){
   document.getElementById('pf-title').textContent = 'Nouveau produit';
-  ['pf-id','pf-name','pf-price','pf-tag','pf-img','pf-desc','pf-material','pf-colors','pf-sizes','pf-stock']
+  ['pf-id','pf-name','pf-price','pf-tag','pf-img','pf-video','pf-desc','pf-material','pf-colors','pf-sizes','pf-stock']
     .forEach(id => document.getElementById(id).value = '');
+  document.getElementById('pf-video-preview').style.display = 'none';
+  document.getElementById('pf-video-status').textContent = '';
   document.getElementById('pf-featured').checked = false;
   document.getElementById('pf-vip-early').checked = false;
   document.getElementById('pf-cat-new').value = '';
@@ -1699,6 +1707,12 @@ const preview = document.getElementById('pf-img-preview');
 preview.src = p.img || '';
 preview.style.display = p.img ? 'block' : 'none';
 
+document.getElementById('pf-video').value = p.videoUrl || '';
+const videoPreview = document.getElementById('pf-video-preview');
+videoPreview.src = p.videoUrl || '';
+videoPreview.style.display = p.videoUrl ? 'block' : 'none';
+document.getElementById('pf-video-status').textContent = '';
+
   document.getElementById('pf-desc').value = p.desc || '';
   document.getElementById('pf-material').value = p.material || '';
   document.getElementById('pf-colors').value = (p.colors || []).join(', ');
@@ -1709,6 +1723,31 @@ preview.style.display = p.img ? 'block' : 'none';
   document.getElementById('product-form').style.display = 'block';
   document.getElementById('product-form').scrollIntoView({behavior:'smooth'});
 }
+async function uploadVideo(input){
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('pf-video-status');
+  status.textContent = 'Envoi en cours... (peut prendre un moment)';
+  const formData = new FormData();
+  formData.append('video', file);
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/upload-video`, {
+      method: 'POST',
+      headers: { 'x-admin-key': adminKey },
+      body: formData,
+    });
+    const data = await res.json();
+    if (!res.ok) { status.textContent = '❌ ' + (data.error || 'Erreur upload'); return; }
+    document.getElementById('pf-video').value = data.url;
+    const preview = document.getElementById('pf-video-preview');
+    preview.src = data.url;
+    preview.style.display = 'block';
+    status.textContent = '✅ Vidéo envoyée';
+  } catch (err) {
+    status.textContent = '❌ Erreur réseau';
+  }
+}
+
 async function uploadPhoto(input){
   const file = input.files[0];
   if (!file) return;
@@ -1821,6 +1860,7 @@ async function saveProduct(){
     cat: catNew || document.getElementById('pf-cat').value,
     tag: document.getElementById('pf-tag').value,
     img: document.getElementById('pf-img').value,
+    videoUrl: document.getElementById('pf-video').value,
     desc: document.getElementById('pf-desc').value,
     material: document.getElementById('pf-material').value,
     colors: document.getElementById('pf-colors').value.split(',').map(s => s.trim()).filter(Boolean),

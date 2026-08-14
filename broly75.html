@@ -2364,6 +2364,7 @@
     </div>
 
     <img class="product-hero" id="pd-img" src="" alt="">
+    <video class="product-hero" id="pd-video" controls playsinline style="display:none; margin-top:10px;"></video>
 
     <div class="pd-title-box">
       <div class="pd-type" id="pd-type"></div>
@@ -2793,6 +2794,16 @@ function openProduct(id){
   selectedColor = null;
   pdFulfilMode = 'livraison';
   document.getElementById('pd-img').src = p.img;
+  const video = document.getElementById('pd-video');
+  if (p.videoUrl){
+    video.src = p.videoUrl;
+    video.style.display = 'block';
+  } else {
+    video.pause();
+    video.removeAttribute('src');
+    video.load();
+    video.style.display = 'none';
+  }
   document.getElementById('pd-type').textContent = p.cat;
   document.getElementById('pd-brand').textContent = p.brand;
   document.getElementById('pd-price').textContent = p.price + ' €';
@@ -4018,7 +4029,10 @@ function showNav(){
 
 function closeOverlay(id){
   document.getElementById(id).classList.remove('show');
-  if (id === 'product-overlay') document.getElementById('product-footer').classList.remove('show');
+  if (id === 'product-overlay'){
+    document.getElementById('product-footer').classList.remove('show');
+    document.getElementById('pd-video').pause();
+  }
   const anyOpen = document.querySelectorAll('.overlay.show').length > 0;
   if (!anyOpen) showNav();
 }
