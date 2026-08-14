@@ -675,6 +675,7 @@
         <button class="nav-row" onclick="openSettingsSection('announcement')">Bloc annonce / promo</button>
         <button class="nav-row" onclick="openSettingsSection('security')">Sécurité</button>
         <button class="nav-row" onclick="openSettingsSection('crypto')">Paiement crypto</button>
+        <button class="nav-row" onclick="openSettingsSection('vip')">Clients VIP</button>
         <button class="nav-row" onclick="openSettingsSection('loyalty')">Fidélité (coins)</button>
       </div>
     </div>
@@ -808,6 +809,21 @@
       <button onclick="saveCryptoWallets()" style="width:100%; margin-top:14px;">Enregistrer</button>
     </div>
 
+    <div class="subscreen" id="reglages-vip">
+      <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
+      <h2>Clients VIP</h2>
+      <p class="muted" style="margin-bottom:14px;">Les clients VIP débloquent des moyens de paiement à vérification manuelle (Paysafecard, Transcash) que les autres ne voient pas. Certifie un client en collant son identifiant Telegram (tu le trouves dans le détail de sa commande, en admin > Commandes).</p>
+
+      <label>Identifiant Telegram</label>
+      <input id="vip-add-id" placeholder="Ex : 6949971660">
+      <label>Nom (facultatif, pour te repérer)</label>
+      <input id="vip-add-name" placeholder="Ex : Jean D.">
+      <button onclick="addVip()" style="width:100%; margin-top:10px;">Certifier ce client VIP</button>
+
+      <h2 style="margin-top:20px;">Clients VIP actuels</h2>
+      <div id="vip-list"><p class="muted">Chargement...</p></div>
+    </div>
+
     <div class="subscreen" id="reglages-loyalty">
       <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
       <h2>Fidélité (coins)</h2>
@@ -906,6 +922,9 @@ function openSettingsSection(name){
   }
   if (name === 'crypto'){
     loadCryptoWallets();
+  }
+  if (name === 'vip'){
+    loadVipList();
   }
   if (name === 'loyalty'){
     loadCoinsPerOrder();
@@ -1031,6 +1050,59 @@ async function saveCryptoWallets(){
     closeSettingsSection();
   } catch (err) {
     alert('Impossible d\'enregistrer — vérifie ta connexion.');
+  }
+}
+
+async function loadVipList(){
+  const list = document.getElementById('vip-list');
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/vip-list`, { headers: { 'x-admin-key': adminKey } });
+    const vips = await res.json();
+    if (!vips.length){
+      list.innerHTML = '<p class="muted">Aucun client VIP pour le moment.</p>';
+      return;
+    }
+    list.innerHTML = vips.map(v => `
+      <div class="row-between" style="padding:10px 0; border-bottom:1px solid var(--line);">
+        <span>
+          <span style="display:block; font-weight:600;">${v.name || 'Sans nom'}</span>
+          <span class="muted" style="font-size:12px;">${v.telegramId}</span>
+        </span>
+        <button class="danger" onclick="removeVip('${v.telegramId}')">Retirer</button>
+      </div>
+    `).join('');
+  } catch (err) {
+    list.innerHTML = '<p class="muted">Impossible de charger la liste.</p>';
+  }
+}
+
+async function addVip(){
+  const telegramId = document.getElementById('vip-add-id').value.trim();
+  const name = document.getElementById('vip-add-name').value.trim();
+  if (!telegramId){ alert('Merci d\'indiquer un identifiant Telegram.'); return; }
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/set-vip`, {
+      method: 'POST', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify({ telegramId, vip: true, name }),
+    });
+    if (!res.ok) { alert('Erreur lors de la certification.'); return; }
+    document.getElementById('vip-add-id').value = '';
+    document.getElementById('vip-add-name').value = '';
+    loadVipList();
+  } catch (err) {
+    alert('Impossible d\'enregistrer — vérifie ta connexion.');
+  }
+}
+
+async function removeVip(telegramId){
+  try {
+    await fetch(`${BACKEND_URL}/api/set-vip`, {
+      method: 'POST', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify({ telegramId, vip: false }),
+    });
+    loadVipList();
+  } catch (err) {
+    alert('Impossible de retirer — vérifie ta connexion.');
   }
 }
 
@@ -1236,6 +1308,7 @@ function showOrderDetail(id){
         ${(o.previousOrdersCount || 0) > 0 ? '<span title="Client fidèle" style="color:var(--warning);">★</span>' : ''}
       </div>
       ${(o.telegramUsername || o.telegramName) ? `<div class="muted">Telegram : ${o.telegramUsername ? '@' + o.telegramUsername : o.telegramName}</div>` : ''}
+      ${o.telegramId ? `<div class="muted">ID : ${o.telegramId}${o.voucherCode ? ` · 🎫 Code ${o.crypto} : ${o.voucherCode}` : ''}</div>` : ''}
       <div class="muted">${(o.previousOrdersCount || 0) > 0 ? `Client fidèle — ${o.previousOrdersCount} commande${o.previousOrdersCount > 1 ? 's' : ''} précédente${o.previousOrdersCount > 1 ? 's' : ''}` : 'Nouveau client'}</div>
       <div class="muted">${(o.lines || []).join(', ')}</div>
       <div class="muted">Total : ${o.totalEur} € — ${o.fulfillment || 'livraison'}</div>
