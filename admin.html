@@ -83,6 +83,10 @@
 
   .stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
   .stat-card{ background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px; }
+  .month-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid var(--border); font-size:14px; }
+  .month-row:last-child{ border-bottom:none; }
+  .month-row .mr-name{ text-transform:capitalize; }
+  .month-row .mr-amount{ font-weight:700; }
   .stat-card .stat-value{ font-family:'Inter', sans-serif; font-weight:700; font-size:22px; color:var(--text); }
   .stat-card .stat-label{ font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); margin-top:4px; }
 
@@ -186,6 +190,12 @@
 <!-- ONGLET APERÇU -->
 <div class="tab-panel" id="tab-apercu">
   <div class="section-header"><h2>Aperçu des ventes</h2></div>
+
+  <div class="stat-card" style="margin-bottom:14px;">
+    <div class="stat-value" id="stat-month-revenue" style="font-size:32px;">—</div>
+    <div class="stat-label" id="stat-month-label">Chiffre d'affaires — ce mois</div>
+  </div>
+
   <div class="stat-grid">
     <div class="stat-card"><div class="stat-value" id="stat-total">—</div><div class="stat-label">Total ventes (€)</div></div>
     <div class="stat-card"><div class="stat-value" id="stat-count">—</div><div class="stat-label">Commandes</div></div>
@@ -193,6 +203,9 @@
     <div class="stat-card"><div class="stat-value" id="stat-delivered">—</div><div class="stat-label">Livrées</div></div>
   </div>
   <canvas id="sales-chart" height="200"></canvas>
+
+  <div class="section-header" style="margin-top:20px;"><h2>Chiffre d'affaires par mois</h2></div>
+  <div id="monthly-revenue-list"></div>
 </div>
 
 <!-- ONGLET AVIS -->
@@ -1185,6 +1198,36 @@ async function loadStats(){
         }
       }
     });
+
+    // Chiffre d'affaires réel = uniquement les commandes qui ont été réellement payées
+    // (une commande "en attente" jamais payée n'est pas une vente, donc pas comptée ici).
+    const paidOrders = orders.filter(o => ['paid', 'ready', 'shipped', 'delivered'].includes(o.status));
+    const now = new Date();
+    const currentMonthKey = `${now.getFullYear()}-${now.getMonth()}`;
+    const monthNames = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+
+    const byMonth = {};
+    paidOrders.forEach(o => {
+      const d = new Date(o.createdAt);
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      byMonth[key] = (byMonth[key] || 0) + (o.totalEur || 0);
+    });
+
+    document.getElementById('stat-month-revenue').textContent = (byMonth[currentMonthKey] || 0).toFixed(2) + ' €';
+    document.getElementById('stat-month-label').textContent = `Chiffre d'affaires — ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+
+    // Liste des 6 derniers mois (y compris ceux à 0€, pour bien voir la tendance)
+    const monthsToShow = [];
+    for (let i = 0; i < 6; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      monthsToShow.push({ key: `${d.getFullYear()}-${d.getMonth()}`, label: `${monthNames[d.getMonth()]} ${d.getFullYear()}` });
+    }
+    document.getElementById('monthly-revenue-list').innerHTML = monthsToShow.map(m => `
+      <div class="month-row">
+        <span class="mr-name">${m.label}</span>
+        <span class="mr-amount">${(byMonth[m.key] || 0).toFixed(2)} €</span>
+      </div>
+    `).join('');
   } catch (err) {
     console.error('Erreur stats', err);
   }}
