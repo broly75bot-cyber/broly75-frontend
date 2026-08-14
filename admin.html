@@ -581,6 +581,7 @@
         <button class="nav-row" onclick="openSettingsSection('banner')">Bannière</button>
         <button class="nav-row" onclick="openSettingsSection('announcement')">Bloc annonce / promo</button>
         <button class="nav-row" onclick="openSettingsSection('security')">Sécurité</button>
+        <button class="nav-row" onclick="openSettingsSection('crypto')">Paiement crypto</button>
       </div>
     </div>
 
@@ -673,6 +674,16 @@
       <button onclick="saveLockMinutes()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
+    <div class="subscreen" id="reglages-crypto">
+      <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
+      <h2>Paiement crypto</h2>
+      <p class="muted" style="margin-bottom:14px;">Change tes adresses de réception à tout moment, et active/désactive les cryptos que tu acceptes. Ajouter une toute nouvelle crypto (différente de ces 4) demande un peu de code en plus — demande à ton assistant.</p>
+
+      <div id="crypto-wallets-editor"></div>
+
+      <button onclick="saveCryptoWallets()" style="width:100%; margin-top:14px;">Enregistrer</button>
+    </div>
+
     <div class="muted" id="style-status" style="text-align:center; margin-top:8px;"></div>
   </div>
 </div>
@@ -758,6 +769,9 @@ function openSettingsSection(name){
   if (name === 'security'){
     document.getElementById('s-lock-minutes').value = getLockMinutes();
   }
+  if (name === 'crypto'){
+    loadCryptoWallets();
+  }
 }
 function saveLockMinutes(){
   const minutes = Math.max(1, Number(document.getElementById('s-lock-minutes').value) || 15);
@@ -765,6 +779,62 @@ function saveLockMinutes(){
   resetLockTimer();
   alert(`Verrouillage réglé sur ${minutes} minute${minutes > 1 ? 's' : ''} d'inactivité.`);
   closeSettingsSection();
+}
+
+const CRYPTO_LABELS_ADMIN = { BTC: 'Bitcoin', ETH: 'Ethereum', LTC: 'Litecoin', USDT: 'USDT (réseau Tron)' };
+
+async function loadCryptoWallets(){
+  let content = currentContent;
+  if (!content){
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/content`);
+      content = await res.json();
+      currentContent = content;
+    } catch (err) {
+      document.getElementById('crypto-wallets-editor').innerHTML = '<p class="muted">Impossible de charger les réglages.</p>';
+      return;
+    }
+  }
+  const wallets = content.cryptoWallets || {};
+  document.getElementById('crypto-wallets-editor').innerHTML = ['BTC', 'ETH', 'LTC', 'USDT'].map(c => {
+    const w = wallets[c] || {};
+    const enabled = w.enabled !== false;
+    return `
+      <div style="border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:12px;">
+        <div class="row-between" style="margin-bottom:8px;">
+          <b>${CRYPTO_LABELS_ADMIN[c]}</b>
+          <label style="display:flex; align-items:center; gap:6px; font-weight:400; font-size:13px;">
+            <input type="checkbox" id="crypto-enabled-${c}" ${enabled ? 'checked' : ''} style="width:auto; margin:0;">
+            Accepté
+          </label>
+        </div>
+        <input id="crypto-address-${c}" value="${w.address || ''}" placeholder="Adresse de réception ${CRYPTO_LABELS_ADMIN[c]}" style="margin-bottom:0;">
+      </div>
+    `;
+  }).join('');
+}
+
+async function saveCryptoWallets(){
+  const cryptoWallets = {};
+  ['BTC', 'ETH', 'LTC', 'USDT'].forEach(c => {
+    cryptoWallets[c] = {
+      enabled: document.getElementById(`crypto-enabled-${c}`).checked,
+      address: document.getElementById(`crypto-address-${c}`).value.trim(),
+    };
+  });
+  const body = { ...(currentContent || {}), cryptoWallets };
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/content`, {
+      method: 'PUT', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) { alert('Erreur lors de l\'enregistrement.'); return; }
+    currentContent = body;
+    alert('Adresses crypto enregistrées.');
+    closeSettingsSection();
+  } catch (err) {
+    alert('Impossible d\'enregistrer — vérifie ta connexion.');
+  }
 }
 
 function closeSettingsSection(){

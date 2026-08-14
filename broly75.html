@@ -3554,10 +3554,27 @@ async function loadSiteContent(){
     }
     applySiteStyle(siteContent.style);
     applyDeliveryLabels(siteContent.labels);
+    applyEnabledCryptos(siteContent.cryptoWallets);
     renderCats();
     renderGrid();
   } catch (err) {
     console.error('Impossible de charger le contenu du site', err);
+  }
+}
+
+function applyEnabledCryptos(cryptoWallets){
+  if (!cryptoWallets) return;
+  let firstEnabledCard = null;
+  document.querySelectorAll('#crypto-toggle .mt-card').forEach(card => {
+    const c = card.dataset.crypto;
+    const enabled = cryptoWallets[c]?.enabled !== false;
+    card.style.display = enabled ? '' : 'none';
+    if (enabled && !firstEnabledCard) firstEnabledCard = card;
+  });
+  // Si la crypto sélectionnée par défaut (Bitcoin) a été désactivée, bascule sur la première dispo
+  const activeCard = document.querySelector('#crypto-toggle .mt-card.active');
+  if (activeCard && activeCard.style.display === 'none' && firstEnabledCard){
+    setCrypto(firstEnabledCard.dataset.crypto, firstEnabledCard);
   }
 }
 
