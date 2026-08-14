@@ -996,6 +996,7 @@ async function loadBackupChannel(){
 }
 
 async function saveBackupChannel(){
+  await getFreshContent();
   const backupChannelId = document.getElementById('s-backup-channel').value.trim();
   const backupFrequency = document.getElementById('s-backup-frequency').value;
   const body = { ...(currentContent || {}), backupChannelId, backupFrequency };
@@ -1083,6 +1084,7 @@ async function loadCryptoWallets(){
 }
 
 async function saveCryptoWallets(){
+  await getFreshContent();
   const cryptoWallets = {};
   ['BTC', 'ETH', 'LTC', 'USDT'].forEach(c => {
     cryptoWallets[c] = {
@@ -1152,6 +1154,7 @@ async function loadVipDiscount(){
 }
 
 async function saveVipDiscount(){
+  await getFreshContent();
   const vipDiscountPercent = Math.max(0, Number(document.getElementById('vip-discount').value) || 0);
   const body = { ...(currentContent || {}), vipDiscountPercent };
   try {
@@ -1233,6 +1236,7 @@ async function loadCoinsPerOrder(){
 }
 
 async function saveCoinsPerOrder(){
+  await getFreshContent();
   const coinsPerOrder = Math.max(0, Number(document.getElementById('s-coins-per-order').value) || 0);
   const body = { ...(currentContent || {}), coinsPerOrder };
   try {
@@ -1919,6 +1923,20 @@ async function loadProducts(){
 // ===== CONTENU =====
 let currentContent = null;
 
+// ⚠️ Important : va toujours chercher la vraie dernière version du contenu avant d'enregistrer
+// quoi que ce soit — évite qu'un réglage sauvegardé depuis un écran efface accidentellement
+// un changement fait entre-temps ailleurs (ex. un papier peint changé, puis "écrasé" par
+// l'enregistrement d'un autre réglage qui se basait sur une version en mémoire dépassée).
+async function getFreshContent(){
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/content`);
+    currentContent = await res.json();
+  } catch (err) {
+    console.error('Impossible de rafraîchir le contenu, on garde la version en mémoire', err);
+  }
+  return currentContent || {};
+}
+
 async function loadContent(){
   try {
     const res = await fetch(`${BACKEND_URL}/api/content`);
@@ -2060,6 +2078,7 @@ function addOrderField(containerId){
 }
 
 async function saveContent(){
+  await getFreshContent();
   const faq = ((currentContent || {}).faq || []).map((_, i) => ({
     q: document.getElementById('faq-q-'+i).value,
     a: document.getElementById('faq-a-'+i).value,
@@ -2266,6 +2285,7 @@ async function uploadStyleImage(input, urlFieldId, statusFieldId, previewFieldId
 }
 
 async function saveStyleSettings(){
+  await getFreshContent();
   const style = {
     colors: {
       ink: document.getElementById('s-color-ink').value,
