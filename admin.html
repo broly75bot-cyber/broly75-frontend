@@ -680,6 +680,7 @@
         <button class="nav-row" onclick="openSettingsSection('security')">Sécurité</button>
         <button class="nav-row" onclick="openSettingsSection('crypto')">Paiement crypto</button>
         <button class="nav-row" onclick="openSettingsSection('vip')">Clients VIP</button>
+        <button class="nav-row" onclick="openSettingsSection('gifts')">Cadeaux par niveau</button>
         <button class="nav-row" onclick="openSettingsSection('loyalty')">Fidélité (coins)</button>
       </div>
     </div>
@@ -834,6 +835,23 @@
       <div id="vip-list"><p class="muted">Chargement...</p></div>
     </div>
 
+    <div class="subscreen" id="reglages-gifts">
+      <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
+      <h2>Cadeaux par niveau</h2>
+      <p class="muted" style="margin-bottom:14px;">Décris le cadeau à glisser dans le colis selon le niveau du client — ça s'affiche dans le message Telegram de la commande et dans son détail admin, pour ne jamais l'oublier. Laisse vide pour ne rien offrir à ce niveau.</p>
+
+      <label>Cadeau pour un client ✔️ (1 commande précédente)</label>
+      <input id="gift-certified" placeholder="Ex : Sticker offert">
+
+      <label style="margin-top:10px;">Cadeau pour un client ★ fidèle (2+ commandes précédentes)</label>
+      <input id="gift-fidele" placeholder="Ex : Petit accessoire offert">
+
+      <label style="margin-top:10px;">Cadeau pour un client 🌟 VIP</label>
+      <input id="gift-vip" placeholder="Ex : Produit surprise offert">
+
+      <button onclick="saveGifts()" style="width:100%; margin-top:14px;">Enregistrer</button>
+    </div>
+
     <div class="subscreen" id="reglages-loyalty">
       <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
       <h2>Fidélité (coins)</h2>
@@ -950,6 +968,9 @@ function openSettingsSection(name){
   if (name === 'vip'){
     loadVipList();
     loadVipDiscount();
+  }
+  if (name === 'gifts'){
+    loadGifts();
   }
   if (name === 'loyalty'){
     loadCoinsPerOrder();
@@ -1073,6 +1094,40 @@ async function saveCryptoWallets(){
     currentContent = body;
     alert('Adresses crypto enregistrées.');
     closeSettingsSection();
+  } catch (err) {
+    alert('Impossible d\'enregistrer — vérifie ta connexion.');
+  }
+}
+
+async function loadGifts(){
+  let content = currentContent;
+  if (!content){
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/content`);
+      content = await res.json();
+      currentContent = content;
+    } catch (err) { return; }
+  }
+  document.getElementById('gift-certified').value = content.giftCertified || '';
+  document.getElementById('gift-fidele').value = content.giftFidele || '';
+  document.getElementById('gift-vip').value = content.giftVip || '';
+}
+
+async function saveGifts(){
+  const body = {
+    ...(currentContent || {}),
+    giftCertified: document.getElementById('gift-certified').value.trim(),
+    giftFidele: document.getElementById('gift-fidele').value.trim(),
+    giftVip: document.getElementById('gift-vip').value.trim(),
+  };
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/content`, {
+      method: 'PUT', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) { alert('Erreur lors de l\'enregistrement.'); return; }
+    currentContent = body;
+    alert('Cadeaux enregistrés.');
   } catch (err) {
     alert('Impossible d\'enregistrer — vérifie ta connexion.');
   }
@@ -1363,6 +1418,7 @@ function showOrderDetail(id){
       ${(o.telegramUsername || o.telegramName) ? `<div class="muted">Telegram : ${o.telegramUsername ? '@' + o.telegramUsername : o.telegramName}</div>` : ''}
       ${o.telegramId ? `<div class="muted">ID : ${o.telegramId}${o.voucherCode ? ` · 🎫 Code ${o.crypto} : ${o.voucherCode}` : ''}</div>` : ''}
       <div class="muted">${clientStatusLabel(o.previousOrdersCount)}</div>
+      <div class="muted" id="order-gift-line"></div>
       <div class="muted">${(o.lines || []).join(', ')}</div>
       <div class="muted">Total : ${o.totalEur} € — ${o.fulfillment || 'livraison'}</div>
       <div class="muted">${o.address || ''}</div>
@@ -1375,6 +1431,24 @@ function showOrderDetail(id){
   `;
   document.querySelectorAll('#tab-commandes .subscreen').forEach(s => s.classList.remove('active'));
   document.getElementById('commandes-detail').classList.add('active');
+
+  displayOrderGift(o);
+}
+
+async function displayOrderGift(o){
+  const line = document.getElementById('order-gift-line');
+  const content = currentContent || {};
+  const n = o.previousOrdersCount || 0;
+  const tierGift = n >= 2 ? content.giftFidele : n === 1 ? content.giftCertified : null;
+  let gift = tierGift;
+  if (o.telegramId) {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/user/${o.telegramId}`);
+      const user = await res.json();
+      if (user.vip && content.giftVip) gift = content.giftVip;
+    } catch (err) { /* tant pis, on garde le cadeau de niveau standard */ }
+  }
+  line.textContent = gift ? `🎁 Cadeau à inclure : ${gift}` : '';
 }
 function closeOrderDetail(){
   document.querySelectorAll('#tab-commandes .subscreen').forEach(s => s.classList.remove('active'));
