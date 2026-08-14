@@ -438,25 +438,32 @@
     <div class="subscreen" id="contenu-statusmsg">
       <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
       <h2>Messages automatiques</h2>
-      <p class="muted" style="margin-bottom:14px;">Le client reçoit automatiquement un de ces messages sur Telegram dès que tu changes le statut d'une commande. Laisse un champ vide pour garder le texte par défaut. Pour "Expédiée", le transporteur/n° de suivi/lien sont ajoutés automatiquement à la fin si tu les as renseignés.</p>
+      <p class="muted" style="margin-bottom:14px;">Le client reçoit automatiquement un de ces messages sur Telegram dès que tu changes le statut d'une commande. Le bon message part selon le mode que le client a choisi. Laisse un champ vide pour garder le texte par défaut. Pour "En cours de livraison", le transporteur/n° de suivi/lien sont ajoutés automatiquement à la fin si tu les as renseignés.</p>
 
-      <label>Commande payée</label>
+      <label>Commande payée <span style="text-transform:none; color:rgba(0,0,0,0.35);">(même message pour les 3 modes)</span></label>
       <textarea id="msg-paid" rows="2" placeholder="✅ Ta commande a bien été validée, elle est en cours de préparation !"></textarea>
 
-      <label style="margin-top:10px;">Prête — sur place / point relais</label>
-      <textarea id="msg-ready-pickup" rows="2" placeholder="🎉 Ta commande est prête ! Tu peux venir la récupérer."></textarea>
+      <h2 style="margin-top:18px;">Prête</h2>
+      <label>Service d'envoi</label>
+      <textarea id="msg-ready-livraison" rows="2" placeholder="📦 Ta commande est prête, elle va bientôt partir !"></textarea>
+      <label style="margin-top:10px;">Horaires de livraison</label>
+      <textarea id="msg-ready-envoi" rows="2" placeholder="📦 Ta commande est prête, elle va bientôt partir !"></textarea>
+      <label style="margin-top:10px;">Point relais</label>
+      <textarea id="msg-ready-retrait" rows="2" placeholder="🎉 Ta commande est prête ! Tu peux venir la récupérer."></textarea>
 
-      <label style="margin-top:10px;">Prête — livraison / envoi</label>
-      <textarea id="msg-ready-delivery" rows="2" placeholder="📦 Ta commande est prête, elle va bientôt partir !"></textarea>
+      <h2 style="margin-top:18px;">En cours de livraison</h2>
+      <label>Service d'envoi</label>
+      <textarea id="msg-shipped-livraison" rows="2" placeholder="🚚 Ta commande est en cours de livraison !"></textarea>
+      <label style="margin-top:10px;">Horaires de livraison</label>
+      <textarea id="msg-shipped-envoi" rows="2" placeholder="🚚 Ta commande est en cours de livraison !"></textarea>
 
-      <label style="margin-top:10px;">En cours de livraison</label>
-      <textarea id="msg-shipped" rows="2" placeholder="🚚 Ta commande est en cours de livraison !"></textarea>
-
-      <label style="margin-top:10px;">Récupérée — sur place / point relais</label>
-      <textarea id="msg-delivered-pickup" rows="2" placeholder="✅ Commande récupérée avec succès ! Merci pour ta confiance 🙏 Tu as gagné 10 coins."></textarea>
-
-      <label style="margin-top:10px;">Arrivée — livraison / envoi</label>
-      <textarea id="msg-delivered-delivery" rows="2" placeholder="📍 Ta commande est arrivée ! Merci pour ta confiance 🙏 Tu as gagné 10 coins."></textarea>
+      <h2 style="margin-top:18px;">Livrée / récupérée</h2>
+      <label>Service d'envoi</label>
+      <textarea id="msg-delivered-livraison" rows="2" placeholder="📍 Ta commande est arrivée ! Merci pour ta confiance 🙏 Tu as gagné 10 coins."></textarea>
+      <label style="margin-top:10px;">Horaires de livraison</label>
+      <textarea id="msg-delivered-envoi" rows="2" placeholder="📍 Ta commande est arrivée ! Merci pour ta confiance 🙏 Tu as gagné 10 coins."></textarea>
+      <label style="margin-top:10px;">Point relais</label>
+      <textarea id="msg-delivered-retrait" rows="2" placeholder="✅ Commande récupérée avec succès ! Merci pour ta confiance 🙏 Tu as gagné 10 coins."></textarea>
 
       <button style="width:100%; margin-top:14px;" onclick="saveContent()">Enregistrer</button>
     </div>
@@ -1242,11 +1249,14 @@ async function loadContent(){
 
   const sm = c.statusMessages || {};
   document.getElementById('msg-paid').value = sm.paid || '';
-  document.getElementById('msg-ready-pickup').value = sm.readyPickup || '';
-  document.getElementById('msg-ready-delivery').value = sm.readyDelivery || '';
-  document.getElementById('msg-shipped').value = sm.shipped || '';
-  document.getElementById('msg-delivered-pickup').value = sm.deliveredPickup || '';
-  document.getElementById('msg-delivered-delivery').value = sm.deliveredDelivery || '';
+  document.getElementById('msg-ready-livraison').value = sm.readyLivraison || '';
+  document.getElementById('msg-ready-envoi').value = sm.readyEnvoi || '';
+  document.getElementById('msg-ready-retrait').value = sm.readyRetrait || '';
+  document.getElementById('msg-shipped-livraison').value = sm.shippedLivraison || '';
+  document.getElementById('msg-shipped-envoi').value = sm.shippedEnvoi || '';
+  document.getElementById('msg-delivered-livraison').value = sm.deliveredLivraison || '';
+  document.getElementById('msg-delivered-envoi').value = sm.deliveredEnvoi || '';
+  document.getElementById('msg-delivered-retrait').value = sm.deliveredRetrait || '';
 
   const lb = c.labels || {};
   document.getElementById('lb-cat1-name').value = lb.cat1Name || '';
@@ -1321,11 +1331,14 @@ async function saveContent(){
     .filter(Boolean);
   const statusMessages = {
     paid: document.getElementById('msg-paid').value,
-    readyPickup: document.getElementById('msg-ready-pickup').value,
-    readyDelivery: document.getElementById('msg-ready-delivery').value,
-    shipped: document.getElementById('msg-shipped').value,
-    deliveredPickup: document.getElementById('msg-delivered-pickup').value,
-    deliveredDelivery: document.getElementById('msg-delivered-delivery').value,
+    readyLivraison: document.getElementById('msg-ready-livraison').value,
+    readyEnvoi: document.getElementById('msg-ready-envoi').value,
+    readyRetrait: document.getElementById('msg-ready-retrait').value,
+    shippedLivraison: document.getElementById('msg-shipped-livraison').value,
+    shippedEnvoi: document.getElementById('msg-shipped-envoi').value,
+    deliveredLivraison: document.getElementById('msg-delivered-livraison').value,
+    deliveredEnvoi: document.getElementById('msg-delivered-envoi').value,
+    deliveredRetrait: document.getElementById('msg-delivered-retrait').value,
   };
   const labels = {
     cat1Name: document.getElementById('lb-cat1-name').value,
