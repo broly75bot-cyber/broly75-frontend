@@ -206,6 +206,9 @@
 
   <div class="section-header" style="margin-top:20px;"><h2>Chiffre d'affaires par mois</h2></div>
   <div id="monthly-revenue-list"></div>
+
+  <div class="section-header" style="margin-top:20px;"><h2>Produits les plus vendus</h2></div>
+  <div id="bestsellers-list"></div>
 </div>
 
 <!-- ONGLET AVIS -->
@@ -1228,6 +1231,26 @@ async function loadStats(){
         <span class="mr-amount">${(byMonth[m.key] || 0).toFixed(2)} €</span>
       </div>
     `).join('');
+
+    // Produits les plus vendus — basé sur les mêmes commandes livrées que le CA, pour rester cohérent
+    const salesCount = {};
+    paidOrders.forEach(o => {
+      (o.lines || []).forEach(name => {
+        salesCount[name] = (salesCount[name] || 0) + 1;
+      });
+    });
+    const topProducts = Object.entries(salesCount).sort((a, b) => b[1] - a[1]).slice(0, 8);
+    const bestsellersList = document.getElementById('bestsellers-list');
+    if (!topProducts.length){
+      bestsellersList.innerHTML = '<p class="muted">Aucune vente livrée pour le moment.</p>';
+    } else {
+      bestsellersList.innerHTML = topProducts.map(([name, count], i) => `
+        <div class="month-row">
+          <span class="mr-name">${i + 1}. ${name}</span>
+          <span class="mr-amount">${count} vendu${count > 1 ? 's' : ''}</span>
+        </div>
+      `).join('');
+    }
   } catch (err) {
     console.error('Erreur stats', err);
   }}
