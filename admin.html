@@ -786,7 +786,15 @@
       <label>Identifiant du canal de sauvegarde</label>
       <input id="s-backup-channel" placeholder="-1004466451606">
       <p class="muted" style="margin-top:6px; margin-bottom:10px;">Laisse vide pour utiliser le canal des commandes par défaut. L'identifiant se récupère comme celui du canal des commandes (voir ton assistant si besoin).</p>
-      <button onclick="saveBackupChannel()" style="width:100%; margin-bottom:10px;">Enregistrer ce canal</button>
+
+      <label>Fréquence</label>
+      <select id="s-backup-frequency">
+        <option value="daily">Tous les jours</option>
+        <option value="weekly">Toutes les semaines</option>
+        <option value="monthly">Tous les mois</option>
+      </select>
+
+      <button onclick="saveBackupChannel()" style="width:100%; margin-top:10px; margin-bottom:10px;">Enregistrer</button>
       <button onclick="triggerBackup()" style="width:100%;">Sauvegarder maintenant</button>
     </div>
 
@@ -913,11 +921,13 @@ async function loadBackupChannel(){
     } catch (err) { return; }
   }
   document.getElementById('s-backup-channel').value = content.backupChannelId || '';
+  document.getElementById('s-backup-frequency').value = content.backupFrequency || 'daily';
 }
 
 async function saveBackupChannel(){
   const backupChannelId = document.getElementById('s-backup-channel').value.trim();
-  const body = { ...(currentContent || {}), backupChannelId };
+  const backupFrequency = document.getElementById('s-backup-frequency').value;
+  const body = { ...(currentContent || {}), backupChannelId, backupFrequency };
   try {
     const res = await fetch(`${BACKEND_URL}/api/content`, {
       method: 'PUT', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
@@ -925,7 +935,7 @@ async function saveBackupChannel(){
     });
     if (!res.ok) { alert('Erreur lors de l\'enregistrement.'); return; }
     currentContent = body;
-    alert('Canal de sauvegarde enregistré.');
+    alert('Réglages de sauvegarde enregistrés.');
   } catch (err) {
     alert('Impossible d\'enregistrer — vérifie ta connexion.');
   }
