@@ -580,6 +580,7 @@
         <button class="nav-row" onclick="openSettingsSection('logo')">Logo</button>
         <button class="nav-row" onclick="openSettingsSection('banner')">Bannière</button>
         <button class="nav-row" onclick="openSettingsSection('announcement')">Bloc annonce / promo</button>
+        <button class="nav-row" onclick="openSettingsSection('security')">Sécurité</button>
       </div>
     </div>
 
@@ -663,6 +664,15 @@
       <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
+    <div class="subscreen" id="reglages-security">
+      <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
+      <h2>Sécurité</h2>
+      <label>Verrouiller l'admin après (minutes d'inactivité)</label>
+      <input id="s-lock-minutes" type="number" min="1" placeholder="15">
+      <p class="muted" style="margin-top:6px;">L'admin se ferme automatiquement et redemande le mot de passe si tu ne l'utilises pas pendant ce temps. Réglage propre à cet appareil/navigateur.</p>
+      <button onclick="saveLockMinutes()" style="width:100%; margin-top:10px;">Enregistrer</button>
+    </div>
+
     <div class="muted" id="style-status" style="text-align:center; margin-top:8px;"></div>
   </div>
 </div>
@@ -673,6 +683,24 @@ const BACKEND_URL = 'https://broly75-backend-production.up.railway.app';
 let adminKey = '';
 let allProducts = [];
 
+// ⚠️ Verrouillage automatique de l'admin après inactivité — durée réglable dans Réglages
+let lockTimeoutId = null;
+function getLockMinutes(){
+  return Number(localStorage.getItem('admin_lock_minutes')) || 15;
+}
+function resetLockTimer(){
+  if (lockTimeoutId) clearTimeout(lockTimeoutId);
+  if (adminKey){ // seulement si on est connecté
+    lockTimeoutId = setTimeout(() => {
+      logout();
+      alert('Session verrouillée après inactivité. Ressaisis le mot de passe pour continuer.');
+    }, getLockMinutes() * 60 * 1000);
+  }
+}
+['mousemove', 'keydown', 'touchstart', 'click', 'scroll'].forEach(evt => {
+  document.addEventListener(evt, resetLockTimer, { passive: true });
+});
+
 function login(){
   adminKey = document.getElementById('admin-key-input').value;
   document.getElementById('login-box').style.display = 'none';
@@ -682,12 +710,14 @@ function login(){
 
   loadProducts();
   loadContent();
+  resetLockTimer();
 }
 function logout() {
   adminKey = '';
   document.getElementById('app').style.display = 'none';
   document.getElementById('login-box').style.display = 'block';
   document.getElementById('admin-key-input').value = '';
+  if (lockTimeoutId) clearTimeout(lockTimeoutId);
 }
 
 function switchTab(name, btn){
@@ -725,7 +755,18 @@ function refreshCurrent(){
 function openSettingsSection(name){
   document.querySelectorAll('#tab-reglages .subscreen').forEach(s => s.classList.remove('active'));
   document.getElementById('reglages-' + name).classList.add('active');
+  if (name === 'security'){
+    document.getElementById('s-lock-minutes').value = getLockMinutes();
+  }
 }
+function saveLockMinutes(){
+  const minutes = Math.max(1, Number(document.getElementById('s-lock-minutes').value) || 15);
+  localStorage.setItem('admin_lock_minutes', minutes);
+  resetLockTimer();
+  alert(`Verrouillage réglé sur ${minutes} minute${minutes > 1 ? 's' : ''} d'inactivité.`);
+  closeSettingsSection();
+}
+
 function closeSettingsSection(){
   document.querySelectorAll('#tab-reglages .subscreen').forEach(s => s.classList.remove('active'));
   document.getElementById('reglages-menu').classList.add('active');
