@@ -278,6 +278,23 @@
     border-radius:16px;
     margin-bottom:18px;
   }
+  .pd-gallery{
+    display:flex; overflow-x:auto; scroll-snap-type:x mandatory;
+    border-radius:16px; margin-bottom:10px;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .pd-gallery::-webkit-scrollbar{ display:none; }
+  .pd-gallery img{
+    flex:0 0 100%; scroll-snap-align:center;
+    width:100%; aspect-ratio:4/5; object-fit:cover;
+  }
+  .pd-gallery-dots{
+    display:flex; justify-content:center; gap:6px; margin-bottom:18px;
+  }
+  .pd-gallery-dots span{
+    width:6px; height:6px; border-radius:50%; background:rgba(241,239,233,0.25);
+  }
+  .pd-gallery-dots span.active{ background:var(--lime); }
   .pd-title-box{
     background:rgba(21,20,23,0.7); backdrop-filter:blur(6px);
     border:2px solid var(--lime);
@@ -2028,7 +2045,7 @@
     </div>
   </div>
   <div class="welcome-divider"></div>
-  <h1>BROLY<span class="hot">75</span></h1>
+  <h1 id="hero-title">BROLY<span class="hot">75</span></h1>
 </header>
 
 <div class="cat-grid" id="cats"></div>
@@ -2363,7 +2380,8 @@
       <button class="close-btn" onclick="closeOverlay('product-overlay')">← Retour</button>
     </div>
 
-    <img class="product-hero" id="pd-img" src="" alt="">
+    <div id="pd-gallery" class="pd-gallery"></div>
+    <div id="pd-gallery-dots" class="pd-gallery-dots"></div>
     <video class="product-hero" id="pd-video" controls playsinline style="display:none; margin-top:10px;"></video>
 
     <div class="pd-title-box">
@@ -2793,7 +2811,16 @@ function openProduct(id){
   selectedSize = null;
   selectedColor = null;
   pdFulfilMode = 'livraison';
-  document.getElementById('pd-img').src = p.img;
+  const images = (p.images && p.images.length) ? p.images : [p.img];
+  const gallery = document.getElementById('pd-gallery');
+  gallery.innerHTML = images.map(url => `<img src="${url}" alt="${p.name}">`).join('');
+  gallery.scrollTo({ left: 0 });
+  const dots = document.getElementById('pd-gallery-dots');
+  dots.innerHTML = images.length > 1 ? images.map((_, i) => `<span class="${i===0?'active':''}"></span>`).join('') : '';
+  gallery.onscroll = () => {
+    const index = Math.round(gallery.scrollLeft / gallery.clientWidth);
+    dots.querySelectorAll('span').forEach((d, i) => d.classList.toggle('active', i === index));
+  };
   const video = document.getElementById('pd-video');
   if (p.videoUrl){
     video.src = p.videoUrl;
@@ -3802,6 +3829,16 @@ function applyDeliveryLabels(labels){
   set('label-pd-suggest-title', labels.pdSuggestTitle);
   set('label-pd-add-btn', labels.pdAddBtn);
   set('label-cc-available', labels.contactAvailableText);
+
+  const heroTitle = document.getElementById('hero-title');
+  if (labels.heroTitleHidden){
+    heroTitle.style.display = 'none';
+  } else {
+    heroTitle.style.display = '';
+    if (labels.heroTitle){
+      heroTitle.textContent = labels.heroTitle; // texte personnalisé : perd l'effet bicolore par défaut
+    }
+  }
   set('label-nav-accueil', labels.navAccueil);
   set('label-nav-infos', labels.navInfos);
   set('label-nav-panier', labels.navPanier);
