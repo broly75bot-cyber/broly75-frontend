@@ -688,6 +688,7 @@
         <button class="nav-row" onclick="openSettingsSection('vip')">Clients VIP</button>
         <button class="nav-row" onclick="openSettingsSection('gifts')">Cadeaux par niveau</button>
         <button class="nav-row" onclick="openSettingsSection('loyalty')">Fidélité (Ƶeni)</button>
+        <button class="nav-row" onclick="openSettingsSection('changelog')">Aperçu des modifications</button>
       </div>
     </div>
 
@@ -867,6 +868,13 @@
       <button onclick="saveCoinsPerOrder()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
+    <div class="subscreen" id="reglages-changelog">
+      <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
+      <h2>Aperçu des modifications</h2>
+      <p class="muted" style="margin-bottom:10px;">Les 200 derniers changements enregistrés (Contenu et Réglages), avec ce qui a été modifié et quand — pratique pour vérifier qu'un changement a bien été pris en compte.</p>
+      <div id="changelog-list"><p class="muted">Chargement...</p></div>
+    </div>
+
     <div class="muted" id="style-status" style="text-align:center; margin-top:8px;"></div>
   </div>
 </div>
@@ -980,6 +988,9 @@ function openSettingsSection(name){
   }
   if (name === 'loyalty'){
     loadCoinsPerOrder();
+  }
+  if (name === 'changelog'){
+    loadContentChangelog();
   }
 }
 async function loadBackupChannel(){
@@ -1220,6 +1231,54 @@ async function removeVip(telegramId){
     loadVipList();
   } catch (err) {
     alert('Impossible de retirer — vérifie ta connexion.');
+  }
+}
+
+// Traduit les noms techniques des champs en libellés compréhensibles pour l'affichage
+const CONTENT_FIELD_LABELS = {
+  wallpaperUrl: 'Papier peint',
+  style: 'Couleurs / polices / logo / bannière',
+  categories: 'Catégories produits',
+  typeOrder: 'Ordre des styles',
+  brandOrder: 'Ordre des marques',
+  labels: 'Intitulés des cases',
+  hours: 'Horaires de livraison',
+  meetup: 'Meetup',
+  shipping: 'Service d\'envoi / minimum de commande',
+  faq: 'Questions fréquentes',
+  contacts: 'Réseaux & contacts',
+  contactLogos: 'Logos des réseaux',
+  statusMessages: 'Messages automatiques',
+  promoCodes: 'Codes promo',
+  rewards: 'Récompenses Ƶeni',
+  coinsPerOrder: 'Ƶeni par commande',
+  cryptoWallets: 'Paiement crypto',
+  vipDiscountPercent: 'Réduction VIP',
+  giftCertified: 'Cadeau — certifié',
+  giftFidele: 'Cadeau — fidèle',
+  giftVip: 'Cadeau — VIP',
+  backupChannelId: 'Canal de sauvegarde',
+  backupFrequency: 'Fréquence de sauvegarde',
+  lastBackupAt: 'Dernière sauvegarde (auto)',
+};
+
+async function loadContentChangelog(){
+  const list = document.getElementById('changelog-list');
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/content-log`, { headers: { 'x-admin-key': adminKey } });
+    const log = await res.json();
+    if (!log.length){
+      list.innerHTML = '<p class="muted">Aucune modification enregistrée pour le moment.</p>';
+      return;
+    }
+    list.innerHTML = log.map(entry => `
+      <div style="padding:10px 0; border-bottom:1px solid var(--line);">
+        <div style="font-size:13px;">${entry.fields.map(f => CONTENT_FIELD_LABELS[f] || f).join(', ')}</div>
+        <div class="muted" style="font-size:11.5px; margin-top:2px;">${new Date(entry.at).toLocaleString('fr-FR')}</div>
+      </div>
+    `).join('');
+  } catch (err) {
+    list.innerHTML = '<p class="muted">Impossible de charger le journal.</p>';
   }
 }
 
