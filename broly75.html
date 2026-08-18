@@ -389,6 +389,38 @@
     gap:6px;
     margin-bottom:20px;
   }
+  .pd-tiers-list{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:8px;
+    margin-bottom:20px;
+  }
+  .pd-tier-card{
+    position:relative;
+    background:rgba(21,20,23,0.7); backdrop-filter:blur(6px);
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:14px 8px;
+    text-align:center;
+    cursor:pointer;
+  }
+  .pd-tier-card .tier-label{
+    font-family:var(--font-body); font-weight:600; font-size:11px;
+    color:rgba(241,239,233,0.55); text-transform:uppercase; margin-bottom:4px;
+  }
+  .pd-tier-card .tier-price{
+    font-family:var(--font-title); font-weight:400; font-size:18px; color:var(--paper);
+  }
+  .pd-tier-card.selected{
+    border-color:var(--lime); box-shadow:0 0 14px rgba(62,205,107,0.2);
+  }
+  .pd-tier-card.selected .tier-price{ color:var(--lime); }
+  .pd-tier-card .tier-check{
+    display:none; position:absolute; top:6px; right:6px;
+    width:16px; height:16px; border-radius:50%; background:var(--lime); color:var(--ink);
+    font-size:10px; align-items:center; justify-content:center; font-weight:700;
+  }
+  .pd-tier-card.selected .tier-check{ display:flex; }
   .suggest-row{
     display:flex;
     gap:12px;
@@ -2393,19 +2425,23 @@
     <div class="section-label" id="label-pd-desc-title">Description</div>
     <div class="pd-desc-box" id="pd-desc"></div>
 
-    <div class="pd-options-box">
+    <div class="pd-options-box" id="pd-block-fulfil">
       <div class="fulfil-toggle" id="pd-fulfil-toggle">
         <button class="active" onclick="setPdFulfil(this,'livraison')" id="label-pd-fulfil-livraison">Livraison</button>
         <button onclick="setPdFulfil(this,'retrait')" id="label-pd-fulfil-retrait">À récupérer sur place</button>
       </div>
       <div class="fulfil-note" id="label-pd-fulfil-note">(Prix selon le mode de remise)</div>
+    </div>
 
+    <div id="pd-block-color">
       <div class="section-label" id="label-pd-color-title" style="margin-top:0;">Couleur</div>
       <div class="pd-colors-inline" id="pd-colors"></div>
+    </div>
 
-      <div class="section-label" id="label-pd-size-title">Taille</div>
-      <div class="pd-sizes-inline" id="pd-sizes"></div>
+    <div class="section-label" id="label-pd-size-title">Sélectionnez une quantité</div>
+    <div class="pd-tiers-list" id="pd-tiers"></div>
 
+    <div id="pd-block-suggest">
       <div class="section-label" id="label-pd-suggest-title">Ça pourrait aussi te plaire</div>
       <div class="suggest-row" id="pd-suggestions"></div>
     </div>
@@ -2798,7 +2834,7 @@ async function loadProductsFromBackend(){
   renderGrid();
 }
 
-let selectedSize = null;
+let selectedTier = null;
 let selectedColor = null;
 let pdFulfilMode = 'livraison';
 let currentProduct = null;
@@ -2808,7 +2844,7 @@ function openProduct(id){
   updateCartBar();
   const p = products.find(x => x.id === id);
   currentProduct = p;
-  selectedSize = null;
+  selectedTier = null;
   selectedColor = null;
   pdFulfilMode = 'livraison';
   const images = (p.images && p.images.length) ? p.images : [p.img];
@@ -2833,16 +2869,30 @@ function openProduct(id){
   }
   document.getElementById('pd-type').textContent = p.cat;
   document.getElementById('pd-brand').textContent = p.brand;
-  document.getElementById('pd-price').textContent = p.price + ' €';
+  const hasTiers = p.priceTiers && p.priceTiers.length > 0;
+  const startPrice = hasTiers ? Math.min(...p.priceTiers.map(t => t.price)) : p.price;
+  document.getElementById('pd-price').textContent = (hasTiers ? 'Dès ' : '') + startPrice + ' €';
   document.getElementById('pd-desc').textContent = p.desc;
-  document.getElementById('pd-footer-price').textContent = p.price + ' €';
+  document.getElementById('pd-footer-price').textContent = startPrice + ' €';
   document.querySelectorAll('#pd-fulfil-toggle button').forEach((b,i) => b.classList.toggle('active', i===0));
-  document.getElementById('pd-colors').innerHTML = p.colors.map(c => `
+
+  const labels = (siteContent && siteContent.labels) || {};
+  document.getElementById('pd-block-fulfil').style.display = labels.pdShowFulfil === false ? 'none' : '';
+  document.getElementById('pd-block-color').style.display = labels.pdShowColor === false ? 'none' : '';
+  document.getElementById('pd-block-suggest').style.display = labels.pdShowSuggest === false ? 'none' : '';
+
+  document.getElementById('pd-colors').innerHTML = (p.colors || []).map(c => `
     <div class="size-option" onclick="selectColor(this,'${c}')">${c}</div>
   `).join('');
-  document.getElementById('pd-sizes').innerHTML = p.sizes.map(s => `
-    <div class="size-option" onclick="selectSize(this,'${s}')">${s}</div>
-  `).join('');
+
+  document.getElementById('pd-tiers').innerHTML = hasTiers ? p.priceTiers.map((t, i) => `
+    <div class="pd-tier-card" onclick="selectTier(this, ${i})">
+      <span class="tier-check">✓</span>
+      <div class="tier-label">${t.label}</div>
+      <div class="tier-price">${t.price.toFixed(2)}€</div>
+    </div>
+  `).join('') : '<p class="warn">Aucun palier configuré pour ce produit.</p>';
+
   const featured = products.filter(x => x.id !== id && x.featured).sort(() => Math.random() - 0.5);
   const rest = products.filter(x => x.id !== id && !x.featured).sort(() => Math.random() - 0.5);
   const others = [...featured, ...rest].slice(0, 4);
@@ -2850,7 +2900,7 @@ function openProduct(id){
     <div class="suggest-card" onclick="openProduct(${s.id})">
       <img src="${s.img}" alt="${s.name}">
       <div class="sname">${s.name}</div>
-      <div class="sprice">${s.price} €</div>
+      <div class="sprice">${(s.priceTiers && s.priceTiers.length) ? 'Dès ' + Math.min(...s.priceTiers.map(t=>t.price)) : s.price} €</div>
     </div>
   `).join('');
   document.getElementById('product-overlay').classList.add('show');
@@ -2863,10 +2913,12 @@ function setPdFulfil(el, mode){
   el.classList.add('active');
 }
 
-function selectSize(el, size){
-  document.querySelectorAll('#pd-sizes .size-option').forEach(o => o.classList.remove('selected'));
+function selectTier(el, index){
+  document.querySelectorAll('#pd-tiers .pd-tier-card').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
-  selectedSize = size;
+  selectedTier = currentProduct.priceTiers[index];
+  document.getElementById('pd-price').textContent = selectedTier.price.toFixed(2) + ' €';
+  document.getElementById('pd-footer-price').textContent = selectedTier.price.toFixed(2) + ' €';
 }
 
 function selectColor(el, color){
@@ -2876,9 +2928,11 @@ function selectColor(el, color){
 }
 
 function addFromDetail(){
-  if (!selectedSize){ alert('Choisis une taille avant d\'ajouter au panier.'); return; }
-  if (!selectedColor){ alert('Choisis une couleur avant d\'ajouter au panier.'); return; }
-  cart[currentProduct.id] = { qty:1, size:selectedSize, color:selectedColor };
+  if (!selectedTier){ alert('Choisis un palier avant d\'ajouter au panier.'); return; }
+  const labels = (siteContent && siteContent.labels) || {};
+  const colorRequired = labels.pdShowColor !== false && currentProduct.colors && currentProduct.colors.length > 0;
+  if (colorRequired && !selectedColor){ alert('Choisis une couleur avant d\'ajouter au panier.'); return; }
+  cart[currentProduct.id] = { qty:1, tierLabel: selectedTier.label, tierPrice: selectedTier.price, color: selectedColor };
   saveCartToStorage();
   updateCartBar();
   closeOverlay('product-overlay');
@@ -2887,9 +2941,9 @@ function addFromDetail(){
 
 function askAboutProduct(){
   const p = currentProduct;
-  const size = selectedSize || 'taille non précisée';
+  const tier = selectedTier ? selectedTier.label : 'palier non précisé';
   const color = selectedColor || 'couleur non précisée';
-  const text = `Bonjour, je suis intéressé par ${p.name} (${color}, ${size}). Est-ce disponible ?`;
+  const text = `Bonjour, je suis intéressé par ${p.name} (${color}, ${tier}). Est-ce disponible ?`;
   // ⚠️ Remplace 'tonbot' par le vrai nom d'utilisateur de ton bot — seul un chat de bot permet un message pré-rempli
   const url = `https://t.me/Broly75bot?text=${encodeURIComponent(text)}`;
   if (tg?.openTelegramLink) tg.openTelegramLink(url);
@@ -3104,7 +3158,7 @@ function renderRecap(){
   const discount = subtotal * promoDiscount;
   const total = subtotal - discount;
   const lines = items.map(p => `
-    <div class="recap-line"><span>${p.name} (${p.size}/${p.color})</span><span>${p.price} €</span></div>
+    <div class="recap-line"><span>${p.name} (${p.tierLabel}${p.color ? "/"+p.color : ""})</span><span>${p.price} €</span></div>
   `).join('');
   const discountLine = promoDiscount > 0
     ? `<div class="recap-line" style="color:var(--lime);"><span>Réduction (${promoCode})</span><span>-${discount.toFixed(2)} €</span></div>`
@@ -3118,7 +3172,7 @@ function renderRecap(){
 }
 
 function orderViaTelegram(){
-  const items = cartItems().map(p => `${p.name} (${p.size}/${p.color})${p.qty > 1 ? ' x' + p.qty : ''}`).join(', ');
+  const items = cartItems().map(p => `${p.name} (${p.tierLabel}${p.color ? '/'+p.color : ''})${p.qty > 1 ? ' x' + p.qty : ''}`).join(', ');
   const total = (cartTotal() * (1 - promoDiscount)).toFixed(2);
   const name = document.getElementById('f-name').value;
   const address = buildFullAddress();
@@ -3236,7 +3290,7 @@ function renderGrid(){
 function cartItems(){
   return Object.keys(cart).map(id => {
     const p = products.find(x => x.id == id);
-    return { ...p, size: cart[id].size, qty: cart[id].qty };
+    return { ...p, tierLabel: cart[id].tierLabel, price: cart[id].tierPrice ?? p.price, color: cart[id].color, qty: cart[id].qty };
   });
 }
 function cartTotal(){ return cartItems().reduce((s,p)=>s+p.price*p.qty,0); }
@@ -3287,7 +3341,7 @@ function renderCheckoutItems(){
       <button type="button" class="is-remove" onclick="removeCartItem(${p.id})">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
       </button>
-      <div class="is-name">${p.name}${p.size ? ' — ' + p.size : ''}${p.color ? ' / ' + p.color : ''}</div>
+      <div class="is-name">${p.name}${p.tierLabel ? ' — ' + p.tierLabel : ''}${p.color ? ' / ' + p.color : ''}</div>
       <div class="is-info">
         <div>
           <div class="is-qty-price">${p.qty} × ${p.price.toFixed(2)}€</div>
@@ -3888,7 +3942,7 @@ function openCart(){
   hideNav();
   const lines = cartItems().map(p => `
     <div class="line-item">
-      <span class="lname">${p.name} <span style="color:var(--cyan); font-family:var(--font-mono); font-size:11px;">— ${p.size} / ${p.color}</span></span>
+      <span class="lname">${p.name} <span style="color:var(--cyan); font-family:var(--font-mono); font-size:11px;">— ${p.tierLabel}${p.color ? ' / '+p.color : ''}</span></span>
       <span class="lprice">${p.price} €</span>
     </div>`).join('');
   document.getElementById('cart-lines').innerHTML = lines || emptyCartStateHTML('cart-overlay');
@@ -3980,7 +4034,11 @@ async function validateAndCreateOrder(){
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        itemIds: Object.keys(cart).flatMap(id => Array(cart[id].qty || 1).fill(Number(id))),
+        items: Object.keys(cart).map(id => ({
+          productId: Number(id),
+          tierLabel: cart[id].tierLabel,
+          qty: cart[id].qty || 1,
+        })),
         name: document.getElementById('f-name').value,
         address: buildFullAddress(),
         contact: document.getElementById('f-contact').value,

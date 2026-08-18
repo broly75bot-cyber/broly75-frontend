@@ -299,8 +299,13 @@
       <input id="pf-material">
       <div class="form-grid">
         <div><label>Couleurs (séparées par virgule)</label><input id="pf-colors" placeholder="Noir, Kaki, Beige"></div>
-        <div><label>Tailles (séparées par virgule)</label><input id="pf-sizes" placeholder="S, M, L, XL"></div>
       </div>
+
+      <label>Paliers quantité / prix</label>
+      <p class="muted" style="margin-top:-6px; margin-bottom:8px;">Le client choisit un palier (ex. "1g", "5g"...) et paie le prix associé, indépendamment du prix de base ci-dessus.</p>
+      <div id="pf-tiers-editor"></div>
+      <button type="button" class="secondary" style="width:100%; margin-bottom:12px;" onclick="addTierField()">+ Ajouter un palier</button>
+
       <label>Stock</label>
       <input id="pf-stock" placeholder="En stock">
       <label>Marque</label>
@@ -492,12 +497,26 @@
       <input id="lb-pd-fulfil-note" placeholder="(Prix selon le mode de remise)">
       <label style="margin-top:10px;">Titre "Couleur"</label>
       <input id="lb-pd-color-title" placeholder="Couleur">
-      <label style="margin-top:10px;">Titre "Taille"</label>
-      <input id="lb-pd-size-title" placeholder="Taille">
+      <label style="margin-top:10px;">Titre "Paliers quantité/prix"</label>
+      <input id="lb-pd-size-title" placeholder="Sélectionnez une quantité">
       <label style="margin-top:10px;">Titre "Ça pourrait aussi te plaire"</label>
       <input id="lb-pd-suggest-title" placeholder="Ça pourrait aussi te plaire">
       <label style="margin-top:10px;">Bouton "Ajouter" (au panier)</label>
       <input id="lb-pd-add-btn" placeholder="Ajouter">
+
+      <label style="margin-top:14px;">Sections affichées sur la fiche produit</label>
+      <label style="display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:400;">
+        <input type="checkbox" id="lb-pd-show-color" style="width:auto;">
+        Afficher la section Couleur
+      </label>
+      <label style="display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:400;">
+        <input type="checkbox" id="lb-pd-show-fulfil" style="width:auto;">
+        Afficher le choix Livraison / Meetup sur la fiche produit
+      </label>
+      <label style="display:flex; align-items:center; gap:8px; margin-top:6px; font-weight:400;">
+        <input type="checkbox" id="lb-pd-show-suggest" style="width:auto;">
+        Afficher "Ça pourrait aussi te plaire"
+      </label>
 
       <h2 style="margin-top:20px;">Page Contact</h2>
       <label>Bandeau de disponibilité</label>
@@ -1759,13 +1778,15 @@ function populateProductDropdowns(selectedCat, selectedBrand){
 
 function openProductForm(){
   document.getElementById('pf-title').textContent = 'Nouveau produit';
-  ['pf-id','pf-name','pf-price','pf-tag','pf-img','pf-video','pf-desc','pf-material','pf-colors','pf-sizes','pf-stock']
+  ['pf-id','pf-name','pf-price','pf-tag','pf-img','pf-video','pf-desc','pf-material','pf-colors','pf-stock']
     .forEach(id => document.getElementById(id).value = '');
   productImages = [];
   renderProductImagesEditor();
   document.getElementById('pf-img-status').textContent = '';
   document.getElementById('pf-video-preview').style.display = 'none';
   document.getElementById('pf-video-status').textContent = '';
+  productTiers = [];
+  renderTiersEditor();
   document.getElementById('pf-featured').checked = false;
   document.getElementById('pf-vip-early').checked = false;
   document.getElementById('pf-cat-new').value = '';
@@ -1800,7 +1821,8 @@ document.getElementById('pf-video-status').textContent = '';
   document.getElementById('pf-desc').value = p.desc || '';
   document.getElementById('pf-material').value = p.material || '';
   document.getElementById('pf-colors').value = (p.colors || []).join(', ');
-  document.getElementById('pf-sizes').value = (p.sizes || []).join(', ');
+  productTiers = p.priceTiers && p.priceTiers.length ? p.priceTiers.map(t => ({...t})) : [];
+  renderTiersEditor();
   document.getElementById('pf-stock').value = p.stock || '';
   document.getElementById('pf-featured').checked = !!p.featured;
   document.getElementById('pf-vip-early').checked = !!p.vipEarlyAccess;
@@ -1833,6 +1855,30 @@ async function uploadVideo(input){
 }
 
 let productImages = [];
+
+let productTiers = [];
+
+function renderTiersEditor(){
+  document.getElementById('pf-tiers-editor').innerHTML = productTiers.map((t, i) => `
+    <div class="form-grid" style="margin-bottom:8px;">
+      <div><input class="tier-label" value="${(t.label||'').replace(/"/g,'&quot;')}" placeholder="Ex : 1g" oninput="productTiers[${i}].label=this.value"></div>
+      <div style="display:flex; gap:6px;">
+        <input class="tier-price" type="number" min="0" step="0.01" value="${t.price ?? ''}" placeholder="Prix €" style="flex:1;" oninput="productTiers[${i}].price=Number(this.value)">
+        <button type="button" class="danger" onclick="removeTierField(${i})" style="flex-shrink:0;">×</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addTierField(){
+  productTiers.push({ label: '', price: 0 });
+  renderTiersEditor();
+}
+
+function removeTierField(index){
+  productTiers.splice(index, 1);
+  renderTiersEditor();
+}
 
 function renderProductImagesEditor(){
   const editor = document.getElementById('pf-images-editor');
@@ -1970,7 +2016,7 @@ async function saveProduct(){
     desc: document.getElementById('pf-desc').value,
     material: document.getElementById('pf-material').value,
     colors: document.getElementById('pf-colors').value.split(',').map(s => s.trim()).filter(Boolean),
-    sizes: document.getElementById('pf-sizes').value.split(',').map(s => s.trim()).filter(Boolean),
+    priceTiers: productTiers.filter(t => t.label && t.price > 0),
     stock: document.getElementById('pf-stock').value,
     brand: brandNew || document.getElementById('pf-brand').value,
     featured: document.getElementById('pf-featured').checked,
@@ -2148,6 +2194,9 @@ async function loadContent(){
   document.getElementById('lb-pd-fulfil-note').value = lb.pdFulfilNote || '';
   document.getElementById('lb-pd-color-title').value = lb.pdColorTitle || '';
   document.getElementById('lb-pd-size-title').value = lb.pdSizeTitle || '';
+  document.getElementById('lb-pd-show-color').checked = lb.pdShowColor !== false;
+  document.getElementById('lb-pd-show-fulfil').checked = lb.pdShowFulfil !== false;
+  document.getElementById('lb-pd-show-suggest').checked = lb.pdShowSuggest !== false;
   document.getElementById('lb-pd-suggest-title').value = lb.pdSuggestTitle || '';
   document.getElementById('lb-pd-add-btn').value = lb.pdAddBtn || '';
   document.getElementById('lb-cc-available').value = lb.contactAvailableText || '';
@@ -2252,6 +2301,9 @@ async function saveContent(){
     pdFulfilNote: document.getElementById('lb-pd-fulfil-note').value,
     pdColorTitle: document.getElementById('lb-pd-color-title').value,
     pdSizeTitle: document.getElementById('lb-pd-size-title').value,
+    pdShowColor: document.getElementById('lb-pd-show-color').checked,
+    pdShowFulfil: document.getElementById('lb-pd-show-fulfil').checked,
+    pdShowSuggest: document.getElementById('lb-pd-show-suggest').checked,
     pdSuggestTitle: document.getElementById('lb-pd-suggest-title').value,
     pdAddBtn: document.getElementById('lb-pd-add-btn').value,
     contactAvailableText: document.getElementById('lb-cc-available').value,
