@@ -2425,21 +2425,23 @@
     <div class="section-label" id="label-pd-desc-title">Description</div>
     <div class="pd-desc-box" id="pd-desc"></div>
 
-    <div class="pd-options-box" id="pd-block-fulfil">
-      <div class="fulfil-toggle" id="pd-fulfil-toggle">
-        <button class="active" onclick="setPdFulfil(this,'livraison')" id="label-pd-fulfil-livraison">Livraison</button>
-        <button onclick="setPdFulfil(this,'retrait')" id="label-pd-fulfil-retrait">À récupérer sur place</button>
+    <div class="pd-options-box">
+      <div id="pd-block-fulfil">
+        <div class="fulfil-toggle" id="pd-fulfil-toggle">
+          <button class="active" onclick="setPdFulfil(this,'livraison')" id="label-pd-fulfil-livraison">Livraison</button>
+          <button onclick="setPdFulfil(this,'retrait')" id="label-pd-fulfil-retrait">À récupérer sur place</button>
+        </div>
+        <div class="fulfil-note" id="label-pd-fulfil-note">(Prix selon le mode de remise)</div>
       </div>
-      <div class="fulfil-note" id="label-pd-fulfil-note">(Prix selon le mode de remise)</div>
-    </div>
 
-    <div id="pd-block-color">
-      <div class="section-label" id="label-pd-color-title" style="margin-top:0;">Couleur</div>
-      <div class="pd-colors-inline" id="pd-colors"></div>
-    </div>
+      <div id="pd-block-color">
+        <div class="section-label" id="label-pd-color-title" style="margin-top:0;">Couleur</div>
+        <div class="pd-colors-inline" id="pd-colors"></div>
+      </div>
 
-    <div class="section-label" id="label-pd-size-title">Sélectionnez une quantité</div>
-    <div class="pd-tiers-list" id="pd-tiers"></div>
+      <div class="section-label" id="label-pd-size-title">Sélectionnez une quantité</div>
+      <div class="pd-tiers-list" id="pd-tiers"></div>
+    </div>
 
     <div id="pd-block-suggest">
       <div class="section-label" id="label-pd-suggest-title">Ça pourrait aussi te plaire</div>

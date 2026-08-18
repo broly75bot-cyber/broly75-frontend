@@ -715,6 +715,7 @@
         <button class="nav-row" onclick="openSettingsSection('crypto')">Paiement crypto</button>
         <button class="nav-row" onclick="openSettingsSection('vip')">Clients VIP</button>
         <button class="nav-row" onclick="openSettingsSection('gifts')">Cadeaux par niveau</button>
+        <button class="nav-row" onclick="openSettingsSection('tierstemplate')">Modèle de paliers</button>
         <button class="nav-row" onclick="openSettingsSection('loyalty')">Fidélité (Ƶeni)</button>
         <button class="nav-row" onclick="openSettingsSection('changelog')">Aperçu des modifications</button>
       </div>
@@ -887,6 +888,17 @@
       <button onclick="saveGifts()" style="width:100%; margin-top:14px;">Enregistrer</button>
     </div>
 
+    <div class="subscreen" id="reglages-tierstemplate">
+      <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
+      <h2>Modèle de paliers</h2>
+      <p class="muted" style="margin-bottom:14px;">Ce modèle se remplit automatiquement à chaque nouveau produit — plus besoin de refaire les mêmes paliers à chaque fois. Tu peux toujours les modifier ensuite au cas par cas dans la fiche du produit.</p>
+
+      <div id="template-tiers-editor"></div>
+      <button class="secondary" style="width:100%; margin-bottom:14px;" onclick="addTemplateTierField()">+ Ajouter un palier</button>
+
+      <button onclick="saveTiersTemplate()" style="width:100%;">Enregistrer le modèle</button>
+    </div>
+
     <div class="subscreen" id="reglages-loyalty">
       <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
       <h2>Fidélité (Ƶeni)</h2>
@@ -1013,6 +1025,9 @@ function openSettingsSection(name){
   }
   if (name === 'gifts'){
     loadGifts();
+  }
+  if (name === 'tierstemplate'){
+    loadTiersTemplate();
   }
   if (name === 'loyalty'){
     loadCoinsPerOrder();
@@ -1776,7 +1791,7 @@ function populateProductDropdowns(selectedCat, selectedBrand){
   }
 }
 
-function openProductForm(){
+async function openProductForm(){
   document.getElementById('pf-title').textContent = 'Nouveau produit';
   ['pf-id','pf-name','pf-price','pf-tag','pf-img','pf-video','pf-desc','pf-material','pf-colors','pf-stock']
     .forEach(id => document.getElementById(id).value = '');
@@ -1785,7 +1800,8 @@ function openProductForm(){
   document.getElementById('pf-img-status').textContent = '';
   document.getElementById('pf-video-preview').style.display = 'none';
   document.getElementById('pf-video-status').textContent = '';
-  productTiers = [];
+  if (!currentContent) await getFreshContent();
+  productTiers = (currentContent?.defaultPriceTiers || []).map(t => ({...t}));
   renderTiersEditor();
   document.getElementById('pf-featured').checked = false;
   document.getElementById('pf-vip-early').checked = false;
@@ -1855,6 +1871,61 @@ async function uploadVideo(input){
 }
 
 let productImages = [];
+
+let templateTiers = [];
+
+function renderTemplateTiersEditor(){
+  document.getElementById('template-tiers-editor').innerHTML = templateTiers.map((t, i) => `
+    <div class="form-grid" style="margin-bottom:8px;">
+      <div><input class="tier-label" value="${(t.label||'').replace(/"/g,'&quot;')}" placeholder="Ex : 1g" oninput="templateTiers[${i}].label=this.value"></div>
+      <div style="display:flex; gap:6px;">
+        <input class="tier-price" type="number" min="0" step="0.01" value="${t.price ?? ''}" placeholder="Prix €" style="flex:1;" oninput="templateTiers[${i}].price=Number(this.value)">
+        <button type="button" class="danger" onclick="removeTemplateTierField(${i})" style="flex-shrink:0;">×</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addTemplateTierField(){
+  templateTiers.push({ label: '', price: 0 });
+  renderTemplateTiersEditor();
+}
+
+function removeTemplateTierField(index){
+  templateTiers.splice(index, 1);
+  renderTemplateTiersEditor();
+}
+
+async function loadTiersTemplate(){
+  let content = currentContent;
+  if (!content){
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/content`);
+      content = await res.json();
+      currentContent = content;
+    } catch (err) { return; }
+  }
+  templateTiers = (content.defaultPriceTiers || []).map(t => ({...t}));
+  renderTemplateTiersEditor();
+}
+
+async function saveTiersTemplate(){
+  await getFreshContent();
+  const defaultPriceTiers = templateTiers.filter(t => t.label && t.price > 0);
+  const body = { ...(currentContent || {}), defaultPriceTiers };
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/content`, {
+      method: 'PUT', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) { alert('Erreur lors de l\'enregistrement.'); return; }
+    currentContent = body;
+    alert('Modèle de paliers enregistré.');
+    closeSettingsSection();
+  } catch (err) {
+    alert('Impossible d\'enregistrer — vérifie ta connexion.');
+  }
+}
 
 let productTiers = [];
 
