@@ -1804,7 +1804,10 @@ async function openProductForm(){
   document.getElementById('pf-video-preview').style.display = 'none';
   document.getElementById('pf-video-status').textContent = '';
   if (!currentContent) await getFreshContent();
-  productTiers = (currentContent?.defaultPriceTiers || []).map(t => ({...t}));
+  const savedTemplate = currentContent?.defaultPriceTiers || [];
+  productTiers = savedTemplate.length
+    ? savedTemplate.map(t => ({...t}))
+    : Array.from({ length: 5 }, () => ({ label: '', price: 0 }));
   renderTiersEditor();
   document.getElementById('pf-featured').checked = false;
   document.getElementById('pf-vip-early').checked = false;
