@@ -899,6 +899,10 @@
       <div id="template-tiers-editor"></div>
       <button class="secondary" style="width:100%; margin-bottom:14px;" onclick="addTemplateTierField()">+ Ajouter un palier</button>
 
+      <label>Nombre de cases vides par défaut (si le modèle ci-dessus est vide)</label>
+      <input id="s-default-tier-count" type="number" min="0" max="20" placeholder="5">
+      <p class="muted" style="margin-top:6px; margin-bottom:10px;">Un nouveau produit démarrera avec ce nombre de cases prêtes à remplir directement, plutôt que 0.</p>
+
       <button onclick="saveTiersTemplate()" style="width:100%;">Enregistrer le modèle</button>
     </div>
 
@@ -1807,7 +1811,7 @@ async function openProductForm(){
   const savedTemplate = currentContent?.defaultPriceTiers || [];
   productTiers = savedTemplate.length
     ? savedTemplate.map(t => ({...t}))
-    : Array.from({ length: 5 }, () => ({ label: '', price: 0 }));
+    : Array.from({ length: currentContent?.defaultTierCount ?? 5 }, () => ({ label: '', price: 0 }));
   renderTiersEditor();
   document.getElementById('pf-featured').checked = false;
   document.getElementById('pf-vip-early').checked = false;
@@ -1913,12 +1917,14 @@ async function loadTiersTemplate(){
   }
   templateTiers = (content.defaultPriceTiers || []).map(t => ({...t}));
   renderTemplateTiersEditor();
+  document.getElementById('s-default-tier-count').value = content.defaultTierCount ?? 5;
 }
 
 async function saveTiersTemplate(){
   await getFreshContent();
   const defaultPriceTiers = templateTiers.filter(t => t.label && t.price > 0);
-  const body = { ...(currentContent || {}), defaultPriceTiers };
+  const defaultTierCount = Math.max(0, Number(document.getElementById('s-default-tier-count').value) || 0);
+  const body = { ...(currentContent || {}), defaultPriceTiers, defaultTierCount };
   try {
     const res = await fetch(`${BACKEND_URL}/api/content`, {
       method: 'PUT', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
