@@ -304,7 +304,10 @@
       <label>Paliers quantité / prix</label>
       <p class="muted" style="margin-top:-6px; margin-bottom:8px;">Le client choisit un palier (ex. "1g", "5g"...) et paie le prix associé, indépendamment du prix de base ci-dessus.</p>
       <div id="pf-tiers-editor"></div>
-      <button type="button" class="secondary" style="width:100%; margin-bottom:12px;" onclick="addTierField()">+ Ajouter un palier</button>
+      <div class="form-grid" style="margin-bottom:12px;">
+        <button type="button" class="secondary" onclick="addTierField()">+ Ajouter un palier</button>
+        <button type="button" class="secondary" onclick="loadTemplateOntoProduct()">Charger le modèle</button>
+      </div>
 
       <label>Stock</label>
       <input id="pf-stock" placeholder="En stock">
@@ -1948,6 +1951,20 @@ function addTierField(){
 
 function removeTierField(index){
   productTiers.splice(index, 1);
+  renderTiersEditor();
+}
+
+async function loadTemplateOntoProduct(){
+  if (!currentContent) await getFreshContent();
+  const template = currentContent?.defaultPriceTiers || [];
+  if (!template.length){
+    alert('Aucun modèle enregistré pour l\'instant — configure-le dans Réglages > Modèle de paliers.');
+    return;
+  }
+  if (productTiers.length > 0 && !confirm('Ce produit a déjà des paliers — les remplacer par le modèle ?')){
+    return;
+  }
+  productTiers = template.map(t => ({...t}));
   renderTiersEditor();
 }
 
