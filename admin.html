@@ -748,6 +748,24 @@
       <label style="margin-top:10px;">Contact / Profil</label>
       <input type="color" id="s-color-zone-contact">
 
+      <h2 style="margin-top:20px;">Typographie</h2>
+      <p class="muted" style="margin-bottom:10px;">Laisse la taille à 0 pour garder la taille par défaut.</p>
+
+      <label>Grand titre BROLY75 — couleur</label>
+      <input type="color" id="s-typo-hero-color">
+      <label style="margin-top:6px;">Grand titre BROLY75 — taille (px)</label>
+      <input type="number" id="s-typo-hero-size" min="0" max="120" placeholder="0 = par défaut">
+
+      <label style="margin-top:14px;">Titres de section (Description, Couleur...) — couleur</label>
+      <input type="color" id="s-typo-section-color">
+      <label style="margin-top:6px;">Titres de section — taille (px)</label>
+      <input type="number" id="s-typo-section-size" min="0" max="60" placeholder="0 = par défaut">
+
+      <label style="margin-top:14px;">Description produit — couleur</label>
+      <input type="color" id="s-typo-desc-color">
+      <label style="margin-top:6px;">Description produit — taille (px)</label>
+      <input type="number" id="s-typo-desc-size" min="0" max="40" placeholder="0 = par défaut">
+
       <button onclick="saveStyleSettings()" style="width:100%; margin-top:14px;">Enregistrer</button>
     </div>
 
@@ -2496,6 +2514,14 @@ async function loadStyleSettings(){
   document.getElementById('s-color-zone-avis').value = colors.zoneAvis || baseZone;
   document.getElementById('s-color-zone-contact').value = colors.zoneContact || baseZone;
 
+  const typo = s.typography || {};
+  document.getElementById('s-typo-hero-color').value = typo.heroColor || colors.paper || '#F1EFE9';
+  document.getElementById('s-typo-hero-size').value = typo.heroSize || '';
+  document.getElementById('s-typo-section-color').value = typo.sectionColor || baseZone;
+  document.getElementById('s-typo-section-size').value = typo.sectionSize || '';
+  document.getElementById('s-typo-desc-color').value = typo.descColor || colors.paper || '#F1EFE9';
+  document.getElementById('s-typo-desc-size').value = typo.descSize || '';
+
   const fonts = s.fonts || {};
   if (fonts.title) document.getElementById('s-font-title').value = fonts.title;
   if (fonts.body) document.getElementById('s-font-body').value = fonts.body;
@@ -2551,6 +2577,14 @@ async function saveStyleSettings(){
       zonePanier: document.getElementById('s-color-zone-panier').value,
       zoneAvis: document.getElementById('s-color-zone-avis').value,
       zoneContact: document.getElementById('s-color-zone-contact').value,
+    },
+    typography: {
+      heroColor: document.getElementById('s-typo-hero-color').value,
+      heroSize: Number(document.getElementById('s-typo-hero-size').value) || 0,
+      sectionColor: document.getElementById('s-typo-section-color').value,
+      sectionSize: Number(document.getElementById('s-typo-section-size').value) || 0,
+      descColor: document.getElementById('s-typo-desc-color').value,
+      descSize: Number(document.getElementById('s-typo-desc-size').value) || 0,
     },
     fonts: {
       title: document.getElementById('s-font-title').value,

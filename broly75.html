@@ -3811,6 +3811,24 @@ function applySiteStyle(style){
     bar.textContent = style.announcement;
     bar.classList.add('show');
   }
+
+  if (style.typography){
+    const t = style.typography;
+    const heroEl = document.getElementById('hero-title');
+    if (heroEl){
+      if (t.heroColor) heroEl.style.color = t.heroColor;
+      if (t.heroSize) heroEl.style.fontSize = t.heroSize + 'px';
+    }
+    document.querySelectorAll('.section-label').forEach(el => {
+      if (t.sectionColor) el.style.color = t.sectionColor;
+      if (t.sectionSize) el.style.fontSize = t.sectionSize + 'px';
+    });
+    const descEl = document.getElementById('pd-desc');
+    if (descEl){
+      if (t.descColor) descEl.style.color = t.descColor;
+      if (t.descSize) descEl.style.fontSize = t.descSize + 'px';
+    }
+  }
 }
 
 async function loadSiteContent(){
