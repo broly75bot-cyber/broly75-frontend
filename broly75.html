@@ -2425,6 +2425,11 @@
     <div class="section-label" id="label-pd-desc-title">Description</div>
     <div class="pd-desc-box" id="pd-desc"></div>
 
+    <div id="pd-block-material" style="display:none;">
+      <div class="section-label" id="label-pd-material-title">Matière</div>
+      <div class="pd-desc-box" id="pd-material"></div>
+    </div>
+
     <div class="pd-options-box">
       <div id="pd-block-fulfil" style="border:1.5px solid var(--co-g-dim, rgba(62,205,107,0.3)); border-radius:14px; padding:12px;">
         <div class="fulfil-toggle" id="pd-fulfil-toggle">
@@ -2875,6 +2880,13 @@ function openProduct(id){
   const startPrice = hasTiers ? Math.min(...p.priceTiers.map(t => t.price)) : p.price;
   document.getElementById('pd-price').textContent = (hasTiers ? 'Dès ' : '') + startPrice + ' €';
   document.getElementById('pd-desc').textContent = p.desc;
+  const materialBlock = document.getElementById('pd-block-material');
+  if (p.material){
+    document.getElementById('pd-material').textContent = p.material;
+    materialBlock.style.display = 'block';
+  } else {
+    materialBlock.style.display = 'none';
+  }
   document.getElementById('pd-footer-price').textContent = startPrice + ' €';
   document.querySelectorAll('#pd-fulfil-toggle button').forEach((b,i) => b.classList.toggle('active', i===0));
 
