@@ -382,6 +382,25 @@
       <h2>Ordre d'affichage des catégories</h2>
       <p class="muted" style="margin-bottom:14px;">Les styles et marques sont détectés automatiquement depuis tes produits. Ici, tu choisis simplement l'ordre dans lequel ils apparaissent dans les listes de la boutique. Ce que tu tapes doit correspondre exactement au texte utilisé dans tes fiches produits.</p>
 
+      <h2>Renommer partout</h2>
+      <p class="muted" style="margin-bottom:10px;">Change le nom d'un style ou d'une marque sur TOUS les produits concernés en un coup, au lieu de le faire un par un.</p>
+      <div class="form-grid">
+        <div>
+          <label>Type</label>
+          <select id="rename-cat-type">
+            <option value="cat">Style</option>
+            <option value="brand">Marque</option>
+          </select>
+        </div>
+        <div>
+          <label>Ancien nom</label>
+          <select id="rename-cat-old"></select>
+        </div>
+      </div>
+      <label>Nouveau nom</label>
+      <input id="rename-cat-new" placeholder="Ex : Manteaux">
+      <button class="secondary" style="width:100%; margin-top:10px; margin-bottom:20px;" onclick="renameCategoryEverywhere()">Renommer partout</button>
+
       <h2>Ordre des styles de vêtements</h2>
       <div id="type-order-editor"></div>
       <button class="secondary" style="width:100%; margin-top:6px;" onclick="addOrderField('type-order-editor')">+ Ajouter un style</button>
@@ -1514,6 +1533,9 @@ function closeSettingsSection(){
 function openContentSection(name){
   document.querySelectorAll('#tab-contenu .subscreen').forEach(s => s.classList.remove('active'));
   document.getElementById('contenu-' + name).classList.add('active');
+  if (name === 'categories'){
+    populateRenameDropdown();
+  }
 }
 function closeContentSection(){
   document.querySelectorAll('#tab-contenu .subscreen').forEach(s => s.classList.remove('active'));
@@ -2249,6 +2271,39 @@ async function deleteProduct(id){
   if (!confirm('Supprimer ce produit ?')) return;
   await fetch(`${BACKEND_URL}/api/products/${id}`, { method:'DELETE', headers:{ 'x-admin-key': adminKey } });
   loadProducts();
+}
+
+async function populateRenameDropdown(){
+  if (!allProducts || !allProducts.length) await loadProducts();
+  const type = document.getElementById('rename-cat-type').value;
+  const values = [...new Set(allProducts.map(p => type === 'brand' ? p.brand : p.cat).filter(Boolean))].sort();
+  document.getElementById('rename-cat-old').innerHTML = values.map(v => `<option value="${v}">${v}</option>`).join('');
+}
+const renameTypeSelect = document.getElementById('rename-cat-type');
+if (renameTypeSelect) renameTypeSelect.addEventListener('change', populateRenameDropdown);
+
+async function renameCategoryEverywhere(){
+  const type = document.getElementById('rename-cat-type').value;
+  const oldName = document.getElementById('rename-cat-old').value;
+  const newName = document.getElementById('rename-cat-new').value.trim();
+  if (!oldName){ alert('Aucun style/marque disponible à renommer.'); return; }
+  if (!newName){ alert('Indique le nouveau nom.'); return; }
+  if (!confirm(`Renommer "${oldName}" en "${newName}" sur tous les produits concernés ?`)) return;
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/rename-category`, {
+      method: 'POST', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify({ type, oldName, newName }),
+    });
+    const data = await res.json();
+    if (!res.ok){ alert(data.error || 'Erreur lors du renommage.'); return; }
+    alert(`${data.count} produit${data.count > 1 ? 's' : ''} mis à jour.`);
+    document.getElementById('rename-cat-new').value = '';
+    await loadProducts();
+    populateRenameDropdown();
+  } catch (err) {
+    alert('Impossible de renommer — vérifie ta connexion.');
+  }
 }
 
 async function loadProducts(){
