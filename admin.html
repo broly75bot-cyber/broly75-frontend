@@ -269,51 +269,69 @@
     <div class="card" id="product-form" style="display:none;">
       <h2 id="pf-title">Nouveau produit</h2>
       <input type="hidden" id="pf-id">
-      <label id="pfl-name">Nom</label>
-      <input id="pf-name" placeholder="Veste en toile brute">
+      <div id="pf-field-name">
+        <label id="pfl-name">Nom</label>
+        <input id="pf-name" placeholder="Veste en toile brute">
+      </div>
       <div class="form-grid">
-        <div><label id="pfl-price">Prix (€)</label><input id="pf-price" type="number"></div>
-        <div>
+        <div id="pf-field-price"><label id="pfl-price">Prix (€)</label><input id="pf-price" type="number"></div>
+        <div id="pf-field-cat">
           <label id="pfl-cat">Catégorie (style)</label>
           <select id="pf-cat"></select>
           <input id="pf-cat-new" placeholder="Ou tape un nouveau style ici" style="margin-top:-4px;">
         </div>
       </div>
-      <label id="pfl-tag">Tag (NEW, DROP, HOT, LIMITED...)</label>
-      <input id="pf-tag">
-      <label id="pfl-photos">Photos <span style="text-transform:none; color:rgba(0,0,0,0.35);">(la 1ère sert de photo principale)</span></label>
-      <div id="pf-images-editor" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;"></div>
-      <input type="file" id="pf-img-file" accept="image/*" multiple onchange="addProductPhoto(this)">
-      <input type="hidden" id="pf-img">
-      <div class="muted" id="pf-img-status"></div>
+      <div id="pf-field-tag">
+        <label id="pfl-tag">Tag (NEW, DROP, HOT, LIMITED...)</label>
+        <input id="pf-tag">
+      </div>
+      <div id="pf-field-photos">
+        <label id="pfl-photos">Photos <span style="text-transform:none; color:rgba(0,0,0,0.35);">(la 1ère sert de photo principale)</span></label>
+        <div id="pf-images-editor" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;"></div>
+        <input type="file" id="pf-img-file" accept="image/*" multiple onchange="addProductPhoto(this)">
+        <input type="hidden" id="pf-img">
+        <div class="muted" id="pf-img-status"></div>
+      </div>
 
-      <label id="pfl-video">Vidéo <span style="text-transform:none; color:rgba(0,0,0,0.35);">(optionnel, en plus de la photo)</span></label>
-<input type="file" id="pf-video-file" accept="video/*" onchange="uploadVideo(this)">
-<input type="hidden" id="pf-video">
-<video id="pf-video-preview" src="" controls style="max-width:160px; border-radius:8px; margin:8px 0; display:none;"></video>
-<div class="muted" id="pf-video-status"></div>
+      <div id="pf-field-video">
+        <label id="pfl-video">Vidéo <span style="text-transform:none; color:rgba(0,0,0,0.35);">(optionnel, en plus de la photo)</span></label>
+        <input type="file" id="pf-video-file" accept="video/*" onchange="uploadVideo(this)">
+        <input type="hidden" id="pf-video">
+        <video id="pf-video-preview" src="" controls style="max-width:160px; border-radius:8px; margin:8px 0; display:none;"></video>
+        <div class="muted" id="pf-video-status"></div>
+      </div>
 
-      <label id="pfl-desc">Description</label>
-      <textarea id="pf-desc" rows="3"></textarea>
-      <label id="pfl-material">Matière</label>
-      <input id="pf-material">
+      <div id="pf-field-desc">
+        <label id="pfl-desc">Description</label>
+        <textarea id="pf-desc" rows="3"></textarea>
+      </div>
+      <div id="pf-field-material">
+        <label id="pfl-material">Matière</label>
+        <input id="pf-material">
+      </div>
       <div class="form-grid">
-        <div><label id="pfl-colors">Couleurs (séparées par virgule)</label><input id="pf-colors" placeholder="Noir, Kaki, Beige"></div>
+        <div id="pf-field-colors"><label id="pfl-colors">Couleurs (séparées par virgule)</label><input id="pf-colors" placeholder="Noir, Kaki, Beige"></div>
       </div>
 
-      <label id="pfl-tiers">Paliers quantité / prix</label>
-      <p class="muted" style="margin-top:-6px; margin-bottom:8px;">Le client choisit un palier (ex. "1g", "5g"...) et paie le prix associé, indépendamment du prix de base ci-dessus.</p>
-      <div id="pf-tiers-editor"></div>
-      <div class="form-grid" style="margin-bottom:12px;">
-        <button type="button" class="secondary" onclick="addTierField()">+ Ajouter un palier</button>
-        <button type="button" class="secondary" onclick="loadTemplateOntoProduct()">Charger le modèle</button>
+      <div id="pf-field-tiers">
+        <label id="pfl-tiers">Paliers quantité / prix</label>
+        <p class="muted" style="margin-top:-6px; margin-bottom:8px;">Le client choisit un palier (ex. "1g", "5g"...) et paie le prix associé, indépendamment du prix de base ci-dessus.</p>
+        <div id="pf-tiers-editor"></div>
+        <div class="form-grid" style="margin-bottom:12px;">
+          <button type="button" class="secondary" onclick="addTierField()">+ Ajouter un palier</button>
+          <button type="button" class="secondary" onclick="loadTemplateOntoProduct()">Charger le modèle</button>
+        </div>
       </div>
 
-      <label id="pfl-stock">Stock</label>
-      <input id="pf-stock" placeholder="En stock">
-      <label id="pfl-brand">Marque</label>
-      <select id="pf-brand"></select>
-      <input id="pf-brand-new" placeholder="Ou tape une nouvelle marque ici" style="margin-top:-4px;">
+      <div id="pf-field-stock">
+        <label id="pfl-stock">Stock</label>
+        <input id="pf-stock" placeholder="En stock">
+      </div>
+      <div id="pf-field-brand">
+        <label id="pfl-brand">Marque</label>
+        <select id="pf-brand"></select>
+        <input id="pf-brand-new" placeholder="Ou tape une nouvelle marque ici" style="margin-top:-4px;">
+      </div>
       <label style="display:flex; align-items:center; gap:8px; margin-top:12px; font-weight:400;">
         <input type="checkbox" id="pf-featured" style="width:auto;">
         Mis en avant dans "Ça pourrait aussi te plaire"
@@ -928,31 +946,31 @@
     <div class="subscreen" id="reglages-pflabels">
       <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
       <h2>Étiquettes du formulaire produit</h2>
-      <p class="muted" style="margin-bottom:14px;">Renomme les étiquettes que TU vois dans le formulaire, quand tu ajoutes ou modifies un produit. Laisse vide pour garder le nom par défaut.</p>
+      <p class="muted" style="margin-bottom:14px;">Renomme les étiquettes que TU vois dans le formulaire, ou masque complètement un champ dont tu ne te sers pas. Laisse le texte vide pour garder le nom par défaut.</p>
 
-      <label>Nom</label>
+      <label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-name" style="width:auto;" checked> Afficher ce champ</label>
       <input id="s-pfl-name" placeholder="Nom">
-      <label style="margin-top:10px;">Prix (€)</label>
+      <label style="margin-top:10px; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-price" style="width:auto;" checked> Afficher ce champ</label>
       <input id="s-pfl-price" placeholder="Prix (€)">
-      <label style="margin-top:10px;">Catégorie (style)</label>
+      <label style="margin-top:10px; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-cat" style="width:auto;" checked> Afficher ce champ</label>
       <input id="s-pfl-cat" placeholder="Catégorie (style)">
-      <label style="margin-top:10px;">Tag</label>
+      <label style="margin-top:10px; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-tag" style="width:auto;" checked> Afficher ce champ</label>
       <input id="s-pfl-tag" placeholder="Tag (NEW, DROP, HOT, LIMITED...)">
-      <label style="margin-top:10px;">Photos</label>
+      <label style="margin-top:10px; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-photos" style="width:auto;" checked> Afficher ce champ</label>
       <input id="s-pfl-photos" placeholder="Photos">
-      <label style="margin-top:10px;">Vidéo</label>
+      <label style="margin-top:10px; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-video" style="width:auto;" checked> Afficher ce champ</label>
       <input id="s-pfl-video" placeholder="Vidéo">
-      <label style="margin-top:10px;">Description</label>
+      <label style="margin-top:10px; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-desc" style="width:auto;" checked> Afficher ce champ</label>
       <input id="s-pfl-desc" placeholder="Description">
-      <label style="margin-top:10px;">Matière</label>
+      <label style="margin-top:10px; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-material" style="width:auto;" checked> Afficher ce champ</label>
       <input id="s-pfl-material" placeholder="Matière">
-      <label style="margin-top:10px;">Couleurs</label>
+      <label style="margin-top:10px; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-colors" style="width:auto;" checked> Afficher ce champ</label>
       <input id="s-pfl-colors" placeholder="Couleurs (séparées par virgule)">
-      <label style="margin-top:10px;">Paliers quantité / prix</label>
+      <label style="margin-top:10px; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-tiers" style="width:auto;" checked> Afficher ce champ</label>
       <input id="s-pfl-tiers" placeholder="Paliers quantité / prix">
-      <label style="margin-top:10px;">Stock</label>
+      <label style="margin-top:10px; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-stock" style="width:auto;" checked> Afficher ce champ</label>
       <input id="s-pfl-stock" placeholder="Stock">
-      <label style="margin-top:10px;">Marque</label>
+      <label style="margin-top:10px; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-brand" style="width:auto;" checked> Afficher ce champ</label>
       <input id="s-pfl-brand" placeholder="Marque">
 
       <button onclick="savePfLabels()" style="width:100%; margin-top:14px;">Enregistrer</button>
@@ -1869,6 +1887,7 @@ async function openProductForm(){
     : Array.from({ length: currentContent?.defaultTierCount ?? 5 }, () => ({ label: '', price: 0 }));
   renderTiersEditor();
   applyPfLabels(currentContent?.pfLabels);
+  applyPfVisibility(currentContent?.pfFieldsVisible);
   document.getElementById('pf-featured').checked = false;
   document.getElementById('pf-vip-early').checked = false;
   document.getElementById('pf-cat-new').value = '';
@@ -1883,6 +1902,7 @@ function editProduct(id){
   const p = allProducts.find(x => x.id === id);
   if (!p) return;
   applyPfLabels(currentContent?.pfLabels);
+  applyPfVisibility(currentContent?.pfFieldsVisible);
   document.getElementById('pf-title').textContent = 'Modifier — ' + p.name;
   document.getElementById('pf-id').value = p.id;
   document.getElementById('pf-name').value = p.name || '';
@@ -1969,19 +1989,28 @@ const PF_LABEL_MAP = {
   colors: 'pfl-colors', tiers: 'pfl-tiers', stock: 'pfl-stock', brand: 'pfl-brand',
 };
 
-// Applique les étiquettes personnalisées sur le vrai formulaire (les labels visibles quand
-// on ajoute/modifie un produit) — appelé dès que le contenu est chargé, pour que ce soit
-// déjà bon sans avoir besoin d'ouvrir Réglages en premier.
+// Applique les étiquettes personnalisées ET la visibilité de chaque champ sur le vrai
+// formulaire (visible quand on ajoute/modifie un produit) — appelé dès que le contenu
+// est chargé, pour que ce soit déjà bon sans avoir besoin d'ouvrir Réglages en premier.
 function applyPfLabels(pfLabels){
-  if (!pfLabels) return;
-  Object.entries(PF_LABEL_MAP).forEach(([key, elId]) => {
-    const el = document.getElementById(elId);
-    if (el && pfLabels[key]){
-      // Ne remplace que le texte, en gardant les éventuels <span> internes (ex. notes en gris)
-      const span = el.querySelector('span');
-      el.childNodes[0].textContent = pfLabels[key] + ' ';
-      if (span) el.appendChild(span);
-    }
+  if (pfLabels){
+    Object.entries(PF_LABEL_MAP).forEach(([key, elId]) => {
+      const el = document.getElementById(elId);
+      if (el && pfLabels[key]){
+        // Ne remplace que le texte, en gardant les éventuels <span> internes (ex. notes en gris)
+        const span = el.querySelector('span');
+        el.childNodes[0].textContent = pfLabels[key] + ' ';
+        if (span) el.appendChild(span);
+      }
+    });
+  }
+}
+
+function applyPfVisibility(pfFieldsVisible){
+  const vis = pfFieldsVisible || {};
+  Object.keys(PF_LABEL_MAP).forEach(key => {
+    const field = document.getElementById(`pf-field-${key}`);
+    if (field) field.style.display = vis[key] === false ? 'none' : '';
   });
 }
 
@@ -1995,20 +2024,26 @@ async function loadPfLabels(){
     } catch (err) { return; }
   }
   const pfLabels = content.pfLabels || {};
+  const pfFieldsVisible = content.pfFieldsVisible || {};
   Object.keys(PF_LABEL_MAP).forEach(key => {
     const input = document.getElementById(`s-${PF_LABEL_MAP[key]}`);
     if (input) input.value = pfLabels[key] || '';
+    const checkbox = document.getElementById(`s-pflv-${key}`);
+    if (checkbox) checkbox.checked = pfFieldsVisible[key] !== false;
   });
 }
 
 async function savePfLabels(){
   await getFreshContent();
   const pfLabels = {};
+  const pfFieldsVisible = {};
   Object.keys(PF_LABEL_MAP).forEach(key => {
     const input = document.getElementById(`s-${PF_LABEL_MAP[key]}`);
     if (input) pfLabels[key] = input.value.trim();
+    const checkbox = document.getElementById(`s-pflv-${key}`);
+    pfFieldsVisible[key] = checkbox ? checkbox.checked : true;
   });
-  const body = { ...(currentContent || {}), pfLabels };
+  const body = { ...(currentContent || {}), pfLabels, pfFieldsVisible };
   try {
     const res = await fetch(`${BACKEND_URL}/api/content`, {
       method: 'PUT', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
@@ -2017,6 +2052,7 @@ async function savePfLabels(){
     if (!res.ok) { alert('Erreur lors de l\'enregistrement.'); return; }
     currentContent = body;
     applyPfLabels(pfLabels);
+    applyPfVisibility(pfFieldsVisible);
     alert('Étiquettes enregistrées.');
     closeSettingsSection();
   } catch (err) {
