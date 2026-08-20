@@ -1908,9 +1908,10 @@ async function openProductForm(){
 }
 function closeProductForm(){ document.getElementById('product-form').style.display = 'none'; }
 
-function editProduct(id){
+async function editProduct(id){
   const p = allProducts.find(x => x.id === id);
   if (!p) return;
+  if (!currentContent) await getFreshContent();
   applyPfLabels(currentContent?.pfLabels);
   applyPfVisibility(currentContent?.pfFieldsVisible);
   document.getElementById('pf-title').textContent = 'Modifier — ' + p.name;
@@ -1930,7 +1931,14 @@ document.getElementById('pf-img-status').textContent = '';
   document.getElementById('pf-desc').value = p.desc || '';
   document.getElementById('pf-material').value = p.material || '';
   document.getElementById('pf-colors').value = (p.colors || []).join(', ');
-  productTiers = p.priceTiers && p.priceTiers.length ? p.priceTiers.map(t => ({...t})) : [];
+  if (p.priceTiers && p.priceTiers.length){
+    productTiers = p.priceTiers.map(t => ({...t}));
+  } else {
+    const savedTemplate = currentContent?.defaultPriceTiers || [];
+    productTiers = savedTemplate.length
+      ? savedTemplate.map(t => ({...t}))
+      : Array.from({ length: currentContent?.defaultTierCount ?? 5 }, () => ({ label: '', price: 0 }));
+  }
   renderTiersEditor();
   document.getElementById('pf-stock').value = p.stock || '';
   document.getElementById('pf-featured').checked = !!p.featured;
