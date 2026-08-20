@@ -284,7 +284,7 @@
     -webkit-overflow-scrolling:touch; scrollbar-width:none;
   }
   .pd-gallery::-webkit-scrollbar{ display:none; }
-  .pd-gallery img{
+  .pd-gallery img, .pd-gallery video{
     flex:0 0 100%; scroll-snap-align:center;
     width:100%; aspect-ratio:4/5; object-fit:cover;
   }
@@ -2414,7 +2414,6 @@
 
     <div id="pd-gallery" class="pd-gallery"></div>
     <div id="pd-gallery-dots" class="pd-gallery-dots"></div>
-    <video class="product-hero" id="pd-video" controls playsinline style="display:none; margin-top:10px;"></video>
 
     <div class="pd-title-box">
       <div class="pd-type" id="pd-type"></div>
@@ -2854,26 +2853,20 @@ function openProduct(id){
   selectedTier = null;
   selectedColor = null;
   pdFulfilMode = 'livraison';
-  const images = (p.images && p.images.length) ? p.images : [p.img];
+  const rawMedia = (p.images && p.images.length) ? p.images : (p.img ? [p.img] : []);
+  const media = rawMedia.map(item => typeof item === 'string' ? { type: 'image', url: item } : item);
   const gallery = document.getElementById('pd-gallery');
-  gallery.innerHTML = images.map(url => `<img src="${url}" alt="${p.name}">`).join('');
+  gallery.innerHTML = media.map(m => m.type === 'video'
+    ? `<video src="${m.url}" muted playsinline loop autoplay></video>`
+    : `<img src="${m.url}" alt="${p.name}">`
+  ).join('');
   gallery.scrollTo({ left: 0 });
   const dots = document.getElementById('pd-gallery-dots');
-  dots.innerHTML = images.length > 1 ? images.map((_, i) => `<span class="${i===0?'active':''}"></span>`).join('') : '';
+  dots.innerHTML = media.length > 1 ? media.map((_, i) => `<span class="${i===0?'active':''}"></span>`).join('') : '';
   gallery.onscroll = () => {
     const index = Math.round(gallery.scrollLeft / gallery.clientWidth);
     dots.querySelectorAll('span').forEach((d, i) => d.classList.toggle('active', i === index));
   };
-  const video = document.getElementById('pd-video');
-  if (p.videoUrl){
-    video.src = p.videoUrl;
-    video.style.display = 'block';
-  } else {
-    video.pause();
-    video.removeAttribute('src');
-    video.load();
-    video.style.display = 'none';
-  }
   document.getElementById('pd-type').textContent = p.cat;
   document.getElementById('pd-brand').textContent = p.brand;
   const hasTiers = p.priceTiers && p.priceTiers.length > 0;
@@ -4158,7 +4151,7 @@ function closeOverlay(id){
   document.getElementById(id).classList.remove('show');
   if (id === 'product-overlay'){
     document.getElementById('product-footer').classList.remove('show');
-    document.getElementById('pd-video').pause();
+    document.querySelectorAll('#pd-gallery video').forEach(v => v.pause());
   }
   const anyOpen = document.querySelectorAll('.overlay.show').length > 0;
   if (!anyOpen) showNav();

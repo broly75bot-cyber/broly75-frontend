@@ -286,19 +286,11 @@
         <input id="pf-tag">
       </div>
       <div id="pf-field-photos">
-        <label id="pfl-photos">Photos <span style="text-transform:none; color:rgba(0,0,0,0.35);">(la 1ère sert de photo principale)</span></label>
+        <label id="pfl-photos">Photos et vidéos <span style="text-transform:none; color:rgba(0,0,0,0.35);">(la 1ère sert de photo principale — mélange libre)</span></label>
         <div id="pf-images-editor" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;"></div>
-        <input type="file" id="pf-img-file" accept="image/*" multiple onchange="addProductPhoto(this)">
+        <input type="file" id="pf-img-file" accept="image/*,video/*" multiple onchange="addProductMedia(this)">
         <input type="hidden" id="pf-img">
         <div class="muted" id="pf-img-status"></div>
-      </div>
-
-      <div id="pf-field-video">
-        <label id="pfl-video">Vidéo <span style="text-transform:none; color:rgba(0,0,0,0.35);">(optionnel, en plus de la photo)</span></label>
-        <input type="file" id="pf-video-file" accept="video/*" onchange="uploadVideo(this)">
-        <input type="hidden" id="pf-video">
-        <video id="pf-video-preview" src="" controls style="max-width:160px; border-radius:8px; margin:8px 0; display:none;"></video>
-        <div class="muted" id="pf-video-status"></div>
       </div>
 
       <div id="pf-field-desc">
@@ -957,9 +949,7 @@
       <label style="margin-top:10px; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-tag" style="width:auto;" checked> Afficher ce champ</label>
       <input id="s-pfl-tag" placeholder="Tag (NEW, DROP, HOT, LIMITED...)">
       <label style="margin-top:10px; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-photos" style="width:auto;" checked> Afficher ce champ</label>
-      <input id="s-pfl-photos" placeholder="Photos">
-      <label style="margin-top:10px; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-video" style="width:auto;" checked> Afficher ce champ</label>
-      <input id="s-pfl-video" placeholder="Vidéo">
+      <input id="s-pfl-photos" placeholder="Photos et vidéos">
       <label style="margin-top:10px; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-desc" style="width:auto;" checked> Afficher ce champ</label>
       <input id="s-pfl-desc" placeholder="Description">
       <label style="margin-top:10px; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="s-pflv-material" style="width:auto;" checked> Afficher ce champ</label>
@@ -1873,13 +1863,11 @@ function populateProductDropdowns(selectedCat, selectedBrand){
 
 async function openProductForm(){
   document.getElementById('pf-title').textContent = 'Nouveau produit';
-  ['pf-id','pf-name','pf-price','pf-tag','pf-img','pf-video','pf-desc','pf-material','pf-colors','pf-stock']
+  ['pf-id','pf-name','pf-price','pf-tag','pf-img','pf-desc','pf-material','pf-colors','pf-stock']
     .forEach(id => document.getElementById(id).value = '');
-  productImages = [];
+  productMedia = [];
   renderProductImagesEditor();
   document.getElementById('pf-img-status').textContent = '';
-  document.getElementById('pf-video-preview').style.display = 'none';
-  document.getElementById('pf-video-status').textContent = '';
   if (!currentContent) await getFreshContent();
   const savedTemplate = currentContent?.defaultPriceTiers || [];
   productTiers = savedTemplate.length
@@ -1911,15 +1899,11 @@ function editProduct(id){
   document.getElementById('pf-cat-new').value = '';
   document.getElementById('pf-brand-new').value = '';
   document.getElementById('pf-tag').value = p.tag || '';
-productImages = p.images && p.images.length ? [...p.images] : (p.img ? [p.img] : []);
+productMedia = (p.images && p.images.length)
+  ? p.images.map(item => typeof item === 'string' ? { type: 'image', url: item } : item)
+  : (p.img ? [{ type: 'image', url: p.img }] : []);
 renderProductImagesEditor();
 document.getElementById('pf-img-status').textContent = '';
-
-document.getElementById('pf-video').value = p.videoUrl || '';
-const videoPreview = document.getElementById('pf-video-preview');
-videoPreview.src = p.videoUrl || '';
-videoPreview.style.display = p.videoUrl ? 'block' : 'none';
-document.getElementById('pf-video-status').textContent = '';
 
   document.getElementById('pf-desc').value = p.desc || '';
   document.getElementById('pf-material').value = p.material || '';
@@ -1932,32 +1916,7 @@ document.getElementById('pf-video-status').textContent = '';
   document.getElementById('product-form').style.display = 'block';
   document.getElementById('product-form').scrollIntoView({behavior:'smooth'});
 }
-async function uploadVideo(input){
-  const file = input.files[0];
-  if (!file) return;
-  const status = document.getElementById('pf-video-status');
-  status.textContent = 'Envoi en cours... (peut prendre un moment)';
-  const formData = new FormData();
-  formData.append('video', file);
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/upload-video`, {
-      method: 'POST',
-      headers: { 'x-admin-key': adminKey },
-      body: formData,
-    });
-    const data = await res.json();
-    if (!res.ok) { status.textContent = '❌ ' + (data.error || 'Erreur upload'); return; }
-    document.getElementById('pf-video').value = data.url;
-    const preview = document.getElementById('pf-video-preview');
-    preview.src = data.url;
-    preview.style.display = 'block';
-    status.textContent = '✅ Vidéo envoyée';
-  } catch (err) {
-    status.textContent = '❌ Erreur réseau';
-  }
-}
-
-let productImages = [];
+let productMedia = [];
 
 let templateTiers = [];
 
@@ -1985,7 +1944,7 @@ function removeTemplateTierField(index){
 
 const PF_LABEL_MAP = {
   name: 'pfl-name', price: 'pfl-price', cat: 'pfl-cat', tag: 'pfl-tag',
-  photos: 'pfl-photos', video: 'pfl-video', desc: 'pfl-desc', material: 'pfl-material',
+  photos: 'pfl-photos', desc: 'pfl-desc', material: 'pfl-material',
   colors: 'pfl-colors', tiers: 'pfl-tiers', stock: 'pfl-stock', brand: 'pfl-brand',
 };
 
@@ -2133,45 +2092,52 @@ async function loadTemplateOntoProduct(){
 
 function renderProductImagesEditor(){
   const editor = document.getElementById('pf-images-editor');
-  editor.innerHTML = productImages.map((url, i) => `
+  editor.innerHTML = productMedia.map((m, i) => `
     <div style="position:relative;">
-      <img src="${url}" style="width:70px; height:70px; object-fit:cover; border-radius:8px; border:${i===0 ? '2px solid var(--accent)' : '1px solid var(--border)'};">
+      ${m.type === 'video'
+        ? `<video src="${m.url}" muted style="width:70px; height:70px; object-fit:cover; border-radius:8px; border:${i===0 ? '2px solid var(--accent)' : '1px solid var(--border)'};"></video>
+           <span style="position:absolute; top:2px; left:2px; background:rgba(0,0,0,0.6); color:#fff; font-size:9px; padding:1px 4px; border-radius:4px;">🎬</span>`
+        : `<img src="${m.url}" style="width:70px; height:70px; object-fit:cover; border-radius:8px; border:${i===0 ? '2px solid var(--accent)' : '1px solid var(--border)'};">`
+      }
       ${i===0 ? '<span style="position:absolute; bottom:2px; left:2px; background:var(--accent); color:#fff; font-size:9px; padding:1px 5px; border-radius:4px;">Principale</span>' : ''}
       <button type="button" onclick="removeProductPhoto(${i})" style="position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background:var(--danger); color:#fff; border:none; font-size:12px; line-height:1; cursor:pointer;">×</button>
     </div>
   `).join('');
-  document.getElementById('pf-img').value = productImages[0] || '';
+  const firstImage = productMedia.find(m => m.type !== 'video');
+  document.getElementById('pf-img').value = firstImage ? firstImage.url : '';
 }
 
-async function addProductPhoto(input){
+async function addProductMedia(input){
   const files = Array.from(input.files || []);
   if (!files.length) return;
   const status = document.getElementById('pf-img-status');
 
   for (let i = 0; i < files.length; i++){
-    status.textContent = `Envoi ${i + 1}/${files.length}...`;
+    const file = files[i];
+    const isVideo = file.type.startsWith('video/');
+    status.textContent = `Envoi ${i + 1}/${files.length}${isVideo ? ' (vidéo, peut prendre un moment)' : ''}...`;
     const formData = new FormData();
-    formData.append('photo', files[i]);
+    formData.append(isVideo ? 'video' : 'photo', file);
     try {
-      const res = await fetch(`${BACKEND_URL}/api/upload`, {
+      const res = await fetch(`${BACKEND_URL}/api/${isVideo ? 'upload-video' : 'upload'}`, {
         method: 'POST',
         headers: { 'x-admin-key': adminKey },
         body: formData,
       });
       const data = await res.json();
       if (!res.ok) { status.textContent = '❌ ' + (data.error || 'Erreur upload'); continue; }
-      productImages.push(data.url);
+      productMedia.push({ type: isVideo ? 'video' : 'image', url: data.url });
       renderProductImagesEditor();
     } catch (err) {
       status.textContent = '❌ Erreur réseau';
     }
   }
-  status.textContent = `✅ ${productImages.length} photo${productImages.length > 1 ? 's' : ''} au total`;
+  status.textContent = `✅ ${productMedia.length} fichier${productMedia.length > 1 ? 's' : ''} au total`;
   input.value = '';
 }
 
 function removeProductPhoto(index){
-  productImages.splice(index, 1);
+  productMedia.splice(index, 1);
   renderProductImagesEditor();
 }
 
@@ -2262,8 +2228,7 @@ async function saveProduct(){
     cat: catNew || document.getElementById('pf-cat').value,
     tag: document.getElementById('pf-tag').value,
     img: document.getElementById('pf-img').value,
-    images: productImages,
-    videoUrl: document.getElementById('pf-video').value,
+    images: productMedia,
     desc: document.getElementById('pf-desc').value,
     material: document.getElementById('pf-material').value,
     colors: document.getElementById('pf-colors').value.split(',').map(s => s.trim()).filter(Boolean),
