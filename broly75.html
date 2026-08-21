@@ -750,6 +750,15 @@
     font-size:14.5px;
     line-height:1.2;
   }
+  .card-brand{
+    font-family:var(--font-mono);
+    font-size:9.5px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color:var(--lime);
+    margin-top:6px;
+    margin-bottom:2px;
+  }
   .card .meta{
     display:flex;
     justify-content:flex-end;
@@ -3332,6 +3341,7 @@ function renderGrid(){
       <div class="tag">${p.tag}</div>
       ${p.vipEarlyAccess ? '<div class="tag" style="right:8px; left:auto; background:var(--lime); color:#04130A;">★ VIP</div>' : ''}
       <img src="${p.img}" alt="${p.name}">
+      ${p.brand ? `<div class="card-brand">${p.brand}</div>` : ''}
       <div class="name">${p.name}</div>
       <div class="meta">
         <button class="like-btn" onclick="event.stopPropagation(); toggleLike(${p.id}, this)">
