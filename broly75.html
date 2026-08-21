@@ -2117,25 +2117,23 @@
 <div class="cat-grid" id="cats"></div>
 
 <!-- FILTRE PAR STYLE -->
-<div class="overlay" id="type-filter-overlay">
-  <div class="overlay-inner">
-    <div class="close-row">
-      <h2 id="type-filter-h2">Type de vêtement</h2>
-      <button class="close-btn" onclick="closeOverlay('type-filter-overlay')" data-i18n="close">Fermer</button>
-    </div>
-    <div class="filter-list" id="type-filter-list"></div>
+<div class="bottom-sheet" id="type-filter-overlay">
+  <div class="bottom-sheet-handle"></div>
+  <div class="close-row">
+    <h2 id="type-filter-h2">Type de vêtement</h2>
+    <button class="close-btn" onclick="closeOverlay('type-filter-overlay')" data-i18n="close">Fermer</button>
   </div>
+  <div class="filter-list" id="type-filter-list"></div>
 </div>
 
 <!-- FILTRE PAR MARQUE -->
-<div class="overlay" id="brand-filter-overlay">
-  <div class="overlay-inner">
-    <div class="close-row">
-      <h2 id="brand-filter-h2">Marque</h2>
-      <button class="close-btn" onclick="closeOverlay('brand-filter-overlay')" data-i18n="close">Fermer</button>
-    </div>
-    <div class="filter-list" id="brand-filter-list"></div>
+<div class="bottom-sheet" id="brand-filter-overlay">
+  <div class="bottom-sheet-handle"></div>
+  <div class="close-row">
+    <h2 id="brand-filter-h2">Marque</h2>
+    <button class="close-btn" onclick="closeOverlay('brand-filter-overlay')" data-i18n="close">Fermer</button>
   </div>
+  <div class="filter-list" id="brand-filter-list"></div>
 </div>
 
 <div class="grid" id="grid"></div>
@@ -4216,7 +4214,7 @@ function closeOverlay(id){
     document.getElementById('product-footer').classList.remove('show');
     document.querySelectorAll('#pd-gallery video').forEach(v => v.pause());
   }
-  const anyOpen = document.querySelectorAll('.overlay.show').length > 0;
+  const anyOpen = document.querySelectorAll('.overlay.show, .bottom-sheet.show').length > 0;
   if (!anyOpen) showNav();
 }
 
