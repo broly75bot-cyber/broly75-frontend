@@ -2217,9 +2217,14 @@
     <div class="info-block">
       <div class="info-block-title">Langue</div>
       <div class="lang-grid" id="lang-grid">
-        <button class="lang-btn active" onclick="setLang(this,'FR')">🇫🇷 Français</button>
-        <button class="lang-btn" onclick="setLang(this,'EN')">🇬🇧 English</button>
-        <button class="lang-btn" onclick="setLang(this,'ES')">🇪🇸 Español</button>
+        <button class="lang-btn active" data-lang="FR" onclick="setLang(this,'FR')">🇫🇷 Français</button>
+        <button class="lang-btn" data-lang="EN" onclick="setLang(this,'EN')">🇬🇧 English</button>
+        <button class="lang-btn" data-lang="ES" onclick="setLang(this,'ES')">🇪🇸 Español</button>
+        <button class="lang-btn" data-lang="DE" onclick="setLang(this,'DE')">🇩🇪 Deutsch</button>
+        <button class="lang-btn" data-lang="IT" onclick="setLang(this,'IT')">🇮🇹 Italiano</button>
+        <button class="lang-btn" data-lang="PT" onclick="setLang(this,'PT')">🇵🇹 Português</button>
+        <button class="lang-btn" data-lang="AR" onclick="setLang(this,'AR')">🇸🇦 العربية</button>
+        <button class="lang-btn" data-lang="NL" onclick="setLang(this,'NL')">🇳🇱 Nederlands</button>
       </div>
     </div>
 
@@ -3544,7 +3549,7 @@ if (reviewLinkEl) reviewLinkEl.href = 'https://t.me/Broly75avis';
 
 async function openProfile(){
   hideNav();
-  document.querySelectorAll('#lang-grid .lang-btn').forEach(b => b.classList.toggle('active', b.textContent.includes(currentLang === 'FR' ? 'Français' : currentLang === 'EN' ? 'English' : 'Español')));
+  document.querySelectorAll('#lang-grid .lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
   const tgUser = tg?.initDataUnsafe?.user;
   document.getElementById('coins-hint-amount').textContent = `${siteContent?.coinsPerOrder ?? 10} Ƶeni`;
   let currentCoins = 0;
@@ -3655,6 +3660,56 @@ const TRANSLATIONS = {
     chooseFulfillment: 'Elige un modo de entrega, por favor.',
     validateOrder: 'Confirmar mi pedido',
     checking: 'Verificando...',
+  },
+  DE: {
+    close: 'Schließen',
+    allStyles: 'Alle Stile',
+    allBrands: 'Alle Marken',
+    discoverProducts: 'Produkte entdecken',
+    cartEmpty: 'Dein Warenkorb ist leer.',
+    chooseFulfillment: 'Bitte wähle eine Liefermethode.',
+    validateOrder: 'Bestellung bestätigen',
+    checking: 'Wird geprüft...',
+  },
+  IT: {
+    close: 'Chiudi',
+    allStyles: 'Tutti gli stili',
+    allBrands: 'Tutte le marche',
+    discoverProducts: 'Scopri i prodotti',
+    cartEmpty: 'Il tuo carrello è vuoto.',
+    chooseFulfillment: 'Scegli una modalità di consegna.',
+    validateOrder: 'Conferma il mio ordine',
+    checking: 'Verifica in corso...',
+  },
+  PT: {
+    close: 'Fechar',
+    allStyles: 'Todos os estilos',
+    allBrands: 'Todas as marcas',
+    discoverProducts: 'Descobrir produtos',
+    cartEmpty: 'O teu carrinho está vazio.',
+    chooseFulfillment: 'Escolhe um modo de entrega.',
+    validateOrder: 'Confirmar o meu pedido',
+    checking: 'A verificar...',
+  },
+  AR: {
+    close: 'إغلاق',
+    allStyles: 'جميع الأنماط',
+    allBrands: 'جميع الماركات',
+    discoverProducts: 'اكتشف المنتجات',
+    cartEmpty: 'سلتك فارغة.',
+    chooseFulfillment: 'يرجى اختيار طريقة التوصيل.',
+    validateOrder: 'تأكيد طلبي',
+    checking: 'جارٍ التحقق...',
+  },
+  NL: {
+    close: 'Sluiten',
+    allStyles: 'Alle stijlen',
+    allBrands: 'Alle merken',
+    discoverProducts: 'Producten ontdekken',
+    cartEmpty: 'Je winkelwagen is leeg.',
+    chooseFulfillment: 'Kies een bezorgmethode.',
+    validateOrder: 'Bestelling bevestigen',
+    checking: 'Controleren...',
   },
 };
 let currentLang = localStorage.getItem('broly75_lang') || 'FR';
