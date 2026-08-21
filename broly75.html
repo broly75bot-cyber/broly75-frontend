@@ -2399,12 +2399,7 @@
 
     <div class="info-block">
       <div class="info-block-title" id="label-info-hours-title">Horaires de livraison</div>
-      <div class="hours-grid">
-        <div class="hours-card"><div class="day">Lundi – Mardi</div><div class="time">À compléter</div></div>
-        <div class="hours-card"><div class="day">Mercredi – Jeudi</div><div class="time">À compléter</div></div>
-        <div class="hours-card"><div class="day">Vendredi</div><div class="time">À compléter</div></div>
-        <div class="hours-card"><div class="day">Week-end</div><div class="time">À compléter</div></div>
-      </div>
+      <div class="hours-grid" id="hours-grid"></div>
     </div>
 
     <div class="info-block">
@@ -3132,12 +3127,14 @@ function setFulfillment(mode, card){
 function renderHoursOptions(){
   const container = document.getElementById('checkout-hours-options');
   const hours = (siteContent && siteContent.hours) || {};
-  const slots = [
-    { key: 'lunMar', label: 'Lundi – Mardi', value: hours.lunMar },
-    { key: 'merJeu', label: 'Mercredi – Jeudi', value: hours.merJeu },
-    { key: 'ven', label: 'Vendredi', value: hours.ven },
-    { key: 'weekend', label: 'Week-end', value: hours.weekend },
-  ];
+  const slots = (siteContent?.hoursList && siteContent.hoursList.length)
+    ? siteContent.hoursList.map((h, i) => ({ key: 'slot' + i, label: h.label, value: h.value }))
+    : [
+        { key: 'lunMar', label: 'Lundi – Mardi', value: hours.lunMar },
+        { key: 'merJeu', label: 'Mercredi – Jeudi', value: hours.merJeu },
+        { key: 'ven', label: 'Vendredi', value: hours.ven },
+        { key: 'weekend', label: 'Week-end', value: hours.weekend },
+      ];
   container.innerHTML = slots.map(s => `
     <div class="option-card ${selectedHoursSlot === s.key ? 'selected' : ''}" onclick="selectHoursSlot('${s.key}', '${s.label}')" style="padding:12px 16px;">
       <div class="oc-info">
@@ -3992,12 +3989,19 @@ function applyDeliveryLabels(labels){
 function openInfo(){
   hideNav();
   if (siteContent){
-    const h = siteContent.hours || {};
-    const cards = document.querySelectorAll('.hours-card .time');
-    if (cards[0]) cards[0].textContent = h.lunMar || 'À compléter';
-    if (cards[1]) cards[1].textContent = h.merJeu || 'À compléter';
-    if (cards[2]) cards[2].textContent = h.ven || 'À compléter';
-    if (cards[3]) cards[3].textContent = h.weekend || 'À compléter';
+    // Nouveau format : liste libre (label + horaire), configurable en admin.
+    // Repli automatique sur l'ancien format à 4 cases fixes si jamais rien n'a encore été migré.
+    const hoursList = (siteContent.hoursList && siteContent.hoursList.length)
+      ? siteContent.hoursList
+      : [
+          { label: 'Lundi – Mardi', value: siteContent.hours?.lunMar },
+          { label: 'Mercredi – Jeudi', value: siteContent.hours?.merJeu },
+          { label: 'Vendredi', value: siteContent.hours?.ven },
+          { label: 'Week-end', value: siteContent.hours?.weekend },
+        ];
+    document.getElementById('hours-grid').innerHTML = hoursList.map(h => `
+      <div class="hours-card"><div class="day">${h.label}</div><div class="time">${h.value || 'À compléter'}</div></div>
+    `).join('');
 
     const m = siteContent.meetup || {};
     document.getElementById('meetup-location').textContent = m.location || 'À compléter';

@@ -631,12 +631,9 @@
     <div class="subscreen" id="contenu-hours">
       <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
       <h2>Horaires de livraison</h2>
-      <div class="form-grid">
-        <div><label>Lundi – Mardi</label><input id="c-lunmar"></div>
-        <div><label>Mercredi – Jeudi</label><input id="c-merjeu"></div>
-        <div><label>Vendredi</label><input id="c-ven"></div>
-        <div><label>Week-end</label><input id="c-weekend"></div>
-      </div>
+      <p class="muted" style="margin-bottom:14px;">Ajoute, renomme ou retire les créneaux librement — le nom du jour comme l'horaire sont entièrement à toi.</p>
+      <div id="hours-editor"></div>
+      <button class="secondary" style="width:100%; margin-top:6px;" onclick="addHoursField()">+ Ajouter un créneau</button>
       <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
@@ -1950,6 +1947,30 @@ let productMedia = [];
 
 let templateTiers = [];
 
+let hoursList = [];
+
+function renderHoursEditor(){
+  document.getElementById('hours-editor').innerHTML = hoursList.map((h, i) => `
+    <div class="form-grid" style="margin-bottom:8px;">
+      <div><input value="${(h.label||'').replace(/"/g,'&quot;')}" placeholder="Ex : Lundi – Mardi" oninput="hoursList[${i}].label=this.value"></div>
+      <div style="display:flex; gap:6px;">
+        <input value="${(h.value||'').replace(/"/g,'&quot;')}" placeholder="Ex : 14h – 20h" style="flex:1;" oninput="hoursList[${i}].value=this.value">
+        <button type="button" class="danger" onclick="removeHoursField(${i})" style="flex-shrink:0;">×</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addHoursField(){
+  hoursList.push({ label: '', value: '' });
+  renderHoursEditor();
+}
+
+function removeHoursField(index){
+  hoursList.splice(index, 1);
+  renderHoursEditor();
+}
+
 function renderTemplateTiersEditor(){
   document.getElementById('template-tiers-editor').innerHTML = templateTiers.map((t, i) => `
     <div class="form-grid" style="margin-bottom:8px;">
@@ -2379,10 +2400,13 @@ async function loadContent(){
   const wpPreview = document.getElementById('wallpaper-preview');
   wpPreview.src = c.wallpaperUrl || '';
   wpPreview.style.display = c.wallpaperUrl ? 'block' : 'none';
-  document.getElementById('c-lunmar').value = c.hours?.lunMar || '';
-  document.getElementById('c-merjeu').value = c.hours?.merJeu || '';
-  document.getElementById('c-ven').value = c.hours?.ven || '';
-  document.getElementById('c-weekend').value = c.hours?.weekend || '';
+  hoursList = (c.hoursList && c.hoursList.length) ? c.hoursList.map(h => ({...h})) : [
+    { label: 'Lundi – Mardi', value: c.hours?.lunMar || '' },
+    { label: 'Mercredi – Jeudi', value: c.hours?.merJeu || '' },
+    { label: 'Vendredi', value: c.hours?.ven || '' },
+    { label: 'Week-end', value: c.hours?.weekend || '' },
+  ];
+  renderHoursEditor();
   document.getElementById('c-meetup-location').value = c.meetup?.location || '';
   document.getElementById('c-meetup-hours').value = c.meetup?.hoursText || '';
   document.getElementById('c-shipping-min').value = c.shipping?.minOrderAmount ?? '';
@@ -2602,12 +2626,7 @@ async function saveContent(){
     brandOrder,
     labels,
     statusMessages,
-    hours: {
-      lunMar: document.getElementById('c-lunmar').value,
-      merJeu: document.getElementById('c-merjeu').value,
-      ven: document.getElementById('c-ven').value,
-      weekend: document.getElementById('c-weekend').value,
-    },
+    hoursList: hoursList.filter(h => h.label),
     meetup: {
       location: document.getElementById('c-meetup-location').value,
       available: true,
