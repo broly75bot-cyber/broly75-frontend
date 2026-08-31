@@ -4107,12 +4107,7 @@ async function loadSiteContent(){
   try {
     const res = await fetch(BACKEND_URL + '/api/content');
     siteContent = await res.json();
-    if (siteContent.wallpaperUrl){
-      document.documentElement.style.setProperty('--wallpaper-image', `url('${siteContent.wallpaperUrl}')`);
-      document.body.classList.add('custom-wallpaper');
-      const wordmark = document.querySelector('.bg-wordmark');
-      if (wordmark) wordmark.style.display = 'none';
-    }
+    applyWallpaper();
     applySiteStyle(siteContent.style);
     applyDeliveryLabels(siteContent.labels);
     applyEnabledCryptos(siteContent.cryptoWallets);
@@ -4121,6 +4116,20 @@ async function loadSiteContent(){
     renderGrid();
   } catch (err) {
     console.error('Impossible de charger le contenu du site', err);
+  }
+}
+
+function applyWallpaper(){
+  if (!siteContent) return;
+  const url = (isVipUser && siteContent.vipWallpaperUrl) ? siteContent.vipWallpaperUrl : siteContent.wallpaperUrl;
+  const wordmark = document.querySelector('.bg-wordmark');
+  if (url){
+    document.documentElement.style.setProperty('--wallpaper-image', `url('${url}')`);
+    document.body.classList.add('custom-wallpaper');
+    if (wordmark) wordmark.style.display = 'none';
+  } else {
+    document.body.classList.remove('custom-wallpaper');
+    if (wordmark) wordmark.style.display = '';
   }
 }
 
@@ -4313,6 +4322,7 @@ async function checkVipStatus(){
     isVipUser = !!data.vip;
     document.body.classList.toggle('vip-user', isVipUser);
     applyVipGoldOverride(isVipUser);
+    applyWallpaper();
     document.getElementById('vip-payment-toggle').style.display = isVipUser ? 'block' : 'none';
     renderGrid();
     renderRecap();

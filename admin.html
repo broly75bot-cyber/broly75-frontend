@@ -378,6 +378,17 @@
       <input id="c-wallpaper" placeholder="https://...">
       <img id="wallpaper-preview" src="" style="max-width:160px; border-radius:8px; margin-bottom:10px; display:none;">
       <button type="button" class="secondary" id="wallpaper-clear-btn" style="display:none; margin-bottom:10px;" onclick="clearImageField('c-wallpaper','wallpaper-preview','wallpaper-status','wallpaper-clear-btn')">Retirer le papier peint</button>
+
+      <h2 style="margin-top:20px;">Papier peint VIP</h2>
+      <p class="muted" style="margin-top:-6px; margin-bottom:10px;">Affiché à la place du papier peint normal uniquement pour les clients certifiés VIP. Laisse vide pour qu'ils gardent le même papier peint que tout le monde.</p>
+      <label>Envoyer une image depuis mon appareil</label>
+      <input type="file" id="vip-wallpaper-file" accept="image/*" onchange="uploadVipWallpaper(this)">
+      <div class="muted" id="vip-wallpaper-status"></div>
+      <label style="margin-top:10px;">Ou URL de l'image de fond</label>
+      <input id="c-vip-wallpaper" placeholder="https://...">
+      <img id="vip-wallpaper-preview" src="" style="max-width:160px; border-radius:8px; margin-bottom:10px; display:none;">
+      <button type="button" class="secondary" id="vip-wallpaper-clear-btn" style="display:none; margin-bottom:10px;" onclick="clearImageField('c-vip-wallpaper','vip-wallpaper-preview','vip-wallpaper-status','vip-wallpaper-clear-btn')">Retirer le papier peint VIP</button>
+
       <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
@@ -2502,6 +2513,32 @@ async function uploadWallpaper(input){
   }
 }
 
+async function uploadVipWallpaper(input){
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('vip-wallpaper-status');
+  status.textContent = 'Envoi en cours...';
+  const formData = new FormData();
+  formData.append('photo', file);
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/upload`, {
+      method: 'POST',
+      headers: { 'x-admin-key': adminKey },
+      body: formData,
+    });
+    const data = await res.json();
+    if (!res.ok) { status.textContent = '❌ ' + (data.error || 'Erreur upload'); return; }
+    document.getElementById('c-vip-wallpaper').value = data.url;
+    const preview = document.getElementById('vip-wallpaper-preview');
+    preview.src = data.url;
+    preview.style.display = 'block';
+    document.getElementById('vip-wallpaper-clear-btn').style.display = 'block';
+    status.textContent = '✅ Image envoyée — pense à cliquer sur "Enregistrer le contenu" pour l\'appliquer';
+  } catch (err) {
+    status.textContent = '❌ Erreur réseau';
+  }
+}
+
 async function saveProduct(){
   const id = document.getElementById('pf-id').value;
   const catNew = document.getElementById('pf-cat-new').value.trim();
@@ -2659,6 +2696,11 @@ async function loadContent(){
   wpPreview.src = c.wallpaperUrl || '';
   wpPreview.style.display = c.wallpaperUrl ? 'block' : 'none';
   document.getElementById('wallpaper-clear-btn').style.display = c.wallpaperUrl ? 'block' : 'none';
+  document.getElementById('c-vip-wallpaper').value = c.vipWallpaperUrl || '';
+  const vipWpPreview = document.getElementById('vip-wallpaper-preview');
+  vipWpPreview.src = c.vipWallpaperUrl || '';
+  vipWpPreview.style.display = c.vipWallpaperUrl ? 'block' : 'none';
+  document.getElementById('vip-wallpaper-clear-btn').style.display = c.vipWallpaperUrl ? 'block' : 'none';
   hoursList = (c.hoursList && c.hoursList.length) ? c.hoursList.map(h => ({...h})) : [
     { label: 'Lundi – Mardi', value: c.hours?.lunMar || '' },
     { label: 'Mercredi – Jeudi', value: c.hours?.merJeu || '' },
@@ -2887,6 +2929,7 @@ async function saveContent(){
   const body = {
     ...(currentContent || {}),
     wallpaperUrl: document.getElementById('c-wallpaper').value,
+    vipWallpaperUrl: document.getElementById('c-vip-wallpaper').value,
     typeOrder,
     promoCodes,
     rewards,
