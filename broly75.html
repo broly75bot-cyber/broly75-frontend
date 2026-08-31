@@ -878,6 +878,13 @@
   .nav-item.active .nav-icon{
     filter:drop-shadow(0 0 6px rgba(62,205,107,0.8));
   }
+  body.vip-user .bottom-nav{
+    border-color:rgba(255,197,20,0.4);
+  }
+  body.vip-user .nav-item.active{ color:#FFC514; }
+  body.vip-user .nav-item.active .nav-icon{
+    filter:drop-shadow(0 0 7px rgba(255,197,20,0.9));
+  }
   .nav-item .badge{
     position:absolute;
     top:-2px; right:2px;
@@ -902,6 +909,15 @@
   .nav-item.profil.active .nav-icon{
     background:var(--lime);
     color:var(--ink);
+  }
+  body.vip-user .nav-item.profil .nav-icon{
+    background:rgba(255,197,20,0.15);
+    border-color:#FFC514;
+    color:#FFC514;
+  }
+  body.vip-user .nav-item.profil.active .nav-icon{
+    background:linear-gradient(135deg, #FFE580, #FFC514);
+    color:#2A1D00;
   }
 
   .cartbar{
@@ -3994,6 +4010,23 @@ function applyZoneColor(el, hex){
   el.style.setProperty('--co-g-dim', hexToRgba(hex, 0.3));
 }
 
+const VIP_GOLD = '#FFC514';
+function applyVipGoldOverride(active){
+  const zones = [
+    document.documentElement,
+    document.getElementById('checkout-overlay'),
+    document.getElementById('avis-overlay'),
+    document.getElementById('review-modal'),
+    document.getElementById('contact-overlay'),
+    document.getElementById('profile-overlay'),
+  ];
+  if (active){
+    zones.forEach(el => applyZoneColor(el, VIP_GOLD));
+  } else if (siteContent && siteContent.style){
+    applySiteStyle(siteContent.style);
+  }
+}
+
 function applySiteStyle(style){
   if (!style) return;
   const root = document.documentElement;
@@ -4278,6 +4311,8 @@ async function checkVipStatus(){
     const res = await fetch(`${BACKEND_URL}/api/user/${tgUser.id}`);
     const data = await res.json();
     isVipUser = !!data.vip;
+    document.body.classList.toggle('vip-user', isVipUser);
+    applyVipGoldOverride(isVipUser);
     document.getElementById('vip-payment-toggle').style.display = isVipUser ? 'block' : 'none';
     renderGrid();
     renderRecap();
