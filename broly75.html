@@ -661,6 +661,29 @@
     grid-template-columns:1fr 1fr;
     gap:12px;
     padding:18px 16px 4px;
+    position:relative;
+    z-index:2;
+  }
+  .inline-cat-dropdown{
+    display:none;
+    position:absolute;
+    left:16px; right:16px;
+    background:rgba(4,6,4,0.92); backdrop-filter:blur(6px);
+    border:2px solid var(--lime);
+    border-radius:16px;
+    padding:10px 8px;
+    z-index:5;
+    max-height:280px;
+    overflow-y:auto;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+  }
+  .inline-cat-dropdown.show{ display:block; }
+  .inline-cat-dropdown .nav-row{
+    font-family:var(--font-title);
+    font-size:22px;
+    font-weight:400;
+    text-transform:none;
+    padding:12px 10px;
   }
   .cat-card{
     position:relative;
@@ -2115,25 +2138,8 @@
 </header>
 
 <div class="cat-grid" id="cats"></div>
-
-<!-- FILTRE PAR STYLE -->
-<div class="bottom-sheet" id="type-filter-overlay">
-  <div class="bottom-sheet-handle"></div>
-  <div class="close-row">
-    <h2 id="type-filter-h2">Type de vêtement</h2>
-    <button class="close-btn" onclick="closeOverlay('type-filter-overlay')" data-i18n="close">Fermer</button>
-  </div>
-  <div class="filter-list" id="type-filter-list"></div>
-</div>
-
-<!-- FILTRE PAR MARQUE -->
-<div class="bottom-sheet" id="brand-filter-overlay">
-  <div class="bottom-sheet-handle"></div>
-  <div class="close-row">
-    <h2 id="brand-filter-h2">Marque</h2>
-    <button class="close-btn" onclick="closeOverlay('brand-filter-overlay')" data-i18n="close">Fermer</button>
-  </div>
-  <div class="filter-list" id="brand-filter-list"></div>
+<div id="inline-cat-dropdown" class="inline-cat-dropdown">
+  <div id="inline-cat-list"></div>
 </div>
 
 <div class="grid" id="grid"></div>
@@ -3272,10 +3278,10 @@ function renderCats(){
   const cat1Name = (siteContent?.labels?.cat1Name) || 'Catégorie 1';
   const cat2Name = (siteContent?.labels?.cat2Name) || 'Catégorie 2';
   bar.innerHTML = `
-    <div class="cat-card ${activeType!=='Tout'?'active':''}" style="background-image:url('${typeThumb}')" onclick="openTypeFilter()">
+    <div class="cat-card ${activeType!=='Tout'?'active':''} ${inlineDropdownFor==='type'?'dropdown-open':''}" style="background-image:url('${typeThumb}')" onclick="toggleInlineDropdown('type')">
       <div class="cc-label" id="label-cat1-text">${activeType === 'Tout' ? cat1Name : activeType}</div>
     </div>
-    <div class="cat-card ${activeBrand!=='Tout'?'active':''}" style="background-image:url('${brandThumb}')" onclick="openBrandFilter()">
+    <div class="cat-card ${activeBrand!=='Tout'?'active':''} ${inlineDropdownFor==='brand'?'dropdown-open':''}" style="background-image:url('${brandThumb}')" onclick="toggleInlineDropdown('brand')">
       <div class="cc-label" id="label-cat2-text">${activeBrand === 'Tout' ? cat2Name : activeBrand}</div>
     </div>
   `;
@@ -3289,42 +3295,52 @@ function sortByCustomOrder(values, order){
   return [...ordered, ...rest];
 }
 
-function openTypeFilter(){
-  hideNav();
-  const h2 = document.getElementById('type-filter-h2');
-  if (h2 && siteContent?.labels?.cat1Name) h2.textContent = siteContent.labels.cat1Name;
-  const detected = [...new Set(products.map(p => p.cat).filter(Boolean))];
-  const types = sortByCustomOrder(detected, siteContent?.typeOrder);
-  const list = document.getElementById('type-filter-list');
-  list.innerHTML = [
-    `<button class="nav-row ${activeType==='Tout'?'selected-row':''}" onclick="pickType('Tout')">${t('allStyles')}</button>`,
-    ...types.map(t => `<button class="nav-row ${activeType===t?'selected-row':''}" onclick="pickType('${t}')">${t}</button>`)
-  ].join('');
-  document.getElementById('type-filter-overlay').classList.add('show');
+let inlineDropdownFor = null; // 'type' | 'brand' | null
+
+function toggleInlineDropdown(which){
+  const dropdown = document.getElementById('inline-cat-dropdown');
+  const list = document.getElementById('inline-cat-list');
+
+  // Retape sur la même case déjà ouverte → referme
+  if (inlineDropdownFor === which){
+    dropdown.classList.remove('show');
+    inlineDropdownFor = null;
+    renderCats();
+    return;
+  }
+
+  if (which === 'type'){
+    const detected = [...new Set(products.map(p => p.cat).filter(Boolean))];
+    const types = sortByCustomOrder(detected, siteContent?.typeOrder);
+    list.innerHTML = [
+      `<button class="nav-row ${activeType==='Tout'?'selected-row':''}" onclick="pickType('Tout')">${t('allStyles')}</button>`,
+      ...types.map(x => `<button class="nav-row ${activeType===x?'selected-row':''}" onclick="pickType('${x}')">${x}</button>`)
+    ].join('');
+  } else {
+    const detected = [...new Set(products.map(p => p.brand).filter(Boolean))];
+    const brands = sortByCustomOrder(detected, siteContent?.brandOrder);
+    list.innerHTML = [
+      `<button class="nav-row ${activeBrand==='Tout'?'selected-row':''}" onclick="pickBrand('Tout')">${t('allBrands')}</button>`,
+      ...brands.map(b => `<button class="nav-row ${activeBrand===b?'selected-row':''}" onclick="pickBrand('${b}')">${b}</button>`)
+    ].join('');
+  }
+  dropdown.classList.add('show');
+  inlineDropdownFor = which;
+  renderCats();
 }
+
 function pickType(t){
   activeType = t;
-  closeOverlay('type-filter-overlay');
+  document.getElementById('inline-cat-dropdown').classList.remove('show');
+  inlineDropdownFor = null;
   renderCats();
   renderGrid();
 }
 
-function openBrandFilter(){
-  hideNav();
-  const h2 = document.getElementById('brand-filter-h2');
-  if (h2 && siteContent?.labels?.cat2Name) h2.textContent = siteContent.labels.cat2Name;
-  const detected = [...new Set(products.map(p => p.brand).filter(Boolean))];
-  const brands = sortByCustomOrder(detected, siteContent?.brandOrder);
-  const list = document.getElementById('brand-filter-list');
-  list.innerHTML = [
-    `<button class="nav-row ${activeBrand==='Tout'?'selected-row':''}" onclick="pickBrand('Tout')">${t('allBrands')}</button>`,
-    ...brands.map(b => `<button class="nav-row ${activeBrand===b?'selected-row':''}" onclick="pickBrand('${b}')">${b}</button>`)
-  ].join('');
-  document.getElementById('brand-filter-overlay').classList.add('show');
-}
 function pickBrand(b){
   activeBrand = b;
-  closeOverlay('brand-filter-overlay');
+  document.getElementById('inline-cat-dropdown').classList.remove('show');
+  inlineDropdownFor = null;
   renderCats();
   renderGrid();
 }
