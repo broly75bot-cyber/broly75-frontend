@@ -679,12 +679,20 @@
   }
   .inline-cat-dropdown.show{ display:block; }
   .inline-cat-dropdown .nav-row{
+    display:block;
+    width:100%;
+    background:none;
+    border:none;
+    text-align:left;
     font-family:var(--font-title);
     font-size:22px;
     font-weight:400;
     text-transform:none;
+    color:var(--paper);
     padding:12px 10px;
+    cursor:pointer;
   }
+  .inline-cat-dropdown .nav-row.selected-row{ color:var(--lime); }
   .cat-card{
     position:relative;
     aspect-ratio:4/1;
@@ -2180,7 +2188,7 @@
   <div class="overlay-inner">
     <div class="close-row">
       <h2>Profil</h2>
-      <button class="close-btn" onclick="closeOverlay('profile-overlay')" data-i18n="close">Fermer</button>
+      <button class="close-btn" onclick="closeOverlay('profile-overlay')" data-i18n="close">← Retour</button>
     </div>
 
     <div class="profile-card">
@@ -2247,7 +2255,7 @@
   <div class="overlay-inner">
     <div class="close-row">
       <h2>Contact</h2>
-      <button class="close-btn" onclick="closeOverlay('contact-overlay')" data-i18n="close">Fermer</button>
+      <button class="close-btn" onclick="closeOverlay('contact-overlay')" data-i18n="close">← Retour</button>
     </div>
 
     <div class="cc-list">
@@ -2319,7 +2327,7 @@
   <div class="overlay-inner">
     <div class="close-row">
       <h2>Avis</h2>
-      <button class="close-btn" onclick="closeOverlay('avis-overlay')" data-i18n="close">Fermer</button>
+      <button class="close-btn" onclick="closeOverlay('avis-overlay')" data-i18n="close">← Retour</button>
     </div>
 
     <div class="checkout-section-header">
@@ -2405,7 +2413,7 @@
   <div class="overlay-inner">
     <div class="close-row">
       <h2>Infos</h2>
-      <button class="close-btn" onclick="closeOverlay('info-overlay')" data-i18n="close">Fermer</button>
+      <button class="close-btn" onclick="closeOverlay('info-overlay')" data-i18n="close">← Retour</button>
     </div>
 
     <div class="info-block">
@@ -2447,7 +2455,7 @@
 <div class="overlay" id="product-overlay">
   <div class="overlay-inner" style="padding-bottom:110px;">
     <div class="close-row">
-      <button class="close-btn" onclick="closeOverlay('product-overlay')">← Retour</button>
+      <button class="close-btn" onclick="closeOverlay('product-overlay')" data-i18n="close">← Retour</button>
     </div>
 
     <div id="pd-gallery" class="pd-gallery"></div>
@@ -2513,7 +2521,7 @@
   <div class="overlay-inner">
     <div class="close-row">
       <h2>Panier</h2>
-      <button class="close-btn" onclick="closeOverlay('cart-overlay')" data-i18n="close">Fermer</button>
+      <button class="close-btn" onclick="closeOverlay('cart-overlay')" data-i18n="close">← Retour</button>
     </div>
     <div id="cart-lines"></div>
     <div class="totals" id="cart-totals-row">
@@ -2538,7 +2546,7 @@
   <div class="overlay-inner">
     <div class="close-row">
       <h2>Commande</h2>
-      <button class="close-btn" onclick="closeOverlay('checkout-overlay')" data-i18n="close">Fermer</button>
+      <button class="close-btn" onclick="closeOverlay('checkout-overlay')" data-i18n="close">← Retour</button>
     </div>
 
     <!-- ARTICLES -->
@@ -3648,7 +3656,7 @@ function handleAvatarUpload(event){
 // ===== Traduction (textes fixes uniquement — ce que l'admin tape lui-même n'est jamais traduit) =====
 const TRANSLATIONS = {
   FR: {
-    close: 'Fermer',
+    close: '← Retour',
     allStyles: 'Tous les styles',
     allBrands: 'Toutes les marques',
     discoverProducts: 'Découvrir les produits',
@@ -3658,7 +3666,7 @@ const TRANSLATIONS = {
     checking: 'Vérification...',
   },
   EN: {
-    close: 'Close',
+    close: '← Back',
     allStyles: 'All styles',
     allBrands: 'All brands',
     discoverProducts: 'Discover products',
@@ -3668,7 +3676,7 @@ const TRANSLATIONS = {
     checking: 'Checking...',
   },
   ES: {
-    close: 'Cerrar',
+    close: '← Volver',
     allStyles: 'Todos los estilos',
     allBrands: 'Todas las marcas',
     discoverProducts: 'Descubrir productos',
@@ -3678,7 +3686,7 @@ const TRANSLATIONS = {
     checking: 'Verificando...',
   },
   DE: {
-    close: 'Schließen',
+    close: '← Zurück',
     allStyles: 'Alle Stile',
     allBrands: 'Alle Marken',
     discoverProducts: 'Produkte entdecken',
@@ -3688,7 +3696,7 @@ const TRANSLATIONS = {
     checking: 'Wird geprüft...',
   },
   IT: {
-    close: 'Chiudi',
+    close: '← Indietro',
     allStyles: 'Tutti gli stili',
     allBrands: 'Tutte le marche',
     discoverProducts: 'Scopri i prodotti',
@@ -3698,7 +3706,7 @@ const TRANSLATIONS = {
     checking: 'Verifica in corso...',
   },
   PT: {
-    close: 'Fechar',
+    close: '← Voltar',
     allStyles: 'Todos os estilos',
     allBrands: 'Todas as marcas',
     discoverProducts: 'Descobrir produtos',
@@ -3708,7 +3716,7 @@ const TRANSLATIONS = {
     checking: 'A verificar...',
   },
   AR: {
-    close: 'إغلاق',
+    close: '→ رجوع',
     allStyles: 'جميع الأنماط',
     allBrands: 'جميع الماركات',
     discoverProducts: 'اكتشف المنتجات',
@@ -3718,7 +3726,7 @@ const TRANSLATIONS = {
     checking: 'جارٍ التحقق...',
   },
   NL: {
-    close: 'Sluiten',
+    close: '← Terug',
     allStyles: 'Alle stijlen',
     allBrands: 'Alle merken',
     discoverProducts: 'Producten ontdekken',
