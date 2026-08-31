@@ -718,6 +718,14 @@
     font-size:12px;
     color:var(--paper);
   }
+  .cat-card .cc-clear{
+    position:absolute; top:8px; right:8px; z-index:2;
+    width:22px; height:22px; border-radius:50%;
+    background:rgba(0,0,0,0.6); border:1.5px solid var(--lime);
+    color:var(--lime); font-size:11px; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+  }
   .cat-card.active{
     border-color:var(--lime);
     box-shadow:0 0 16px rgba(62,205,107,0.25);
@@ -3287,9 +3295,11 @@ function renderCats(){
   bar.innerHTML = `
     <div class="cat-card ${activeType!=='Tout'?'active':''} ${inlineDropdownFor==='type'?'dropdown-open':''}" style="background-image:url('${typeThumb}')" onclick="toggleInlineDropdown('type', this)">
       <div class="cc-label" id="label-cat1-text">${activeType === 'Tout' ? cat1Name : activeType}</div>
+      ${activeType !== 'Tout' ? `<button class="cc-clear" onclick="event.stopPropagation(); pickType('Tout');">✕</button>` : ''}
     </div>
     <div class="cat-card ${activeBrand!=='Tout'?'active':''} ${inlineDropdownFor==='brand'?'dropdown-open':''}" style="background-image:url('${brandThumb}')" onclick="toggleInlineDropdown('brand', this)">
       <div class="cc-label" id="label-cat2-text">${activeBrand === 'Tout' ? cat2Name : activeBrand}</div>
+      ${activeBrand !== 'Tout' ? `<button class="cc-clear" onclick="event.stopPropagation(); pickBrand('Tout');">✕</button>` : ''}
     </div>
   `;
 }
