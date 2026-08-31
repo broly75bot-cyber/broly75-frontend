@@ -2890,6 +2890,14 @@ async function loadProductsFromBackend(){
     console.error('Impossible de charger le catalogue', err);
     products = [];
   }
+  // Retire du panier les articles dont le produit a été supprimé depuis (évite un plantage
+  // ou une erreur "Produit inconnu" surprise au moment de payer)
+  const validIds = new Set(products.map(p => String(p.id)));
+  const cleanedCart = Object.fromEntries(Object.entries(cart).filter(([id]) => validIds.has(String(id))));
+  if (Object.keys(cleanedCart).length !== Object.keys(cart).length){
+    cart = cleanedCart;
+    saveCartToStorage();
+  }
   renderCats();
   renderGrid();
 }
@@ -3066,7 +3074,13 @@ function loadCartFromStorage(){
       return;
     }
     const saved = localStorage.getItem('broly75_cart');
-    if (saved) cart = JSON.parse(saved);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Retire les articles sauvegardés avant le système de paliers de prix (pas de tierLabel) —
+      // sinon ils afficheraient "undefined" dans le récapitulatif.
+      cart = Object.fromEntries(Object.entries(parsed).filter(([id, item]) => item.tierLabel));
+      if (Object.keys(cart).length !== Object.keys(parsed).length) saveCartToStorage();
+    }
   } catch (err) { console.error('Impossible de charger le panier', err); }
 }
 loadCartFromStorage();
@@ -3414,10 +3428,13 @@ function renderGrid(){
 }
 
 function cartItems(){
-  return Object.keys(cart).map(id => {
-    const p = products.find(x => x.id == id);
-    return { ...p, tierLabel: cart[id].tierLabel, price: cart[id].tierPrice ?? p.price, color: cart[id].color, qty: cart[id].qty };
-  });
+  return Object.keys(cart)
+    .map(id => {
+      const p = products.find(x => x.id == id);
+      if (!p) return null; // le produit a été supprimé depuis — on ignore l'article, pas de plantage
+      return { ...p, tierLabel: cart[id].tierLabel, price: cart[id].tierPrice ?? p.price, color: cart[id].color, qty: cart[id].qty };
+    })
+    .filter(Boolean);
 }
 function cartTotal(){ return cartItems().reduce((s,p)=>s+p.price*p.qty,0); }
 
