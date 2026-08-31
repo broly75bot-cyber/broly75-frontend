@@ -718,14 +718,6 @@
     font-size:12px;
     color:var(--paper);
   }
-  .cat-card .cc-clear{
-    position:absolute; top:8px; right:8px; z-index:2;
-    width:22px; height:22px; border-radius:50%;
-    background:rgba(0,0,0,0.6); border:1.5px solid var(--lime);
-    color:var(--lime); font-size:11px; line-height:1;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer;
-  }
   .cat-card.active{
     border-color:var(--lime);
     box-shadow:0 0 16px rgba(62,205,107,0.25);
@@ -2152,6 +2144,9 @@
   <h1 id="hero-title">BROLY<span class="hot">75</span></h1>
 </header>
 
+<div id="cats-back-row" style="display:none; padding:0 16px;">
+  <button class="close-btn" onclick="clearAllCatFilters()" data-i18n="close">← Retour</button>
+</div>
 <div class="cat-grid" id="cats"></div>
 <div id="inline-cat-dropdown" class="inline-cat-dropdown">
   <div id="inline-cat-list"></div>
@@ -3292,16 +3287,22 @@ function renderCats(){
   const brandThumb = siteContent?.labels?.cat2Image || products.find(p => activeBrand === 'Tout' ? true : p.brand === activeBrand)?.img || '';
   const cat1Name = (siteContent?.labels?.cat1Name) || 'Catégorie 1';
   const cat2Name = (siteContent?.labels?.cat2Name) || 'Catégorie 2';
+  document.getElementById('cats-back-row').style.display = (activeType !== 'Tout' || activeBrand !== 'Tout') ? 'block' : 'none';
   bar.innerHTML = `
     <div class="cat-card ${activeType!=='Tout'?'active':''} ${inlineDropdownFor==='type'?'dropdown-open':''}" style="background-image:url('${typeThumb}')" onclick="toggleInlineDropdown('type', this)">
       <div class="cc-label" id="label-cat1-text">${activeType === 'Tout' ? cat1Name : activeType}</div>
-      ${activeType !== 'Tout' ? `<button class="cc-clear" onclick="event.stopPropagation(); pickType('Tout');">✕</button>` : ''}
     </div>
     <div class="cat-card ${activeBrand!=='Tout'?'active':''} ${inlineDropdownFor==='brand'?'dropdown-open':''}" style="background-image:url('${brandThumb}')" onclick="toggleInlineDropdown('brand', this)">
       <div class="cc-label" id="label-cat2-text">${activeBrand === 'Tout' ? cat2Name : activeBrand}</div>
-      ${activeBrand !== 'Tout' ? `<button class="cc-clear" onclick="event.stopPropagation(); pickBrand('Tout');">✕</button>` : ''}
     </div>
   `;
+}
+
+function clearAllCatFilters(){
+  activeType = 'Tout';
+  activeBrand = 'Tout';
+  renderCats();
+  renderGrid();
 }
 
 // Applique l'ordre choisi dans l'admin ; ce qui n'a pas été classé passe à la fin, dans l'ordre détecté
