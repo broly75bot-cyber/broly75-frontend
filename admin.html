@@ -358,6 +358,7 @@
         <button class="nav-row" onclick="openContentSection('statusmsg')">Messages automatiques (commandes)</button>
         <button class="nav-row" onclick="openContentSection('promo')">Codes promo</button>
         <button class="nav-row" onclick="openContentSection('rewards')">Récompenses Ƶeni</button>
+        <button class="nav-row" onclick="openContentSection('ordermsg')">Style du bon de commande</button>
         <button class="nav-row" onclick="openContentSection('hours')">Horaires de livraison</button>
         <button class="nav-row" onclick="openContentSection('meetup')">Meetup</button>
         <button class="nav-row" onclick="openContentSection('shipping')">Service d'envoi</button>
@@ -633,6 +634,21 @@
       <button class="secondary" style="width:100%; margin-top:6px;" onclick="addRewardField()">+ Ajouter une récompense</button>
 
       <button style="width:100%; margin-top:14px;" onclick="saveContent()">Enregistrer</button>
+    </div>
+
+    <div class="subscreen" id="contenu-ordermsg">
+      <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
+      <h2>Style du bon de commande</h2>
+      <p class="muted" style="margin-bottom:10px;">Personnalise le message que TU reçois sur ton canal Commandes à chaque nouvelle vente. Une ligne = un jeton, ou du texte libre. Une ligne vide s'affiche vide, une ligne dont le jeton est vide disparaît toute seule.</p>
+      <p class="muted" style="margin-bottom:14px; font-family:monospace; font-size:11.5px; line-height:1.7;">
+        Jetons disponibles :<br>
+        {orderId} {date} {client} {status} {gift_line}<br>
+        {contact_line} {items} {total} {promo_line}<br>
+        {voucher_line} {mode} {address_line} {photo_line}
+      </p>
+      <textarea id="c-order-template" rows="16" style="font-family:monospace; font-size:12.5px;"></textarea>
+      <button class="secondary" style="width:100%; margin-top:8px;" onclick="resetOrderTemplate()">Réinitialiser au modèle par défaut</button>
+      <button style="width:100%; margin-top:8px;" onclick="saveContent()">Enregistrer</button>
     </div>
 
     <!-- Sous-écran : Horaires -->
@@ -2524,6 +2540,30 @@ async function loadProducts(){
 // ===== CONTENU =====
 let currentContent = null;
 
+const DEFAULT_ORDER_TEMPLATE = [
+  '🛒 *Nouvelle commande*',
+  '🆔 {orderId}   •   🕐 {date}',
+  '',
+  '👤 *{client}*',
+  '{status}',
+  '{gift_line}',
+  '{contact_line}',
+  '',
+  '📦 *Articles*',
+  '{items}',
+  '',
+  '💰 *Total : {total}*',
+  '{promo_line}',
+  '{voucher_line}',
+  '🚚 Mode : {mode}',
+  '{address_line}',
+  '{photo_line}',
+].join('\n');
+
+function resetOrderTemplate(){
+  document.getElementById('c-order-template').value = DEFAULT_ORDER_TEMPLATE;
+}
+
 // ⚠️ Important : va toujours chercher la vraie dernière version du contenu avant d'enregistrer
 // quoi que ce soit — évite qu'un réglage sauvegardé depuis un écran efface accidentellement
 // un changement fait entre-temps ailleurs (ex. un papier peint changé, puis "écrasé" par
@@ -2593,6 +2633,7 @@ async function loadContent(){
   renderOrderEditor('type-order-editor', c.typeOrder || []);
   renderPromoEditor(c.promoCodes || []);
   renderRewardsEditor(c.rewards || []);
+  document.getElementById('c-order-template').value = c.orderMessageTemplate || DEFAULT_ORDER_TEMPLATE;
   renderOrderEditor('brand-order-editor', c.brandOrder || []);
 
   const sm = c.statusMessages || {};
@@ -2780,6 +2821,7 @@ async function saveContent(){
     typeOrder,
     promoCodes,
     rewards,
+    orderMessageTemplate: document.getElementById('c-order-template').value,
     brandOrder,
     labels,
     statusMessages,
