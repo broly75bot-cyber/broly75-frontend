@@ -2156,7 +2156,7 @@
 </div>
 
 <nav class="bottom-nav">
-  <button class="nav-item active" onclick="setActiveNav(this)">
+  <button class="nav-item active" onclick="setActiveNav(this); goHome();">
     <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></span>
     <span class="nav-label" id="label-nav-accueil">Accueil</span>
   </button>
@@ -3498,6 +3498,20 @@ function updateCartBar(){
 function setActiveNav(el){
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   el.classList.add('active');
+}
+
+function goHome(){
+  // Ferme tout ce qui pourrait être ouvert (fiche produit, panier, infos, avis, etc.)
+  document.querySelectorAll('.overlay.show, .bottom-sheet.show').forEach(el => el.classList.remove('show'));
+  document.getElementById('product-footer').classList.remove('show');
+  document.getElementById('inline-cat-dropdown').classList.remove('show');
+  inlineDropdownFor = null;
+  activeType = 'Tout';
+  activeBrand = 'Tout';
+  renderCats();
+  renderGrid();
+  showNav();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Modifie ces 6 questions/réponses avec tes vraies infos
