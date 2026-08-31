@@ -377,6 +377,7 @@
       <label style="margin-top:10px;">Ou URL de l'image de fond (laisse vide pour garder le décor par défaut)</label>
       <input id="c-wallpaper" placeholder="https://...">
       <img id="wallpaper-preview" src="" style="max-width:160px; border-radius:8px; margin-bottom:10px; display:none;">
+      <button type="button" class="secondary" id="wallpaper-clear-btn" style="display:none; margin-bottom:10px;" onclick="clearImageField('c-wallpaper','wallpaper-preview','wallpaper-status','wallpaper-clear-btn')">Retirer le papier peint</button>
       <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
@@ -439,6 +440,7 @@
       <div class="muted" id="cat1-img-status"></div>
       <img id="cat1-img-preview" src="" style="max-width:100px; border-radius:8px; margin:6px 0 12px; display:none;">
       <input type="hidden" id="cat1-img-url">
+      <button type="button" class="secondary" id="cat1-img-clear-btn" style="display:none; margin-bottom:12px;" onclick="clearImageField('cat1-img-url','cat1-img-preview','cat1-img-status','cat1-img-clear-btn')">Retirer la photo</button>
 
       <label>Nom de la case "Marque"</label>
       <input id="lb-cat2-name" placeholder="Catégorie 2">
@@ -447,6 +449,7 @@
       <div class="muted" id="cat2-img-status"></div>
       <img id="cat2-img-preview" src="" style="max-width:100px; border-radius:8px; margin:6px 0 12px; display:none;">
       <input type="hidden" id="cat2-img-url">
+      <button type="button" class="secondary" id="cat2-img-clear-btn" style="display:none; margin-bottom:12px;" onclick="clearImageField('cat2-img-url','cat2-img-preview','cat2-img-status','cat2-img-clear-btn')">Retirer la photo</button>
 
       <label>Texte "Tous les styles" (en haut de la liste Style)</label>
       <input id="lb-all-styles" placeholder="Tous les styles">
@@ -704,6 +707,7 @@
       <div class="muted" id="logo-telegram-status"></div>
       <img id="logo-telegram-preview" src="" style="max-width:60px; border-radius:12px; margin:6px 0 12px; display:none;">
       <input type="hidden" id="logo-telegram-url">
+      <button type="button" class="secondary" id="logo-telegram-clear-btn" style="display:none; margin-bottom:12px;" onclick="clearImageField('logo-telegram-url','logo-telegram-preview','logo-telegram-status','logo-telegram-clear-btn')">Retirer le logo</button>
 
       <label>Canal Telegram (lien)</label>
       <input id="c-tg-channel" style="margin-bottom:16px;">
@@ -714,6 +718,7 @@
       <div class="muted" id="logo-instagram-status"></div>
       <img id="logo-instagram-preview" src="" style="max-width:60px; border-radius:12px; margin:6px 0 12px; display:none;">
       <input type="hidden" id="logo-instagram-url">
+      <button type="button" class="secondary" id="logo-instagram-clear-btn" style="display:none; margin-bottom:12px;" onclick="clearImageField('logo-instagram-url','logo-instagram-preview','logo-instagram-status','logo-instagram-clear-btn')">Retirer le logo</button>
 
       <label>Snapchat (lien)</label>
       <input id="c-snapchat">
@@ -721,6 +726,7 @@
       <div class="muted" id="logo-snapchat-status"></div>
       <img id="logo-snapchat-preview" src="" style="max-width:60px; border-radius:12px; margin:6px 0 12px; display:none;">
       <input type="hidden" id="logo-snapchat-url">
+      <button type="button" class="secondary" id="logo-snapchat-clear-btn" style="display:none; margin-bottom:12px;" onclick="clearImageField('logo-snapchat-url','logo-snapchat-preview','logo-snapchat-status','logo-snapchat-clear-btn')">Retirer le logo</button>
 
       <label>WhatsApp (lien)</label>
       <input id="c-whatsapp">
@@ -728,6 +734,7 @@
       <div class="muted" id="logo-whatsapp-status"></div>
       <img id="logo-whatsapp-preview" src="" style="max-width:60px; border-radius:12px; margin:6px 0 12px; display:none;">
       <input type="hidden" id="logo-whatsapp-url">
+      <button type="button" class="secondary" id="logo-whatsapp-clear-btn" style="display:none; margin-bottom:12px;" onclick="clearImageField('logo-whatsapp-url','logo-whatsapp-preview','logo-whatsapp-status','logo-whatsapp-clear-btn')">Retirer le logo</button>
 
       <label>Signal (lien)</label>
       <input id="c-signal">
@@ -735,6 +742,7 @@
       <div class="muted" id="logo-signal-status"></div>
       <img id="logo-signal-preview" src="" style="max-width:60px; border-radius:12px; margin:6px 0 12px; display:none;">
       <input type="hidden" id="logo-signal-url">
+      <button type="button" class="secondary" id="logo-signal-clear-btn" style="display:none; margin-bottom:12px;" onclick="clearImageField('logo-signal-url','logo-signal-preview','logo-signal-status','logo-signal-clear-btn')">Retirer le logo</button>
 
       <label>Potato (lien)</label>
       <input id="c-potato">
@@ -742,6 +750,7 @@
       <div class="muted" id="logo-potato-status"></div>
       <img id="logo-potato-preview" src="" style="max-width:60px; border-radius:12px; margin:6px 0 12px; display:none;">
       <input type="hidden" id="logo-potato-url">
+      <button type="button" class="secondary" id="logo-potato-clear-btn" style="display:none; margin-bottom:12px;" onclick="clearImageField('logo-potato-url','logo-potato-preview','logo-potato-status','logo-potato-clear-btn')">Retirer le logo</button>
 
       <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
@@ -859,6 +868,7 @@
       <div class="muted" id="s-logo-status"></div>
       <img id="s-logo-preview" src="" style="max-width:80px; border-radius:50%; margin:8px 0; display:none;">
       <input type="hidden" id="s-logo-url">
+      <button type="button" class="secondary" id="s-logo-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearImageField('s-logo-url','s-logo-preview','s-logo-status','s-logo-clear-btn')">Retirer le logo</button>
       <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
@@ -871,6 +881,7 @@
       <div class="muted" id="s-banner-status"></div>
       <img id="s-banner-preview" src="" style="max-width:100%; border-radius:8px; margin:8px 0; display:none;">
       <input type="hidden" id="s-banner-url">
+      <button type="button" class="secondary" id="s-banner-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearImageField('s-banner-url','s-banner-preview','s-banner-status','s-banner-clear-btn')">Retirer la bannière</button>
       <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
@@ -2377,6 +2388,17 @@ function removeProductPhoto(index){
 }
 
 
+// Vide un champ image (logo, bannière, papier peint, photo de case, logo de contact) —
+// remet le champ de valeur à vide et cache l'aperçu + le bouton lui-même, sans attendre un nouvel upload.
+function clearImageField(urlFieldId, previewFieldId, statusFieldId, clearBtnId){
+  document.getElementById(urlFieldId).value = '';
+  const preview = document.getElementById(previewFieldId);
+  preview.src = '';
+  preview.style.display = 'none';
+  if (statusFieldId) document.getElementById(statusFieldId).textContent = 'Image retirée — pense à enregistrer';
+  if (clearBtnId) document.getElementById(clearBtnId).style.display = 'none';
+}
+
 async function uploadCatImage(input, key){
   const file = input.files[0];
   if (!file) return;
@@ -2396,6 +2418,8 @@ async function uploadCatImage(input, key){
     const preview = document.getElementById(`${key}-img-preview`);
     preview.src = data.url;
     preview.style.display = 'block';
+    const clearBtn = document.getElementById(`${key}-img-clear-btn`);
+    if (clearBtn) clearBtn.style.display = 'block';
     status.textContent = '✅ Photo envoyée — pense à enregistrer';
   } catch (err) {
     status.textContent = '❌ Erreur réseau';
@@ -2421,6 +2445,8 @@ async function uploadContactLogo(input, platform){
     const preview = document.getElementById(`logo-${platform}-preview`);
     preview.src = data.url;
     preview.style.display = 'block';
+    const clearBtn = document.getElementById(`logo-${platform}-clear-btn`);
+    if (clearBtn) clearBtn.style.display = 'block';
     status.textContent = '✅ Logo envoyé — pense à enregistrer';
   } catch (err) {
     status.textContent = '❌ Erreur réseau';
@@ -2446,6 +2472,7 @@ async function uploadWallpaper(input){
     const preview = document.getElementById('wallpaper-preview');
     preview.src = data.url;
     preview.style.display = 'block';
+    document.getElementById('wallpaper-clear-btn').style.display = 'block';
     status.textContent = '✅ Image envoyée — pense à cliquer sur "Enregistrer le contenu" pour l\'appliquer';
   } catch (err) {
     status.textContent = '❌ Erreur réseau';
@@ -2608,6 +2635,7 @@ async function loadContent(){
   const wpPreview = document.getElementById('wallpaper-preview');
   wpPreview.src = c.wallpaperUrl || '';
   wpPreview.style.display = c.wallpaperUrl ? 'block' : 'none';
+  document.getElementById('wallpaper-clear-btn').style.display = c.wallpaperUrl ? 'block' : 'none';
   hoursList = (c.hoursList && c.hoursList.length) ? c.hoursList.map(h => ({...h})) : [
     { label: 'Lundi – Mardi', value: c.hours?.lunMar || '' },
     { label: 'Mercredi – Jeudi', value: c.hours?.merJeu || '' },
@@ -2634,6 +2662,7 @@ async function loadContent(){
     const preview = document.getElementById(`logo-${platform}-preview`);
     preview.src = url;
     preview.style.display = url ? 'block' : 'none';
+    document.getElementById(`logo-${platform}-clear-btn`).style.display = url ? 'block' : 'none';
   });
 
   document.getElementById('faq-editor').innerHTML = (c.faq || []).map((item, i) => `
@@ -2674,9 +2703,11 @@ async function loadContent(){
   const cat1Preview = document.getElementById('cat1-img-preview');
   cat1Preview.src = lb.cat1Image || '';
   cat1Preview.style.display = lb.cat1Image ? 'block' : 'none';
+  document.getElementById('cat1-img-clear-btn').style.display = lb.cat1Image ? 'block' : 'none';
   const cat2Preview = document.getElementById('cat2-img-preview');
   cat2Preview.src = lb.cat2Image || '';
   cat2Preview.style.display = lb.cat2Image ? 'block' : 'none';
+  document.getElementById('cat2-img-clear-btn').style.display = lb.cat2Image ? 'block' : 'none';
   document.getElementById('lb-livraison-title').value = lb.livraisonTitle || '';
   document.getElementById('lb-livraison-sub').value = lb.livraisonSub || '';
   document.getElementById('lb-envoi-title').value = lb.envoiTitle || '';
@@ -2928,11 +2959,13 @@ async function loadStyleSettings(){
   const logoPreview = document.getElementById('s-logo-preview');
   logoPreview.src = s.logoUrl || '';
   logoPreview.style.display = s.logoUrl ? 'block' : 'none';
+  document.getElementById('s-logo-clear-btn').style.display = s.logoUrl ? 'block' : 'none';
 
   document.getElementById('s-banner-url').value = s.bannerUrl || '';
   const bannerPreview = document.getElementById('s-banner-preview');
   bannerPreview.src = s.bannerUrl || '';
   bannerPreview.style.display = s.bannerUrl ? 'block' : 'none';
+  document.getElementById('s-banner-clear-btn').style.display = s.bannerUrl ? 'block' : 'none';
 
   document.getElementById('s-announcement').value = s.announcement || '';
 }
@@ -2956,6 +2989,8 @@ async function uploadStyleImage(input, urlFieldId, statusFieldId, previewFieldId
     const preview = document.getElementById(previewFieldId);
     preview.src = data.url;
     preview.style.display = 'block';
+    const clearBtn = document.getElementById(urlFieldId.replace('-url', '-clear-btn'));
+    if (clearBtn) clearBtn.style.display = 'block';
     status.textContent = '✅ Image envoyée — pense à enregistrer les réglages';
   } catch (err) {
     status.textContent = '❌ Erreur réseau';
