@@ -915,7 +915,10 @@
       <button id="twofa-toggle-btn" onclick="start2FASetup()" style="width:100%;">Activer le 2FA</button>
 
       <h2 style="margin-top:20px;">Journal des connexions</h2>
-      <p class="muted" style="margin-bottom:10px;">Les 200 dernières tentatives de connexion à l'admin (réussies ou non), avec l'adresse IP et l'heure.</p>
+      <div class="section-header" style="margin-bottom:6px;">
+        <p class="muted" style="margin:0;">Les 20 dernières tentatives de connexion à l'admin (réussies ou non), avec l'adresse IP et l'heure.</p>
+        <button class="danger" onclick="clearAdminLog()">Effacer le journal</button>
+      </div>
       <div id="admin-log-list"><p class="muted">Chargement...</p></div>
 
       <h2 style="margin-top:20px;">Sauvegarde</h2>
@@ -1351,6 +1354,18 @@ async function loadAdminLog(){
     list.innerHTML = '<p class="muted">Impossible de charger le journal.</p>';
   }
 }
+
+async function clearAdminLog(){
+  if (!confirm('Effacer tout le journal des connexions ? Cette action est irréversible.')) return;
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin-log`, { method: 'DELETE', headers: { 'x-admin-key': adminKey } });
+    if (!res.ok) { alert('Erreur lors de la suppression.'); return; }
+    loadAdminLog();
+  } catch (err) {
+    alert('Impossible d\'effacer — vérifie ta connexion.');
+  }
+}
+
 function saveLockMinutes(){
   const minutes = Math.max(1, Number(document.getElementById('s-lock-minutes').value) || 15);
   localStorage.setItem('admin_lock_minutes', minutes);
