@@ -6,6 +6,7 @@
 <title>BROLY75 — Administration</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
   :root{
@@ -166,7 +167,9 @@
 <div class="login-box" id="login-box">
   <h1>BROLY75 Admin</h1>
   <input type="password" id="admin-key-input" placeholder="Mot de passe admin">
-  <button onclick="login()" style="width:100%;">Se connecter</button>
+  <input type="text" id="admin-2fa-input" placeholder="Code à 6 chiffres ou code de secours" style="margin-top:8px;">
+  <div class="muted" id="login-error" style="color:#c0392b; margin-top:6px; min-height:16px;"></div>
+  <button onclick="login()" style="width:100%; margin-top:6px;">Se connecter</button>
 </div>
 
 <div id="app">
@@ -872,6 +875,29 @@
       <p class="muted" style="margin-top:6px;">L'admin se ferme automatiquement et redemande le mot de passe si tu ne l'utilises pas pendant ce temps. Réglage propre à cet appareil/navigateur.</p>
       <button onclick="saveLockMinutes()" style="width:100%; margin-top:10px;">Enregistrer</button>
 
+      <h2 style="margin-top:20px;">Double authentification (2FA)</h2>
+      <p class="muted" style="margin-bottom:10px;">Ajoute un code à 6 chiffres, généré par une app comme Google Authenticator, en plus de ton mot de passe. Même si quelqu'un devine ton mot de passe, il ne peut pas se connecter sans ton téléphone.</p>
+      <div id="twofa-status" class="muted" style="margin-bottom:10px;">Chargement...</div>
+
+      <div id="twofa-setup-box" style="display:none;">
+        <div id="twofa-qrcode" style="text-align:center; margin:14px 0;"></div>
+        <p class="muted" style="margin-bottom:6px;">Scanne ce QR code avec Google Authenticator ou Authy. Si tu ne peux pas scanner, entre ce code manuellement :</p>
+        <p style="font-family:monospace; font-weight:700; text-align:center; margin-bottom:14px; word-break:break-all;" id="twofa-secret-text"></p>
+        <label>Code affiché dans ton app (pour confirmer)</label>
+        <input type="text" inputmode="numeric" maxlength="6" id="twofa-confirm-code" placeholder="123456">
+        <button onclick="confirm2FASetup()" style="width:100%; margin-top:10px;">Confirmer et activer</button>
+      </div>
+
+      <div id="twofa-backup-codes-box" style="display:none; border:2px solid var(--warning, #d97706); border-radius:10px; padding:12px; margin-top:12px;">
+        <p style="font-weight:700; margin-bottom:6px;">⚠️ Note ces codes de secours maintenant — ils ne s'afficheront plus jamais après.</p>
+        <p class="muted" style="margin-bottom:10px;">Si tu perds ton téléphone ou ton appli d'authentification, un de ces codes (à usage unique) te permettra de te reconnecter à la place du code habituel.</p>
+        <div id="twofa-backup-codes-list" style="font-family:monospace; font-weight:700; font-size:15px; line-height:1.9;"></div>
+      </div>
+
+      <button id="twofa-regen-btn" onclick="regenerateBackupCodes()" style="width:100%; margin-top:10px; display:none;">Régénérer mes codes de secours</button>
+
+      <button id="twofa-toggle-btn" onclick="start2FASetup()" style="width:100%;">Activer le 2FA</button>
+
       <h2 style="margin-top:20px;">Journal des connexions</h2>
       <p class="muted" style="margin-bottom:10px;">Les 200 dernières tentatives de connexion à l'admin (réussies ou non), avec l'adresse IP et l'heure.</p>
       <div id="admin-log-list"><p class="muted">Chargement...</p></div>
@@ -1045,8 +1071,29 @@ function resetLockTimer(){
   document.addEventListener(evt, resetLockTimer, { passive: true });
 });
 
-function login(){
-  adminKey = document.getElementById('admin-key-input').value;
+async function login(){
+  const password = document.getElementById('admin-key-input').value;
+  const code = document.getElementById('admin-2fa-input').value.trim();
+  const errorBox = document.getElementById('login-error');
+  errorBox.textContent = '';
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/verify-login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, code }),
+    });
+    const data = await res.json();
+    if (!res.ok){
+      errorBox.textContent = data.error || 'Connexion refusée.';
+      return;
+    }
+  } catch (err) {
+    errorBox.textContent = 'Impossible de vérifier — vérifie ta connexion.';
+    return;
+  }
+
+  adminKey = password;
   document.getElementById('login-box').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   loadOrders();
@@ -1061,6 +1108,7 @@ function logout() {
   document.getElementById('app').style.display = 'none';
   document.getElementById('login-box').style.display = 'block';
   document.getElementById('admin-key-input').value = '';
+  document.getElementById('admin-2fa-input').value = '';
   if (lockTimeoutId) clearTimeout(lockTimeoutId);
 }
 
@@ -1103,6 +1151,7 @@ function openSettingsSection(name){
     document.getElementById('s-lock-minutes').value = getLockMinutes();
     loadAdminLog();
     loadBackupChannel();
+    load2FAStatus();
   }
   if (name === 'crypto'){
     loadCryptoWallets();
@@ -1165,6 +1214,105 @@ async function triggerBackup(){
     else alert('Erreur lors de la sauvegarde.');
   } catch (err) {
     alert('Impossible de lancer la sauvegarde — vérifie ta connexion.');
+  }
+}
+
+async function load2FAStatus(){
+  const statusBox = document.getElementById('twofa-status');
+  const toggleBtn = document.getElementById('twofa-toggle-btn');
+  const regenBtn = document.getElementById('twofa-regen-btn');
+  document.getElementById('twofa-setup-box').style.display = 'none';
+  document.getElementById('twofa-backup-codes-box').style.display = 'none';
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/2fa/status`, { headers: { 'x-admin-key': adminKey } });
+    const data = await res.json();
+    if (data.enabled){
+      statusBox.textContent = `✅ Activé — ${data.backupCodesRemaining} code${data.backupCodesRemaining > 1 ? 's' : ''} de secours restant${data.backupCodesRemaining > 1 ? 's' : ''}.`;
+      statusBox.style.color = 'var(--success)';
+      toggleBtn.textContent = 'Désactiver le 2FA';
+      toggleBtn.onclick = disable2FA;
+      regenBtn.style.display = 'block';
+    } else {
+      statusBox.textContent = '❌ Désactivé — seul le mot de passe protège l\'admin.';
+      statusBox.style.color = '';
+      toggleBtn.textContent = 'Activer le 2FA';
+      toggleBtn.onclick = start2FASetup;
+      regenBtn.style.display = 'none';
+    }
+  } catch (err) {
+    statusBox.textContent = 'Impossible de vérifier le statut.';
+  }
+}
+
+async function start2FASetup(){
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/2fa/setup`, { method: 'POST', headers: { 'x-admin-key': adminKey } });
+    const data = await res.json();
+    if (!res.ok){ alert(data.error || 'Erreur.'); return; }
+    document.getElementById('twofa-secret-text').textContent = data.secret;
+    document.getElementById('twofa-qrcode').innerHTML = '';
+    new QRCode(document.getElementById('twofa-qrcode'), { text: data.otpauthUrl, width: 180, height: 180 });
+    document.getElementById('twofa-setup-box').style.display = 'block';
+    document.getElementById('twofa-confirm-code').value = '';
+  } catch (err) {
+    alert('Impossible de démarrer la configuration — vérifie ta connexion.');
+  }
+}
+
+async function confirm2FASetup(){
+  const code = document.getElementById('twofa-confirm-code').value.trim();
+  if (code.length !== 6){ alert('Entre le code à 6 chiffres affiché dans ton app.'); return; }
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/2fa/confirm`, {
+      method: 'POST', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify({ code }),
+    });
+    const data = await res.json();
+    if (!res.ok){ alert(data.error || 'Code incorrect.'); return; }
+    document.getElementById('twofa-setup-box').style.display = 'none';
+    showBackupCodes(data.backupCodes);
+    load2FAStatus();
+  } catch (err) {
+    alert('Impossible de confirmer — vérifie ta connexion.');
+  }
+}
+
+function showBackupCodes(codes){
+  document.getElementById('twofa-backup-codes-list').innerHTML = codes.map(c => `<div>${c}</div>`).join('');
+  document.getElementById('twofa-backup-codes-box').style.display = 'block';
+}
+
+async function regenerateBackupCodes(){
+  const code = prompt('Entre ton code 2FA actuel pour générer de nouveaux codes de secours (les anciens seront invalidés) :');
+  if (!code) return;
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/2fa/regenerate-backup-codes`, {
+      method: 'POST', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify({ code }),
+    });
+    const data = await res.json();
+    if (!res.ok){ alert(data.error || 'Code incorrect.'); return; }
+    showBackupCodes(data.backupCodes);
+    load2FAStatus();
+  } catch (err) {
+    alert('Impossible de régénérer — vérifie ta connexion.');
+  }
+}
+
+async function disable2FA(){
+  const code = prompt('Entre ton code 2FA actuel pour confirmer la désactivation :');
+  if (!code) return;
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/2fa/disable`, {
+      method: 'POST', headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify({ code }),
+    });
+    const data = await res.json();
+    if (!res.ok){ alert(data.error || 'Code incorrect.'); return; }
+    alert('2FA désactivé.');
+    load2FAStatus();
+  } catch (err) {
+    alert('Impossible de désactiver — vérifie ta connexion.');
   }
 }
 
