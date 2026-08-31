@@ -666,19 +666,16 @@
   }
   .inline-cat-dropdown{
     display:none;
-    position:absolute;
-    width:calc(50% - 22px);
+    position:fixed;
     background:rgba(4,6,4,0.92); backdrop-filter:blur(6px);
     border:2px solid var(--lime);
     border-radius:16px;
     padding:4px 8px;
-    z-index:5;
-    max-height:220px;
+    z-index:50;
+    max-height:320px;
     overflow-y:auto;
     box-shadow:0 10px 30px rgba(0,0,0,0.5);
   }
-  .inline-cat-dropdown.align-left{ left:16px; right:auto; }
-  .inline-cat-dropdown.align-right{ right:16px; left:auto; }
   .inline-cat-dropdown.show{ display:block; }
   .inline-cat-dropdown .nav-row{
     display:block;
@@ -3288,10 +3285,10 @@ function renderCats(){
   const cat1Name = (siteContent?.labels?.cat1Name) || 'Catégorie 1';
   const cat2Name = (siteContent?.labels?.cat2Name) || 'Catégorie 2';
   bar.innerHTML = `
-    <div class="cat-card ${activeType!=='Tout'?'active':''} ${inlineDropdownFor==='type'?'dropdown-open':''}" style="background-image:url('${typeThumb}')" onclick="toggleInlineDropdown('type')">
+    <div class="cat-card ${activeType!=='Tout'?'active':''} ${inlineDropdownFor==='type'?'dropdown-open':''}" style="background-image:url('${typeThumb}')" onclick="toggleInlineDropdown('type', this)">
       <div class="cc-label" id="label-cat1-text">${activeType === 'Tout' ? cat1Name : activeType}</div>
     </div>
-    <div class="cat-card ${activeBrand!=='Tout'?'active':''} ${inlineDropdownFor==='brand'?'dropdown-open':''}" style="background-image:url('${brandThumb}')" onclick="toggleInlineDropdown('brand')">
+    <div class="cat-card ${activeBrand!=='Tout'?'active':''} ${inlineDropdownFor==='brand'?'dropdown-open':''}" style="background-image:url('${brandThumb}')" onclick="toggleInlineDropdown('brand', this)">
       <div class="cc-label" id="label-cat2-text">${activeBrand === 'Tout' ? cat2Name : activeBrand}</div>
     </div>
   `;
@@ -3307,7 +3304,7 @@ function sortByCustomOrder(values, order){
 
 let inlineDropdownFor = null; // 'type' | 'brand' | null
 
-function toggleInlineDropdown(which){
+function toggleInlineDropdown(which, cardEl){
   const dropdown = document.getElementById('inline-cat-dropdown');
   const list = document.getElementById('inline-cat-list');
 
@@ -3317,6 +3314,14 @@ function toggleInlineDropdown(which){
     inlineDropdownFor = null;
     renderCats();
     return;
+  }
+
+  // Positionne et dimensionne le panneau exactement sur la case tapée (largeur identique)
+  if (cardEl){
+    const rect = cardEl.getBoundingClientRect();
+    dropdown.style.left = rect.left + 'px';
+    dropdown.style.width = rect.width + 'px';
+    dropdown.style.top = (rect.bottom + 8) + 'px';
   }
 
   if (which === 'type'){
@@ -3335,8 +3340,6 @@ function toggleInlineDropdown(which){
     ].join('');
   }
   dropdown.classList.add('show');
-  dropdown.classList.toggle('align-left', which === 'type');
-  dropdown.classList.toggle('align-right', which === 'brand');
   inlineDropdownFor = which;
   renderCats();
 }
