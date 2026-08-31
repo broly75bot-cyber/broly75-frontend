@@ -79,6 +79,17 @@
     visibility:hidden;
     pointer-events:none;
   }
+  #splash .splash-character{
+    width:150px;
+    height:150px;
+    object-fit:contain;
+    filter:drop-shadow(0 0 18px rgba(62,205,107,0.7)) drop-shadow(0 0 36px rgba(62,205,107,0.4));
+    animation:splashFloat 2.2s ease-in-out infinite;
+  }
+  @keyframes splashFloat{
+    0%, 100%{ transform:translateY(0px); }
+    50%{ transform:translateY(-14px); }
+  }
   #splash .splash-logo{
     font-family:var(--font-title);
     font-weight:400;
@@ -2120,6 +2131,7 @@
 <body>
 
 <div id="splash">
+  <img class="splash-character" id="splash-character-img" src="" alt="" style="display:none;">
   <div class="splash-logo">BROLY<br>75<span class="splash-app">APP</span></div>
   <div class="splash-tag">Chargement de la boutique...</div>
 </div>
@@ -4027,6 +4039,11 @@ function applySiteStyle(style){
   if (style.bannerUrl){
     document.getElementById('site-banner-img').src = style.bannerUrl;
     document.getElementById('site-banner').classList.add('show');
+  }
+  if (style.splashCharacterUrl){
+    const splashImg = document.getElementById('splash-character-img');
+    splashImg.src = style.splashCharacterUrl;
+    splashImg.style.display = 'block';
   }
   if (style.announcement){
     const bar = document.getElementById('announcement-bar');

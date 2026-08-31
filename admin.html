@@ -772,6 +772,7 @@
         <button class="nav-row" onclick="openSettingsSection('fonts')">Polices d'écriture</button>
         <button class="nav-row" onclick="openSettingsSection('logo')">Logo</button>
         <button class="nav-row" onclick="openSettingsSection('banner')">Bannière</button>
+        <button class="nav-row" onclick="openSettingsSection('splash')">Personnage écran de lancement</button>
         <button class="nav-row" onclick="openSettingsSection('announcement')">Bloc annonce / promo</button>
         <button class="nav-row" onclick="openSettingsSection('security')">Sécurité</button>
         <button class="nav-row" onclick="openSettingsSection('crypto')">Paiement crypto</button>
@@ -883,6 +884,20 @@
       <img id="s-banner-preview" src="" style="max-width:100%; border-radius:8px; margin:8px 0; display:none;">
       <input type="hidden" id="s-banner-url">
       <button type="button" class="secondary" id="s-banner-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearImageField('s-banner-url','s-banner-preview','s-banner-status','s-banner-clear-btn')">Retirer la bannière</button>
+      <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
+    </div>
+
+    <!-- Sous-écran : Personnage écran de lancement -->
+    <div class="subscreen" id="reglages-splash">
+      <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
+      <h2>Personnage écran de lancement</h2>
+      <label>Image flottante affichée au-dessus du logo pendant le chargement (facultatif)</label>
+      <input type="file" id="s-splash-file" accept="image/*" onchange="uploadStyleImage(this,'s-splash-url','s-splash-status','s-splash-preview')">
+      <div class="muted" id="s-splash-status"></div>
+      <img id="s-splash-preview" src="" style="width:150px; height:150px; object-fit:contain; margin:8px 0; display:none; background:#040604; border-radius:12px;">
+      <input type="hidden" id="s-splash-url">
+      <button type="button" class="secondary" id="s-splash-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearImageField('s-splash-url','s-splash-preview','s-splash-status','s-splash-clear-btn')">Retirer le personnage</button>
+      <p class="muted" style="margin-top:10px;">Si aucune image n'est définie, l'écran de lancement s'affiche sans personnage (juste le logo).</p>
       <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
@@ -2971,6 +2986,12 @@ async function loadStyleSettings(){
   bannerPreview.style.display = s.bannerUrl ? 'block' : 'none';
   document.getElementById('s-banner-clear-btn').style.display = s.bannerUrl ? 'block' : 'none';
 
+  document.getElementById('s-splash-url').value = s.splashCharacterUrl || '';
+  const splashPreview = document.getElementById('s-splash-preview');
+  splashPreview.src = s.splashCharacterUrl || '';
+  splashPreview.style.display = s.splashCharacterUrl ? 'block' : 'none';
+  document.getElementById('s-splash-clear-btn').style.display = s.splashCharacterUrl ? 'block' : 'none';
+
   document.getElementById('s-announcement').value = s.announcement || '';
 }
 
@@ -3031,6 +3052,7 @@ async function saveStyleSettings(){
     },
     logoUrl: document.getElementById('s-logo-url').value,
     bannerUrl: document.getElementById('s-banner-url').value,
+    splashCharacterUrl: document.getElementById('s-splash-url').value,
     announcement: document.getElementById('s-announcement').value,
   };
   // On repart du contenu existant pour ne pas écraser les autres réglages (horaires, contacts, FAQ...)
