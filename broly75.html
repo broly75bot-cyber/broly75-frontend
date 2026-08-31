@@ -3089,6 +3089,14 @@ let currentOrderId = null;
 let fulfillmentMode = null;
 let promoCode = null;
 let promoDiscount = 0;
+
+// Reproduit côté app le même calcul que le serveur : la MEILLEURE réduction entre le code promo
+// et la remise VIP automatique (jamais les deux cumulées) — pour que le récapitulatif affiché
+// au client corresponde exactement à ce qu'il paiera vraiment, sans surprise après validation.
+function effectiveDiscount(){
+  const vipDiscount = isVipUser ? (siteContent?.vipDiscountPercent || 0) / 100 : 0;
+  return Math.max(promoDiscount, vipDiscount);
+}
 let likedProducts = {};
 
 function toggleLike(id, btn){
@@ -3268,13 +3276,15 @@ async function handleAddressPhoto(event){
 function renderRecap(){
   const items = cartItems();
   const subtotal = cartTotal();
-  const discount = subtotal * promoDiscount;
+  const discountRate = effectiveDiscount();
+  const discount = subtotal * discountRate;
   const total = subtotal - discount;
   const lines = items.map(p => `
     <div class="recap-line"><span>${p.name} (${p.tierLabel}${p.color ? "/"+p.color : ""})</span><span>${p.price} €</span></div>
   `).join('');
-  const discountLine = promoDiscount > 0
-    ? `<div class="recap-line" style="color:var(--lime);"><span>Réduction (${promoCode})</span><span>-${discount.toFixed(2)} €</span></div>`
+  const discountLabel = discountRate > 0 && discountRate === promoDiscount ? `Réduction (${promoCode})` : 'Réduction VIP';
+  const discountLine = discountRate > 0
+    ? `<div class="recap-line" style="color:var(--lime);"><span>${discountLabel}</span><span>-${discount.toFixed(2)} €</span></div>`
     : '';
   document.getElementById('order-recap').innerHTML = `
     ${lines}
@@ -3286,7 +3296,7 @@ function renderRecap(){
 
 function orderViaTelegram(){
   const items = cartItems().map(p => `${p.name} (${p.tierLabel}${p.color ? '/'+p.color : ''})${p.qty > 1 ? ' x' + p.qty : ''}`).join(', ');
-  const total = (cartTotal() * (1 - promoDiscount)).toFixed(2);
+  const total = (cartTotal() * (1 - effectiveDiscount())).toFixed(2);
   const name = document.getElementById('f-name').value;
   const address = buildFullAddress();
   const contact = document.getElementById('f-contact').value;
@@ -4246,6 +4256,7 @@ async function checkVipStatus(){
     isVipUser = !!data.vip;
     document.getElementById('vip-payment-toggle').style.display = isVipUser ? 'block' : 'none';
     renderGrid();
+    renderRecap();
   } catch (err) {
     console.error('Impossible de vérifier le statut VIP', err);
   }
