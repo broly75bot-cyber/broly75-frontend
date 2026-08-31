@@ -444,6 +444,11 @@
       <img id="cat2-img-preview" src="" style="max-width:100px; border-radius:8px; margin:6px 0 12px; display:none;">
       <input type="hidden" id="cat2-img-url">
 
+      <label>Texte "Tous les styles" (en haut de la liste Style)</label>
+      <input id="lb-all-styles" placeholder="Tous les styles">
+      <label style="margin-top:10px;">Texte "Toutes les marques" (en haut de la liste Marque)</label>
+      <input id="lb-all-brands" placeholder="Toutes les marques">
+
       <h2 style="margin-top:16px;">Méthode de livraison — carte 1</h2>
       <label>Titre</label>
       <input id="lb-livraison-title" placeholder="Service d'envoi">
@@ -2458,6 +2463,8 @@ async function loadContent(){
   document.getElementById('lb-hero-hidden').checked = !!lb.heroTitleHidden;
   document.getElementById('lb-cat1-name').value = lb.cat1Name || '';
   document.getElementById('lb-cat2-name').value = lb.cat2Name || '';
+  document.getElementById('lb-all-styles').value = lb.allStylesText || '';
+  document.getElementById('lb-all-brands').value = lb.allBrandsText || '';
   document.getElementById('cat1-img-url').value = lb.cat1Image || '';
   document.getElementById('cat2-img-url').value = lb.cat2Image || '';
   const cat1Preview = document.getElementById('cat1-img-preview');
@@ -2571,6 +2578,8 @@ async function saveContent(){
     heroTitleHidden: document.getElementById('lb-hero-hidden').checked,
     cat1Name: document.getElementById('lb-cat1-name').value,
     cat2Name: document.getElementById('lb-cat2-name').value,
+    allStylesText: document.getElementById('lb-all-styles').value,
+    allBrandsText: document.getElementById('lb-all-brands').value,
     cat1Image: document.getElementById('cat1-img-url').value,
     cat2Image: document.getElementById('cat2-img-url').value,
     livraisonTitle: document.getElementById('lb-livraison-title').value,

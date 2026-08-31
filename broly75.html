@@ -3328,14 +3328,14 @@ function toggleInlineDropdown(which, cardEl){
     const detected = [...new Set(products.map(p => p.cat).filter(Boolean))];
     const types = sortByCustomOrder(detected, siteContent?.typeOrder);
     list.innerHTML = [
-      `<button class="nav-row ${activeType==='Tout'?'selected-row':''}" onclick="pickType('Tout')">${t('allStyles')}</button>`,
+      `<button class="nav-row ${activeType==='Tout'?'selected-row':''}" onclick="pickType('Tout')">${siteContent?.labels?.allStylesText || t('allStyles')}</button>`,
       ...types.map(x => `<button class="nav-row ${activeType===x?'selected-row':''}" onclick="pickType('${x}')">${x}</button>`)
     ].join('');
   } else {
     const detected = [...new Set(products.map(p => p.brand).filter(Boolean))];
     const brands = sortByCustomOrder(detected, siteContent?.brandOrder);
     list.innerHTML = [
-      `<button class="nav-row ${activeBrand==='Tout'?'selected-row':''}" onclick="pickBrand('Tout')">${t('allBrands')}</button>`,
+      `<button class="nav-row ${activeBrand==='Tout'?'selected-row':''}" onclick="pickBrand('Tout')">${siteContent?.labels?.allBrandsText || t('allBrands')}</button>`,
       ...brands.map(b => `<button class="nav-row ${activeBrand===b?'selected-row':''}" onclick="pickBrand('${b}')">${b}</button>`)
     ].join('');
   }
