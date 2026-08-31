@@ -2997,7 +2997,16 @@ function setPdFulfil(el, mode){
 }
 
 function selectTier(el, index){
+  const alreadySelected = el.classList.contains('selected');
   document.querySelectorAll('#pd-tiers .pd-tier-card').forEach(o => o.classList.remove('selected'));
+  if (alreadySelected){
+    selectedTier = null;
+    const hasTiers = currentProduct.priceTiers && currentProduct.priceTiers.length > 0;
+    const startPrice = hasTiers ? Math.min(...currentProduct.priceTiers.map(t => t.price)) : currentProduct.price;
+    document.getElementById('pd-price').textContent = (hasTiers ? 'Dès ' : '') + startPrice + ' €';
+    document.getElementById('pd-footer-price').textContent = startPrice + ' €';
+    return;
+  }
   el.classList.add('selected');
   selectedTier = currentProduct.priceTiers[index];
   document.getElementById('pd-price').textContent = selectedTier.price.toFixed(2) + ' €';
@@ -3005,7 +3014,12 @@ function selectTier(el, index){
 }
 
 function selectColor(el, color){
+  const alreadySelected = el.classList.contains('selected');
   document.querySelectorAll('#pd-colors .size-option').forEach(o => o.classList.remove('selected'));
+  if (alreadySelected){
+    selectedColor = null;
+    return;
+  }
   el.classList.add('selected');
   selectedColor = color;
 }
