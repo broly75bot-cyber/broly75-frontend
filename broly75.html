@@ -1867,18 +1867,11 @@
     overflow:hidden;
     background:#fff;
     flex-shrink:0;
-    padding:5px;
+    padding:0;
   }
   .cc-icon img{
     width:100%; height:100%;
-    object-fit:contain;
-  }
-  /* Correctif d'alignement : Snapchat et WhatsApp remplissent tout leur carré source
-     (pas de marge interne), contrairement à Telegram/Instagram/Signal/Potato qui en ont déjà —
-     on ajoute donc un padding supplémentaire ciblé pour uniformiser la taille visuelle rendue. */
-  #contact-snapchat .cc-icon,
-  #contact-whatsapp .cc-icon{
-    padding:9px;
+    object-fit:cover;
   }
   .cc-info{
     flex:1;
