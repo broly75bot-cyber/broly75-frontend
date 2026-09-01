@@ -2193,7 +2193,7 @@
     <div class="avatar-badge" id="avatar-badge">B</div>
     <div class="welcome-text">
       <div class="eyebrow">Bienvenue</div>
-      <div class="name">BROLY75</div>
+      <div class="name" id="welcome-name">BROLY75</div>
     </div>
   </div>
   <div class="welcome-divider"></div>
@@ -4352,6 +4352,8 @@ async function checkVipStatus(){
     document.body.classList.toggle('vip-user', isVipUser);
     applyVipGoldOverride(isVipUser);
     applyWallpaper();
+    const welcomeName = document.getElementById('welcome-name');
+    if (welcomeName) welcomeName.textContent = isVipUser ? 'BROLY75 VIP' : 'BROLY75';
     document.getElementById('vip-payment-toggle').style.display = isVipUser ? 'block' : 'none';
     renderGrid();
     renderRecap();
