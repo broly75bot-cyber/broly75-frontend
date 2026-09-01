@@ -586,6 +586,8 @@
     align-items:center;
     justify-content:center;
     gap:10px;
+    position:relative;
+    overflow:hidden;
   }
   .add-to-cart-btn .btn-price{
     background:var(--ink);
@@ -902,10 +904,27 @@
     0%, 100%{ text-shadow:0 0 4px rgba(255,230,0,0.6); }
     50%{ text-shadow:0 0 12px rgba(255,246,170,1); }
   }
+  @keyframes vipShineSweep{
+    0%{ transform:translateX(-120%) skewX(-20deg); }
+    45%{ transform:translateX(220%) skewX(-20deg); }
+    100%{ transform:translateX(220%) skewX(-20deg); }
+  }
   body.vip-user .card{ animation:vipCardGlow 2s ease-in-out infinite; }
   body.vip-user .card .price{ animation:vipTextFlash 2s ease-in-out infinite; }
   body.vip-user .add-to-cart-btn, body.vip-user .product-footer{ animation:vipBtnGlow 1.8s ease-in-out infinite; }
   body.vip-user .pd-price-big{ animation:vipTextFlash 2s ease-in-out infinite; }
+  body.vip-user .card::after,
+  body.vip-user .add-to-cart-btn::after{
+    content:'';
+    position:absolute; top:-20%; left:0;
+    width:35%; height:140%;
+    background:linear-gradient(100deg, transparent, rgba(255,255,255,0.75), transparent);
+    animation:vipShineSweep 2.6s ease-in-out infinite;
+    pointer-events:none;
+  }
+  body.vip-user .add-to-cart-btn::after{
+    animation-duration:1.8s;
+  }
   .nav-item .badge{
     position:absolute;
     top:-2px; right:2px;
