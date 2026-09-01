@@ -1144,6 +1144,7 @@
       <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
       <h2>Aperçu des modifications</h2>
       <p class="muted" style="margin-bottom:10px;">Les 200 derniers changements enregistrés (Contenu et Réglages), avec ce qui a été modifié et quand — pratique pour vérifier qu'un changement a bien été pris en compte.</p>
+      <button type="button" class="secondary" onclick="clearChangelog()" style="width:100%; margin-bottom:10px;">Vider le journal</button>
       <div id="changelog-list"><p class="muted">Chargement...</p></div>
     </div>
 
@@ -1701,6 +1702,18 @@ async function loadContentChangelog(){
     `).join('');
   } catch (err) {
     list.innerHTML = '<p class="muted">Impossible de charger le journal.</p>';
+  }
+}
+
+async function clearChangelog(){
+  if (!confirm('Vider tout le journal des modifications ? Cette action est irréversible.')) return;
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/content-log`, {
+      method: 'DELETE', headers: { 'x-admin-key': adminKey }
+    });
+    if (res.ok) loadContentChangelog();
+  } catch (err) {
+    alert('Erreur lors du vidage du journal');
   }
 }
 
