@@ -952,6 +952,20 @@
       <input type="hidden" id="s-splash-vip-url">
       <button type="button" class="secondary" id="s-splash-vip-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearImageField('s-splash-vip-url','s-splash-vip-preview','s-splash-vip-status','s-splash-vip-clear-btn')">Retirer le personnage VIP</button>
 
+      <label style="margin-top:20px;">Logo "BROLY75" en image (facultatif — remplace le texte généré automatiquement par ton propre logo dessiné)</label>
+      <input type="file" id="s-splash-logo-file" accept="image/*" onchange="uploadStyleImage(this,'s-splash-logo-url','s-splash-logo-status','s-splash-logo-preview')">
+      <div class="muted" id="s-splash-logo-status"></div>
+      <img id="s-splash-logo-preview" src="" style="max-width:220px; margin:8px 0; display:none; background:#040604; border-radius:8px;">
+      <input type="hidden" id="s-splash-logo-url">
+      <button type="button" class="secondary" id="s-splash-logo-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearImageField('s-splash-logo-url','s-splash-logo-preview','s-splash-logo-status','s-splash-logo-clear-btn')">Retirer le logo image</button>
+
+      <label style="margin-top:16px;">Logo image VIP (facultatif — affiché à la place de celui ci-dessus uniquement pour les clients VIP)</label>
+      <input type="file" id="s-splash-logo-vip-file" accept="image/*" onchange="uploadStyleImage(this,'s-splash-logo-vip-url','s-splash-logo-vip-status','s-splash-logo-vip-preview')">
+      <div class="muted" id="s-splash-logo-vip-status"></div>
+      <img id="s-splash-logo-vip-preview" src="" style="max-width:220px; margin:8px 0; display:none; background:#040604; border-radius:8px;">
+      <input type="hidden" id="s-splash-logo-vip-url">
+      <button type="button" class="secondary" id="s-splash-logo-vip-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearImageField('s-splash-logo-vip-url','s-splash-logo-vip-preview','s-splash-logo-vip-status','s-splash-logo-vip-clear-btn')">Retirer le logo image VIP</button>
+
       <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
@@ -3111,6 +3125,17 @@ async function loadStyleSettings(){
   splashVipPreview.style.display = s.splashCharacterUrlVip ? 'block' : 'none';
   document.getElementById('s-splash-vip-clear-btn').style.display = s.splashCharacterUrlVip ? 'block' : 'none';
 
+  document.getElementById('s-splash-logo-url').value = s.splashLogoImageUrl || '';
+  const splashLogoPreview = document.getElementById('s-splash-logo-preview');
+  splashLogoPreview.src = s.splashLogoImageUrl || '';
+  splashLogoPreview.style.display = s.splashLogoImageUrl ? 'block' : 'none';
+  document.getElementById('s-splash-logo-clear-btn').style.display = s.splashLogoImageUrl ? 'block' : 'none';
+  document.getElementById('s-splash-logo-vip-url').value = s.splashLogoImageUrlVip || '';
+  const splashLogoVipPreview = document.getElementById('s-splash-logo-vip-preview');
+  splashLogoVipPreview.src = s.splashLogoImageUrlVip || '';
+  splashLogoVipPreview.style.display = s.splashLogoImageUrlVip ? 'block' : 'none';
+  document.getElementById('s-splash-logo-vip-clear-btn').style.display = s.splashLogoImageUrlVip ? 'block' : 'none';
+
   document.getElementById('s-announcement').value = s.announcement || '';
   document.getElementById('s-announcement-vip').value = s.announcementVip || '';
 }
@@ -3178,6 +3203,8 @@ async function saveStyleSettings(){
     bannerUrlVip: document.getElementById('s-banner-vip-url').value,
     splashCharacterUrl: document.getElementById('s-splash-url').value,
     splashCharacterUrlVip: document.getElementById('s-splash-vip-url').value,
+    splashLogoImageUrl: document.getElementById('s-splash-logo-url').value,
+    splashLogoImageUrlVip: document.getElementById('s-splash-logo-vip-url').value,
     announcement: document.getElementById('s-announcement').value,
     announcementVip: document.getElementById('s-announcement-vip').value,
   };
