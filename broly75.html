@@ -343,14 +343,14 @@
     font-family:var(--font-title);
     font-size:24px;
     text-transform:uppercase;
-    background:linear-gradient(135deg, #FFFFFF 0%, #FFFFFF 35%, #8FE0A8 70%, var(--lime) 100%);
+    background:linear-gradient(90deg, #FFFFFF 0%, var(--lime) 100%);
     -webkit-background-clip:text;
     background-clip:text;
     -webkit-text-fill-color:transparent;
     margin-bottom:2px;
   }
   body.vip-user .pd-name{
-    background:linear-gradient(135deg, #FFFFFF 0%, #FFFFFF 35%, #FFE066 70%, #FFD700 100%);
+    background:linear-gradient(90deg, #FFFFFF 0%, #FFD700 100%);
     -webkit-background-clip:text;
     background-clip:text;
     -webkit-text-fill-color:transparent;
@@ -4061,9 +4061,6 @@ function applyVipGoldOverride(active){
     document.documentElement.style.setProperty('--glow-rgb', VIP_GLOW_RGB);
   } else {
     document.documentElement.style.removeProperty('--glow-rgb');
-    if (siteContent && siteContent.style){
-      applySiteStyle(siteContent.style);
-    }
   }
 }
 
@@ -4370,9 +4367,9 @@ async function checkVipStatus(){
     const data = await res.json();
     isVipUser = !!data.vip;
     document.body.classList.toggle('vip-user', isVipUser);
-    applyVipGoldOverride(isVipUser);
     applyWallpaper();
     if (siteContent && siteContent.style) applySiteStyle(siteContent.style);
+    applyVipGoldOverride(isVipUser);
     const welcomeName = document.getElementById('welcome-name');
     if (welcomeName) welcomeName.innerHTML = isVipUser ? 'BROLY75 <span style="color:#FFE600;">VIP</span>' : 'BROLY75';
     document.getElementById('vip-payment-toggle').style.display = isVipUser ? 'block' : 'none';
