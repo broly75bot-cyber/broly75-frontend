@@ -453,6 +453,13 @@
       <input type="hidden" id="cat1-img-url">
       <button type="button" class="secondary" id="cat1-img-clear-btn" style="display:none; margin-bottom:12px;" onclick="clearImageField('cat1-img-url','cat1-img-preview','cat1-img-status','cat1-img-clear-btn')">Retirer la photo</button>
 
+      <label>Photo de fond VIP (facultatif — affichée à la place de la photo ci-dessus uniquement pour les clients VIP)</label>
+      <input type="file" id="cat1-vip-img-file" accept="image/*" onchange="uploadCatImage(this,'cat1-vip')">
+      <div class="muted" id="cat1-vip-img-status"></div>
+      <img id="cat1-vip-img-preview" src="" style="max-width:100px; border-radius:8px; margin:6px 0 12px; display:none;">
+      <input type="hidden" id="cat1-vip-img-url">
+      <button type="button" class="secondary" id="cat1-vip-img-clear-btn" style="display:none; margin-bottom:12px;" onclick="clearImageField('cat1-vip-img-url','cat1-vip-img-preview','cat1-vip-img-status','cat1-vip-img-clear-btn')">Retirer la photo VIP</button>
+
       <label>Nom de la case "Marque"</label>
       <input id="lb-cat2-name" placeholder="Catégorie 2">
       <label>Photo de fond (facultatif — sinon une photo produit est utilisée automatiquement)</label>
@@ -461,6 +468,13 @@
       <img id="cat2-img-preview" src="" style="max-width:100px; border-radius:8px; margin:6px 0 12px; display:none;">
       <input type="hidden" id="cat2-img-url">
       <button type="button" class="secondary" id="cat2-img-clear-btn" style="display:none; margin-bottom:12px;" onclick="clearImageField('cat2-img-url','cat2-img-preview','cat2-img-status','cat2-img-clear-btn')">Retirer la photo</button>
+
+      <label>Photo de fond VIP (facultatif — affichée à la place de la photo ci-dessus uniquement pour les clients VIP)</label>
+      <input type="file" id="cat2-vip-img-file" accept="image/*" onchange="uploadCatImage(this,'cat2-vip')">
+      <div class="muted" id="cat2-vip-img-status"></div>
+      <img id="cat2-vip-img-preview" src="" style="max-width:100px; border-radius:8px; margin:6px 0 12px; display:none;">
+      <input type="hidden" id="cat2-vip-img-url">
+      <button type="button" class="secondary" id="cat2-vip-img-clear-btn" style="display:none; margin-bottom:12px;" onclick="clearImageField('cat2-vip-img-url','cat2-vip-img-preview','cat2-vip-img-status','cat2-vip-img-clear-btn')">Retirer la photo VIP</button>
 
       <label>Texte "Tous les styles" (en haut de la liste Style)</label>
       <input id="lb-all-styles" placeholder="Tous les styles">
@@ -887,6 +901,14 @@
       <p class="muted" id="s-logo-preview-hint" style="display:none; margin-bottom:8px;">Aperçu exact du badge tel qu'il apparaîtra dans l'app (52×52px, recadré au centre).</p>
       <input type="hidden" id="s-logo-url">
       <button type="button" class="secondary" id="s-logo-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearImageField('s-logo-url','s-logo-preview','s-logo-status','s-logo-clear-btn')">Retirer le logo</button>
+
+      <label style="margin-top:16px;">Logo VIP (facultatif — affiché à la place du logo ci-dessus uniquement pour les clients VIP)</label>
+      <input type="file" id="s-logo-vip-file" accept="image/*" onchange="uploadStyleImage(this,'s-logo-vip-url','s-logo-vip-status','s-logo-vip-preview')">
+      <div class="muted" id="s-logo-vip-status"></div>
+      <img id="s-logo-vip-preview" src="" style="width:52px; height:52px; object-fit:cover; border-radius:50%; border:2px solid #FFE600; margin:8px 0; display:none;">
+      <input type="hidden" id="s-logo-vip-url">
+      <button type="button" class="secondary" id="s-logo-vip-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearImageField('s-logo-vip-url','s-logo-vip-preview','s-logo-vip-status','s-logo-vip-clear-btn')">Retirer le logo VIP</button>
+
       <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
@@ -900,6 +922,14 @@
       <img id="s-banner-preview" src="" style="max-width:100%; border-radius:8px; margin:8px 0; display:none;">
       <input type="hidden" id="s-banner-url">
       <button type="button" class="secondary" id="s-banner-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearImageField('s-banner-url','s-banner-preview','s-banner-status','s-banner-clear-btn')">Retirer la bannière</button>
+
+      <label style="margin-top:16px;">Bannière VIP (facultatif — affichée à la place de celle ci-dessus uniquement pour les clients VIP)</label>
+      <input type="file" id="s-banner-vip-file" accept="image/*" onchange="uploadStyleImage(this,'s-banner-vip-url','s-banner-vip-status','s-banner-vip-preview')">
+      <div class="muted" id="s-banner-vip-status"></div>
+      <img id="s-banner-vip-preview" src="" style="max-width:100%; border-radius:8px; margin:8px 0; display:none;">
+      <input type="hidden" id="s-banner-vip-url">
+      <button type="button" class="secondary" id="s-banner-vip-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearImageField('s-banner-vip-url','s-banner-vip-preview','s-banner-vip-status','s-banner-vip-clear-btn')">Retirer la bannière VIP</button>
+
       <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
@@ -914,6 +944,14 @@
       <input type="hidden" id="s-splash-url">
       <button type="button" class="secondary" id="s-splash-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearImageField('s-splash-url','s-splash-preview','s-splash-status','s-splash-clear-btn')">Retirer le personnage</button>
       <p class="muted" style="margin-top:10px;">Si aucune image n'est définie, l'écran de lancement s'affiche sans personnage (juste le logo).</p>
+
+      <label style="margin-top:16px;">Personnage VIP (facultatif — affiché à la place de celui ci-dessus uniquement pour les clients VIP)</label>
+      <input type="file" id="s-splash-vip-file" accept="image/*" onchange="uploadStyleImage(this,'s-splash-vip-url','s-splash-vip-status','s-splash-vip-preview')">
+      <div class="muted" id="s-splash-vip-status"></div>
+      <img id="s-splash-vip-preview" src="" style="width:150px; height:150px; object-fit:contain; margin:8px 0; display:none; background:#040604; border-radius:12px;">
+      <input type="hidden" id="s-splash-vip-url">
+      <button type="button" class="secondary" id="s-splash-vip-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearImageField('s-splash-vip-url','s-splash-vip-preview','s-splash-vip-status','s-splash-vip-clear-btn')">Retirer le personnage VIP</button>
+
       <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
@@ -923,6 +961,10 @@
       <h2>Bloc annonce / promo</h2>
       <label>Message affiché en bandeau en haut de la boutique (laisser vide pour le masquer)</label>
       <input id="s-announcement" placeholder="Ex : 🔥 Livraison offerte ce week-end">
+
+      <label style="margin-top:16px;">Message VIP (facultatif — affiché à la place du message ci-dessus uniquement pour les clients VIP)</label>
+      <input id="s-announcement-vip" placeholder="Ex : ★ Merci pour ta fidélité, client VIP">
+
       <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
@@ -2773,6 +2815,16 @@ async function loadContent(){
   cat2Preview.src = lb.cat2Image || '';
   cat2Preview.style.display = lb.cat2Image ? 'block' : 'none';
   document.getElementById('cat2-img-clear-btn').style.display = lb.cat2Image ? 'block' : 'none';
+  document.getElementById('cat1-vip-img-url').value = lb.cat1ImageVip || '';
+  const cat1VipPreview = document.getElementById('cat1-vip-img-preview');
+  cat1VipPreview.src = lb.cat1ImageVip || '';
+  cat1VipPreview.style.display = lb.cat1ImageVip ? 'block' : 'none';
+  document.getElementById('cat1-vip-img-clear-btn').style.display = lb.cat1ImageVip ? 'block' : 'none';
+  document.getElementById('cat2-vip-img-url').value = lb.cat2ImageVip || '';
+  const cat2VipPreview = document.getElementById('cat2-vip-img-preview');
+  cat2VipPreview.src = lb.cat2ImageVip || '';
+  cat2VipPreview.style.display = lb.cat2ImageVip ? 'block' : 'none';
+  document.getElementById('cat2-vip-img-clear-btn').style.display = lb.cat2ImageVip ? 'block' : 'none';
   document.getElementById('lb-livraison-title').value = lb.livraisonTitle || '';
   document.getElementById('lb-livraison-sub').value = lb.livraisonSub || '';
   document.getElementById('lb-envoi-title').value = lb.envoiTitle || '';
@@ -2882,6 +2934,8 @@ async function saveContent(){
     allBrandsText: document.getElementById('lb-all-brands').value,
     cat1Image: document.getElementById('cat1-img-url').value,
     cat2Image: document.getElementById('cat2-img-url').value,
+    cat1ImageVip: document.getElementById('cat1-vip-img-url').value,
+    cat2ImageVip: document.getElementById('cat2-vip-img-url').value,
     livraisonTitle: document.getElementById('lb-livraison-title').value,
     livraisonSub: document.getElementById('lb-livraison-sub').value,
     envoiTitle: document.getElementById('lb-envoi-title').value,
@@ -3029,20 +3083,36 @@ async function loadStyleSettings(){
   logoPreview.style.display = s.logoUrl ? 'block' : 'none';
   document.getElementById('s-logo-preview-hint').style.display = s.logoUrl ? 'block' : 'none';
   document.getElementById('s-logo-clear-btn').style.display = s.logoUrl ? 'block' : 'none';
+  document.getElementById('s-logo-vip-url').value = s.logoUrlVip || '';
+  const logoVipPreview = document.getElementById('s-logo-vip-preview');
+  logoVipPreview.src = s.logoUrlVip || '';
+  logoVipPreview.style.display = s.logoUrlVip ? 'block' : 'none';
+  document.getElementById('s-logo-vip-clear-btn').style.display = s.logoUrlVip ? 'block' : 'none';
 
   document.getElementById('s-banner-url').value = s.bannerUrl || '';
   const bannerPreview = document.getElementById('s-banner-preview');
   bannerPreview.src = s.bannerUrl || '';
   bannerPreview.style.display = s.bannerUrl ? 'block' : 'none';
   document.getElementById('s-banner-clear-btn').style.display = s.bannerUrl ? 'block' : 'none';
+  document.getElementById('s-banner-vip-url').value = s.bannerUrlVip || '';
+  const bannerVipPreview = document.getElementById('s-banner-vip-preview');
+  bannerVipPreview.src = s.bannerUrlVip || '';
+  bannerVipPreview.style.display = s.bannerUrlVip ? 'block' : 'none';
+  document.getElementById('s-banner-vip-clear-btn').style.display = s.bannerUrlVip ? 'block' : 'none';
 
   document.getElementById('s-splash-url').value = s.splashCharacterUrl || '';
   const splashPreview = document.getElementById('s-splash-preview');
   splashPreview.src = s.splashCharacterUrl || '';
   splashPreview.style.display = s.splashCharacterUrl ? 'block' : 'none';
   document.getElementById('s-splash-clear-btn').style.display = s.splashCharacterUrl ? 'block' : 'none';
+  document.getElementById('s-splash-vip-url').value = s.splashCharacterUrlVip || '';
+  const splashVipPreview = document.getElementById('s-splash-vip-preview');
+  splashVipPreview.src = s.splashCharacterUrlVip || '';
+  splashVipPreview.style.display = s.splashCharacterUrlVip ? 'block' : 'none';
+  document.getElementById('s-splash-vip-clear-btn').style.display = s.splashCharacterUrlVip ? 'block' : 'none';
 
   document.getElementById('s-announcement').value = s.announcement || '';
+  document.getElementById('s-announcement-vip').value = s.announcementVip || '';
 }
 
 async function uploadStyleImage(input, urlFieldId, statusFieldId, previewFieldId){
@@ -3103,9 +3173,13 @@ async function saveStyleSettings(){
       mono: document.getElementById('s-font-mono').value,
     },
     logoUrl: document.getElementById('s-logo-url').value,
+    logoUrlVip: document.getElementById('s-logo-vip-url').value,
     bannerUrl: document.getElementById('s-banner-url').value,
+    bannerUrlVip: document.getElementById('s-banner-vip-url').value,
     splashCharacterUrl: document.getElementById('s-splash-url').value,
+    splashCharacterUrlVip: document.getElementById('s-splash-vip-url').value,
     announcement: document.getElementById('s-announcement').value,
+    announcementVip: document.getElementById('s-announcement-vip').value,
   };
   // On repart du contenu existant pour ne pas écraser les autres réglages (horaires, contacts, FAQ...)
   const body = { ...(currentContent || {}), style };

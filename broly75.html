@@ -3379,8 +3379,9 @@ let activeBrand = 'Tout';
 
 function renderCats(){
   const bar = document.getElementById('cats');
-  const typeThumb = siteContent?.labels?.cat1Image || products.find(p => activeType === 'Tout' ? true : p.cat === activeType)?.img || '';
-  const brandThumb = siteContent?.labels?.cat2Image || products.find(p => activeBrand === 'Tout' ? true : p.brand === activeBrand)?.img || '';
+  const lb = siteContent?.labels || {};
+  const typeThumb = (isVipUser && lb.cat1ImageVip) || lb.cat1Image || products.find(p => activeType === 'Tout' ? true : p.cat === activeType)?.img || '';
+  const brandThumb = (isVipUser && lb.cat2ImageVip) || lb.cat2Image || products.find(p => activeBrand === 'Tout' ? true : p.brand === activeBrand)?.img || '';
   const cat1Name = (siteContent?.labels?.cat1Name) || 'Catégorie 1';
   const cat2Name = (siteContent?.labels?.cat2Name) || 'Catégorie 2';
   document.getElementById('cats-back-row').style.display = (activeType !== 'Tout' || activeBrand !== 'Tout') ? 'block' : 'none';
@@ -4093,23 +4094,31 @@ function applySiteStyle(style){
     if (style.fonts.body) root.style.setProperty('--font-body', style.fonts.body);
     if (style.fonts.mono) root.style.setProperty('--font-mono', style.fonts.mono);
   }
-  if (style.logoUrl){
+  const vipLogo = isVipUser && style.logoUrlVip;
+  if (vipLogo || style.logoUrl){
     const badge = document.getElementById('avatar-badge');
-    badge.innerHTML = `<img src="${style.logoUrl}" alt="Logo">`;
+    badge.innerHTML = `<img src="${vipLogo || style.logoUrl}" alt="Logo">`;
   }
-  if (style.bannerUrl){
-    document.getElementById('site-banner-img').src = style.bannerUrl;
+  const vipBanner = isVipUser && style.bannerUrlVip;
+  if (vipBanner || style.bannerUrl){
+    document.getElementById('site-banner-img').src = vipBanner || style.bannerUrl;
     document.getElementById('site-banner').classList.add('show');
+  } else {
+    document.getElementById('site-banner').classList.remove('show');
   }
-  if (style.splashCharacterUrl){
+  const vipSplash = isVipUser && style.splashCharacterUrlVip;
+  if (vipSplash || style.splashCharacterUrl){
     const splashImg = document.getElementById('splash-character-img');
-    splashImg.src = style.splashCharacterUrl;
+    splashImg.src = vipSplash || style.splashCharacterUrl;
     splashImg.style.display = 'block';
   }
-  if (style.announcement){
+  const vipAnnouncement = isVipUser && style.announcementVip;
+  if (vipAnnouncement || style.announcement){
     const bar = document.getElementById('announcement-bar');
-    bar.textContent = style.announcement;
+    bar.textContent = vipAnnouncement || style.announcement;
     bar.classList.add('show');
+  } else {
+    document.getElementById('announcement-bar').classList.remove('show');
   }
 
   if (style.typography){
@@ -4354,9 +4363,11 @@ async function checkVipStatus(){
     document.body.classList.toggle('vip-user', isVipUser);
     applyVipGoldOverride(isVipUser);
     applyWallpaper();
+    if (siteContent && siteContent.style) applySiteStyle(siteContent.style);
     const welcomeName = document.getElementById('welcome-name');
     if (welcomeName) welcomeName.innerHTML = isVipUser ? 'BROLY75 <span style="color:#FFE600;">VIP</span>' : 'BROLY75';
     document.getElementById('vip-payment-toggle').style.display = isVipUser ? 'block' : 'none';
+    renderCats();
     renderGrid();
     renderRecap();
   } catch (err) {
