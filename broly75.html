@@ -4120,6 +4120,7 @@ async function loadSiteContent(){
     siteContent = await res.json();
     applyWallpaper();
     applySiteStyle(siteContent.style);
+    if (isVipUser) applyVipGoldOverride(true);
     applyDeliveryLabels(siteContent.labels);
     applyEnabledCryptos(siteContent.cryptoWallets);
     applyTranslations();
