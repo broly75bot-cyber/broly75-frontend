@@ -831,16 +831,16 @@
   .like-btn{
     display:flex;
     align-items:center;
-    gap:5px;
+    gap:3px;
     background:var(--ink);
-    border:2px solid var(--lime);
-    border-radius:20px;
-    padding:6px 12px;
+    border:1.5px solid var(--lime);
+    border-radius:16px;
+    padding:3px 8px;
     color:var(--lime);
   }
   .like-btn .like-count{
     font-family:var(--font-mono);
-    font-size:11px;
+    font-size:9.5px;
     color:var(--paper);
   }
   .card .add{
@@ -3540,7 +3540,7 @@ function renderGrid(){
       <div class="name">${p.name}</div>
       <div class="meta">
         <button class="like-btn" onclick="event.stopPropagation(); toggleLike(${p.id}, this)">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="${likedProducts[p.id] ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="${likedProducts[p.id] ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
           <span class="like-count">${p.likes}</span>
         </button>
       </div>
