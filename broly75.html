@@ -4110,7 +4110,6 @@ function timeAgo(dateStr){
   return `Il y a ${Math.floor(months / 12)} an${Math.floor(months/12) > 1 ? 's' : ''}`;
 }
 
-let vipLoungeOpenedOnce = false;
 async function openVipLounge(){
   hideNav();
   const tgUser = tg?.initDataUnsafe?.user;
@@ -4158,10 +4157,7 @@ async function openVipLounge(){
   }
 
   document.getElementById('vip-lounge-overlay').classList.add('show');
-  if (!vipLoungeOpenedOnce){
-    vipLoungeOpenedOnce = true;
-    triggerVipConfetti();
-  }
+  triggerVipConfetti();
 }
 
 function triggerVipConfetti(){
