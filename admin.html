@@ -715,32 +715,40 @@
     <div class="subscreen" id="contenu-statusmsg">
       <button class="subscreen-back" onclick="closeContentSection()">Contenu</button>
       <h2>Messages automatiques</h2>
-      <p class="muted" style="margin-bottom:14px;">Le client reçoit automatiquement un de ces messages sur Telegram dès que tu changes le statut d'une commande. Le bon message part selon le mode que le client a choisi. Laisse un champ vide pour garder le texte par défaut. Pour "En cours de livraison", le transporteur/n° de suivi/lien sont ajoutés automatiquement à la fin si tu les as renseignés.</p>
+      <p class="muted" style="margin-bottom:14px;">Le client reçoit automatiquement un de ces messages sur Telegram dès que tu changes le statut d'une commande. Le bon message part selon le mode que le client a choisi. Laisse un champ vide pour garder le texte par défaut. Pour "En cours de livraison", le transporteur/n° de suivi/lien sont ajoutés automatiquement à la fin si tu les as renseignés. Tu peux utiliser {name} (prénom du client), {orderId} (numéro de commande), {total} (montant) et {coins} (Ƶeni gagnés) dans n'importe quel message.</p>
 
-      <label>Commande payée <span style="text-transform:none; color:rgba(0,0,0,0.35);">(même message pour les 3 modes)</span></label>
-      <textarea id="msg-paid" rows="2" placeholder="✅ Ta commande a bien été validée, elle est en cours de préparation !"></textarea>
+      <h2 style="margin-top:0;">Commande reçue</h2>
+      <label>Service d'envoi</label>
+      <textarea id="msg-pending-livraison" rows="2" placeholder="🛒 Commande {orderId} reçue ! Merci {name}, on prépare tout ça avec soin. Total : {total} €."></textarea>
+      <label style="margin-top:10px;">Horaires de livraison</label>
+      <textarea id="msg-pending-envoi" rows="2" placeholder="🛒 Commande {orderId} reçue ! Merci {name}, elle part bientôt par colis. Total : {total} €."></textarea>
+      <label style="margin-top:10px;">Point relais</label>
+      <textarea id="msg-pending-retrait" rows="2" placeholder="🛒 Commande {orderId} reçue ! Merci {name}, on te prévient dès qu'elle est prête. Total : {total} €."></textarea>
+
+      <label style="margin-top:18px;">Commande payée <span style="text-transform:none; color:rgba(0,0,0,0.35);">(même message pour les 3 modes)</span></label>
+      <textarea id="msg-paid" rows="2" placeholder="✅ Paiement confirmé pour la commande {orderId} ! Elle passe en préparation."></textarea>
 
       <h2 style="margin-top:18px;">Prête</h2>
       <label>Service d'envoi</label>
-      <textarea id="msg-ready-livraison" rows="2" placeholder="📦 Ta commande est prête, elle va bientôt partir !"></textarea>
+      <textarea id="msg-ready-livraison" rows="2" placeholder="📦 Ta commande {orderId} est prête, elle part bientôt en livraison !"></textarea>
       <label style="margin-top:10px;">Horaires de livraison</label>
-      <textarea id="msg-ready-envoi" rows="2" placeholder="📦 Ta commande est prête, elle va bientôt partir !"></textarea>
+      <textarea id="msg-ready-envoi" rows="2" placeholder="📦 Ta commande {orderId} est prête, le colis part bientôt !"></textarea>
       <label style="margin-top:10px;">Point relais</label>
-      <textarea id="msg-ready-retrait" rows="2" placeholder="🎉 Ta commande est prête ! Tu peux venir la récupérer."></textarea>
+      <textarea id="msg-ready-retrait" rows="2" placeholder="🎉 Ta commande {orderId} est prête ! Tu peux venir la récupérer."></textarea>
 
       <h2 style="margin-top:18px;">En cours de livraison</h2>
       <label>Service d'envoi</label>
-      <textarea id="msg-shipped-livraison" rows="2" placeholder="🚚 Ta commande est en cours de livraison !"></textarea>
+      <textarea id="msg-shipped-livraison" rows="2" placeholder="🚚 Ta commande {orderId} est en cours de livraison, elle arrive bientôt !"></textarea>
       <label style="margin-top:10px;">Horaires de livraison</label>
-      <textarea id="msg-shipped-envoi" rows="2" placeholder="🚚 Ta commande est en cours de livraison !"></textarea>
+      <textarea id="msg-shipped-envoi" rows="2" placeholder="🚚 Ton colis {orderId} est en route !"></textarea>
 
       <h2 style="margin-top:18px;">Livrée / récupérée</h2>
       <label>Service d'envoi</label>
-      <textarea id="msg-delivered-livraison" rows="2" placeholder="📍 Ta commande est arrivée ! Merci pour ta confiance 🙏 Tu as gagné {coins} Ƶeni."></textarea>
+      <textarea id="msg-delivered-livraison" rows="2" placeholder="📍 Livrée ! Merci {name} pour ta confiance 🙏 Tu as gagné {coins} Ƶeni."></textarea>
       <label style="margin-top:10px;">Horaires de livraison</label>
-      <textarea id="msg-delivered-envoi" rows="2" placeholder="📍 Ta commande est arrivée ! Merci pour ta confiance 🙏 Tu as gagné {coins} Ƶeni."></textarea>
+      <textarea id="msg-delivered-envoi" rows="2" placeholder="📍 Ton colis {orderId} est arrivé ! Merci {name} pour ta confiance 🙏 Tu as gagné {coins} Ƶeni."></textarea>
       <label style="margin-top:10px;">Point relais</label>
-      <textarea id="msg-delivered-retrait" rows="2" placeholder="✅ Commande récupérée avec succès ! Merci pour ta confiance 🙏 Tu as gagné {coins} coins."></textarea>
+      <textarea id="msg-delivered-retrait" rows="2" placeholder="✅ Commande {orderId} récupérée avec succès ! Merci {name} pour ta confiance 🙏 Tu as gagné {coins} Ƶeni."></textarea>
 
       <button style="width:100%; margin-top:14px;" onclick="saveContent()">Enregistrer</button>
     </div>
@@ -3009,6 +3017,9 @@ async function loadContent(){
   renderOrderEditor('brand-order-editor', c.brandOrder || []);
 
   const sm = c.statusMessages || {};
+  document.getElementById('msg-pending-livraison').value = sm.pendingLivraison || '';
+  document.getElementById('msg-pending-envoi').value = sm.pendingEnvoi || '';
+  document.getElementById('msg-pending-retrait').value = sm.pendingRetrait || '';
   document.getElementById('msg-paid').value = sm.paid || '';
   document.getElementById('msg-ready-livraison').value = sm.readyLivraison || '';
   document.getElementById('msg-ready-envoi').value = sm.readyEnvoi || '';
@@ -3137,6 +3148,9 @@ async function saveContent(){
     .map(input => input.value.trim())
     .filter(Boolean);
   const statusMessages = {
+    pendingLivraison: document.getElementById('msg-pending-livraison').value,
+    pendingEnvoi: document.getElementById('msg-pending-envoi').value,
+    pendingRetrait: document.getElementById('msg-pending-retrait').value,
     paid: document.getElementById('msg-paid').value,
     readyLivraison: document.getElementById('msg-ready-livraison').value,
     readyEnvoi: document.getElementById('msg-ready-envoi').value,
