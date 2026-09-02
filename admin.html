@@ -162,10 +162,15 @@
   .faq-edit-item{ margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--border); }
 
   /* ===== Menu de navigation (lignes qui ouvrent un sous-écran) ===== */
-  .nav-list{ background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+  .nav-list{
+    background:rgba(21,22,25,0.7); backdrop-filter:blur(6px);
+    border:1.5px solid rgba(255,255,255,0.55);
+    border-radius:14px; overflow:hidden;
+    margin-bottom:22px;
+  }
   .nav-row{
     display:flex; justify-content:space-between; align-items:center;
-    padding:15px 16px; border-bottom:1px solid var(--border);
+    padding:16px; border-bottom:1px solid var(--border);
     font-family:'Inter', sans-serif; font-weight:500; font-size:13.5px; color:var(--text);
     cursor:pointer; background:none; width:100%; text-align:left; border-left:none; border-right:none; border-top:none;
   }
@@ -174,11 +179,10 @@
   .nav-row .nav-row-hint{ color:var(--text-muted); font-size:12px; font-weight:400; margin-right:8px; }
   .nav-row::after{ content:'›'; color:var(--text-muted); font-size:19px; margin-left:8px; }
   .nav-group-title{
-    padding:18px 16px 6px;
+    padding:0 4px 8px;
     font-family:'Inter', sans-serif; font-weight:700; font-size:11px;
     text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted);
   }
-  .nav-group-title:first-child{ padding-top:4px; }
 
   .subscreen{ display:none; }
   .subscreen.active{ display:block; }
@@ -878,31 +882,39 @@
 
     <!-- Menu principal des réglages -->
     <div class="subscreen active" id="reglages-menu">
+      <div class="nav-group-title">Apparence</div>
       <div class="nav-list">
-        <div class="nav-group-title">Apparence</div>
         <button class="nav-row" onclick="openSettingsSection('colors')">Couleurs</button>
         <button class="nav-row" onclick="openSettingsSection('fonts')">Polices d'écriture</button>
         <button class="nav-row" onclick="openSettingsSection('logo')">Logo</button>
         <button class="nav-row" onclick="openSettingsSection('banner')">Bannière</button>
         <button class="nav-row" onclick="openSettingsSection('splash')">Personnage écran de lancement</button>
         <button class="nav-row" onclick="openSettingsSection('admin-wallpaper')">Papier peint de l'admin</button>
+      </div>
 
-        <div class="nav-group-title">Contenu &amp; promo</div>
+      <div class="nav-group-title">Contenu &amp; promo</div>
+      <div class="nav-list">
         <button class="nav-row" onclick="openSettingsSection('announcement')">Bloc annonce / promo</button>
         <button class="nav-row" onclick="openSettingsSection('pflabels')">Étiquettes du formulaire produit</button>
+      </div>
 
-        <div class="nav-group-title">VIP &amp; fidélité</div>
+      <div class="nav-group-title">VIP &amp; fidélité</div>
+      <div class="nav-list">
         <button class="nav-row" onclick="openSettingsSection('vip')">Clients VIP</button>
         <button class="nav-row" onclick="openSettingsSection('vip-benefits')">Avantages VIP Lounge</button>
         <button class="nav-row" onclick="openSettingsSection('gifts')">Cadeaux par niveau</button>
         <button class="nav-row" onclick="openSettingsSection('tierstemplate')">Modèle de paliers</button>
         <button class="nav-row" onclick="openSettingsSection('loyalty')">Fidélité (Ƶeni)</button>
+      </div>
 
-        <div class="nav-group-title">Sécurité &amp; paiement</div>
+      <div class="nav-group-title">Sécurité &amp; paiement</div>
+      <div class="nav-list">
         <button class="nav-row" onclick="openSettingsSection('security')">Sécurité</button>
         <button class="nav-row" onclick="openSettingsSection('crypto')">Paiement crypto</button>
+      </div>
 
-        <div class="nav-group-title">Suivi</div>
+      <div class="nav-group-title">Suivi</div>
+      <div class="nav-list">
         <button class="nav-row" onclick="openSettingsSection('changelog')">Aperçu des modifications</button>
       </div>
     </div>
