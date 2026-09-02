@@ -3264,7 +3264,7 @@ function saveCartToStorage(){
 function loadCartFromStorage(){
   try {
     const savedTime = Number(localStorage.getItem('broly75_cart_time') || 0);
-    const isExpired = savedTime && (Date.now() - savedTime) > 24 * 60 * 60 * 1000; // 24h
+    const isExpired = savedTime && (Date.now() - savedTime) > 5 * 24 * 60 * 60 * 1000; // 5 jours
     if (isExpired){
       localStorage.removeItem('broly75_cart');
       localStorage.removeItem('broly75_cart_time');
