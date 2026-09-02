@@ -3097,6 +3097,7 @@ async function loadProductsFromBackend(){
   renderCats();
   renderGrid();
   renderVipHomeCarousel();
+  updateCartBar();
 }
 
 let selectedTier = null;
@@ -4797,11 +4798,17 @@ if (isRealTelegram){
   loadProductsFromBackend();
   loadSiteContent();
   updateCartBar();
-  checkVipStatus();
+  const vipCheckPromise = checkVipStatus();
 
-  setTimeout(() => {
+  const minSplashTime = new Promise(resolve => setTimeout(resolve, 1600));
+  const safetyTimeout = new Promise(resolve => setTimeout(resolve, 4000));
+
+  Promise.race([
+    Promise.all([minSplashTime, vipCheckPromise]),
+    safetyTimeout,
+  ]).finally(() => {
     document.getElementById('splash').classList.add('hide');
-  }, 1600);
+  });
 }
 </script>
 </body>
