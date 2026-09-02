@@ -100,6 +100,11 @@
 
   .stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
   .stat-card{ background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px; }
+  #tab-accueil .stat-card, #tab-accueil button.secondary{
+    border:1.5px solid rgba(255,255,255,0.55);
+    background:rgba(21,22,25,0.7);
+    backdrop-filter:blur(6px);
+  }
   .month-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid var(--border); font-size:14px; }
   .month-row:last-child{ border-bottom:none; }
   .month-row .mr-name{ text-transform:capitalize; }
