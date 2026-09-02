@@ -932,6 +932,11 @@
     30%{ transform:translateY(-4px); }
     50%{ transform:translateY(0); }
   }
+  @keyframes vipConfettiFall{
+    0%{ opacity:0; transform:translate(-50%,-50%) translate(0,0) rotate(0deg); }
+    15%{ opacity:1; }
+    100%{ opacity:0; transform:translate(-50%,-50%) translate(var(--drift), 340px) rotate(320deg); }
+  }
   .nav-item .badge{
     position:absolute;
     top:-2px; right:2px;
@@ -2268,6 +2273,11 @@
   <h1 id="hero-title">BROLY<span class="hot">75</span></h1>
 </header>
 
+<div id="vip-home-carousel" style="display:none; padding:16px 0 4px;">
+  <div class="section-label" style="padding:0 16px; margin-bottom:10px;">★ Avant-première VIP, rien que pour toi</div>
+  <div id="vip-home-carousel-track" style="display:flex; overflow-x:auto; gap:12px; padding:0 16px 6px; scroll-snap-type:x mandatory;"></div>
+</div>
+
 <div id="cats-back-row" style="display:none; padding:0 16px; text-align:right;">
   <button class="close-btn" onclick="clearAllCatFilters()" data-i18n="close">← Retour</button>
 </div>
@@ -2295,6 +2305,10 @@
     </span>
     <span class="nav-label" id="label-nav-panier">Panier</span>
   </button>
+  <button class="nav-item vip-tab" style="display:none;" onclick="setActiveNav(this); openVipLounge();">
+    <span class="nav-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.6 5.8 21 7 14 2 9.3 9 8.5"/></svg></span>
+    <span class="nav-label">VIP</span>
+  </button>
   <button class="nav-item" onclick="setActiveNav(this); openAvis();">
     <span class="nav-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg></span>
     <span class="nav-label" id="label-nav-avis">Avis</span>
@@ -2308,6 +2322,43 @@
     <span class="nav-label" id="label-nav-profil">Profil</span>
   </button>
 </nav>
+
+<!-- VIP LOUNGE -->
+<div class="overlay" id="vip-lounge-overlay">
+  <div class="overlay-inner">
+    <div class="close-row">
+      <h2>★ VIP Lounge</h2>
+      <button class="close-btn" onclick="closeOverlay('vip-lounge-overlay')">← Retour</button>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-badge" id="lounge-tier-badge" style="background:linear-gradient(135deg,#FFF3B0,#FFD700 60%,#E8B400); color:#2A1D00; border-color:#FFD700;">★ VIP</div>
+      <div class="profile-name" style="margin-top:4px;">Statut VIP</div>
+      <div id="lounge-tier-progress" style="width:100%; margin-top:14px;">
+        <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:0.05em; color:rgba(241,239,233,0.6); margin-bottom:5px;">
+          <span id="lounge-tier-current"></span>
+          <span id="lounge-tier-next"></span>
+        </div>
+        <div style="width:100%; height:8px; border-radius:5px; background:rgba(241,239,233,0.12); overflow:hidden;">
+          <div id="lounge-tier-bar" style="height:100%; width:0%; border-radius:5px; background:linear-gradient(90deg, #FFF3B0, #FFD700); transition:width .4s ease;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-block" style="margin-top:16px;">
+      <div class="info-block-title">Tes avantages VIP</div>
+      <div class="info-row"><span>★</span><span>Accès en avant-première aux nouveaux produits</span></div>
+      <div class="info-row"><span>★</span><span>Réduction automatique appliquée au panier</span></div>
+      <div class="info-row"><span>★</span><span>Paiement Paysafecard / Transcash débloqué</span></div>
+      <div class="info-row"><span>★</span><span>Thème doré exclusif dans toute l'app</span></div>
+    </div>
+
+    <div id="lounge-exclusive-section" style="display:none; margin-top:16px;">
+      <div class="section-label" style="margin-bottom:10px;">★ Produits en avant-première pour toi</div>
+      <div id="lounge-exclusive-grid" class="cat-grid" style="display:flex; overflow-x:auto; gap:10px; padding-bottom:6px;"></div>
+    </div>
+  </div>
+</div>
 
 <!-- PROFIL -->
 <div class="overlay" id="profile-overlay">
@@ -2328,6 +2379,15 @@
       <div class="profile-badge">Membre</div>
       <div class="profile-name" id="profile-name">Ton nom Telegram</div>
       <div class="profile-email" id="profile-email">ton.email@exemple.com</div>
+      <div id="vip-tier-progress" style="display:none; width:100%; margin-top:14px;">
+        <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:0.05em; color:rgba(241,239,233,0.6); margin-bottom:5px;">
+          <span id="vip-tier-current"></span>
+          <span id="vip-tier-next"></span>
+        </div>
+        <div style="width:100%; height:8px; border-radius:5px; background:rgba(241,239,233,0.12); overflow:hidden;">
+          <div id="vip-tier-bar" style="height:100%; width:0%; border-radius:5px; background:linear-gradient(90deg, #FFF3B0, #FFD700); transition:width .4s ease;"></div>
+        </div>
+      </div>
     </div>
 
     <div class="coins-card">
@@ -3024,6 +3084,7 @@ async function loadProductsFromBackend(){
   }
   renderCats();
   renderGrid();
+  renderVipHomeCarousel();
 }
 
 let selectedTier = null;
@@ -3443,6 +3504,28 @@ function orderViaTelegram(){
 let activeType = 'Tout';
 let activeBrand = 'Tout';
 
+function renderVipHomeCarousel(){
+  const wrap = document.getElementById('vip-home-carousel');
+  const track = document.getElementById('vip-home-carousel-track');
+  if (!isVipUser){
+    wrap.style.display = 'none';
+    return;
+  }
+  const exclusiveProducts = products.filter(p => p.vipEarlyAccess);
+  if (!exclusiveProducts.length){
+    wrap.style.display = 'none';
+    return;
+  }
+  wrap.style.display = 'block';
+  track.innerHTML = exclusiveProducts.map(p => `
+    <div style="flex:0 0 130px; scroll-snap-align:start; cursor:pointer;" onclick="openProduct(${p.id})">
+      <img src="${p.img}" alt="${p.name}" style="width:130px; height:160px; object-fit:cover; border-radius:14px; border:2px solid #FFD700; box-shadow:0 0 10px rgba(255,215,0,0.4);">
+      <div style="font-size:11.5px; color:var(--paper); margin-top:6px; line-height:1.3;">${p.name}</div>
+      <div style="font-family:var(--font-mono); font-size:12px; color:#FFE600; margin-top:2px;">${(p.priceTiers && p.priceTiers.length) ? 'Dès ' + Math.min(...p.priceTiers.map(t=>t.price)) + '€' : p.price + '€'}</div>
+    </div>
+  `).join('');
+}
+
 function renderCats(){
   const bar = document.getElementById('cats');
   const lb = siteContent?.labels || {};
@@ -3792,6 +3875,11 @@ async function openProfile(){
       const date = new Date(data.memberSince);
       document.getElementById('member-since').textContent = date.toLocaleDateString('fr-FR', { month:'short', year:'numeric' });
       document.getElementById('vip-badge').style.display = data.vip ? 'inline-block' : 'none';
+      if (data.vip){
+        applyVipTierProgress(data.ordersCount || 0);
+      } else {
+        document.getElementById('vip-tier-progress').style.display = 'none';
+      }
     } catch (err) {
       console.error('Impossible de charger le profil', err);
     }
@@ -4011,6 +4099,87 @@ function timeAgo(dateStr){
   return `Il y a ${Math.floor(months / 12)} an${Math.floor(months/12) > 1 ? 's' : ''}`;
 }
 
+let vipLoungeOpenedOnce = false;
+async function openVipLounge(){
+  hideNav();
+  const tgUser = tg?.initDataUnsafe?.user;
+  let ordersCount = 0;
+  if (tgUser){
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/user/${tgUser.id}`);
+      const data = await res.json();
+      ordersCount = data.ordersCount || 0;
+    } catch (err) {
+      console.error('Impossible de charger le statut VIP', err);
+    }
+  }
+  const { current, next } = getVipTier(ordersCount);
+  document.getElementById('lounge-tier-badge').textContent = `★ VIP ${current.name.toUpperCase()}`;
+  const currentLabel = document.getElementById('lounge-tier-current');
+  const nextLabel = document.getElementById('lounge-tier-next');
+  const bar = document.getElementById('lounge-tier-bar');
+  if (next){
+    const span = next.min - current.min;
+    const done = ordersCount - current.min;
+    const pct = Math.max(0, Math.min(100, (done / span) * 100));
+    currentLabel.textContent = current.name;
+    nextLabel.textContent = `${next.name} — ${next.min - ordersCount} commande${next.min - ordersCount > 1 ? 's' : ''}`;
+    bar.style.width = pct + '%';
+  } else {
+    currentLabel.textContent = current.name + ' (palier maximum)';
+    nextLabel.textContent = '';
+    bar.style.width = '100%';
+  }
+
+  const exclusiveProducts = products.filter(p => p.vipEarlyAccess);
+  const section = document.getElementById('lounge-exclusive-section');
+  const grid = document.getElementById('lounge-exclusive-grid');
+  if (exclusiveProducts.length){
+    section.style.display = 'block';
+    grid.innerHTML = exclusiveProducts.map(p => `
+      <div style="flex:0 0 120px; cursor:pointer;" onclick="closeOverlay('vip-lounge-overlay'); openProduct(${p.id});">
+        <img src="${p.img}" alt="${p.name}" style="width:120px; height:150px; object-fit:cover; border-radius:12px; border:2px solid #FFD700;">
+        <div style="font-size:11px; color:var(--paper); margin-top:6px; line-height:1.3;">${p.name}</div>
+      </div>
+    `).join('');
+  } else {
+    section.style.display = 'none';
+  }
+
+  document.getElementById('vip-lounge-overlay').classList.add('show');
+  if (!vipLoungeOpenedOnce){
+    vipLoungeOpenedOnce = true;
+    triggerVipConfetti();
+  }
+}
+
+function triggerVipConfetti(){
+  const container = document.createElement('div');
+  container.style.cssText = 'position:fixed; inset:0; pointer-events:none; z-index:9999; overflow:hidden;';
+  document.body.appendChild(container);
+  const colors = ['#FFD700', '#FFE600', '#FFF3B0', '#E8B400'];
+  for (let i = 0; i < 36; i++){
+    const piece = document.createElement('div');
+    const size = 6 + Math.random() * 6;
+    const startX = 50 + (Math.random() * 30 - 15);
+    const drift = (Math.random() * 140 - 70);
+    const duration = 1.4 + Math.random() * 1.1;
+    const delay = Math.random() * 0.3;
+    piece.style.cssText = `
+      position:absolute; top:38%; left:${startX}%;
+      width:${size}px; height:${size}px;
+      background:${colors[i % colors.length]};
+      border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+      opacity:0;
+      transform:translate(-50%,-50%);
+      animation:vipConfettiFall ${duration}s ease-out ${delay}s forwards;
+      --drift:${drift}px;
+    `;
+    container.appendChild(piece);
+  }
+  setTimeout(() => container.remove(), 3200);
+}
+
 async function openAvis(){
   hideNav();
   const list = document.getElementById('review-list');
@@ -4103,6 +4272,45 @@ function applyZoneColor(el, hex){
 
 const VIP_GOLD = '#FFE600';
 const VIP_GLOW_RGB = '255,230,0';
+
+const VIP_TIERS = [
+  { name: 'Bronze', min: 0 },
+  { name: 'Argent', min: 5 },
+  { name: 'Or', min: 15 },
+];
+function getVipTier(ordersCount){
+  let current = VIP_TIERS[0];
+  let next = VIP_TIERS[1];
+  for (let i = 0; i < VIP_TIERS.length; i++){
+    if (ordersCount >= VIP_TIERS[i].min){
+      current = VIP_TIERS[i];
+      next = VIP_TIERS[i + 1] || null;
+    }
+  }
+  return { current, next };
+}
+function applyVipTierProgress(ordersCount){
+  const { current, next } = getVipTier(ordersCount);
+  document.getElementById('vip-badge').textContent = `★ VIP ${current.name.toUpperCase()}`;
+  const progressEl = document.getElementById('vip-tier-progress');
+  progressEl.style.display = 'block';
+  const currentLabel = document.getElementById('vip-tier-current');
+  const nextLabel = document.getElementById('vip-tier-next');
+  const bar = document.getElementById('vip-tier-bar');
+  if (next){
+    const span = next.min - current.min;
+    const done = ordersCount - current.min;
+    const pct = Math.max(0, Math.min(100, (done / span) * 100));
+    currentLabel.textContent = current.name;
+    nextLabel.textContent = `${next.name} — ${next.min - ordersCount} commande${next.min - ordersCount > 1 ? 's' : ''}`;
+    bar.style.width = pct + '%';
+  } else {
+    currentLabel.textContent = current.name + ' (palier maximum)';
+    nextLabel.textContent = '';
+    bar.style.width = '100%';
+  }
+}
+
 function applyVipGoldOverride(active){
   const zones = [
     document.documentElement,
@@ -4111,6 +4319,7 @@ function applyVipGoldOverride(active){
     document.getElementById('review-modal'),
     document.getElementById('contact-overlay'),
     document.getElementById('profile-overlay'),
+    document.getElementById('vip-lounge-overlay'),
   ];
   if (active){
     zones.forEach(el => applyZoneColor(el, VIP_GOLD));
@@ -4441,6 +4650,8 @@ async function checkVipStatus(){
     const welcomeName = document.getElementById('welcome-name');
     if (welcomeName) welcomeName.innerHTML = isVipUser ? 'BROLY75 <span style="color:#FFE600;">VIP</span>' : 'BROLY75';
     document.getElementById('vip-payment-toggle').style.display = isVipUser ? 'block' : 'none';
+    document.querySelectorAll('.vip-tab').forEach(el => el.style.display = isVipUser ? 'flex' : 'none');
+    renderVipHomeCarousel();
     renderCats();
     renderGrid();
     renderRecap();
