@@ -909,6 +909,15 @@
     display:flex; align-items:center; justify-content:center;
   }
   .nav-item svg{ width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.8; }
+  .nav-item.vip-tab svg{
+    fill:#FFE600;
+    stroke:#FFE600;
+    animation:vipTabFlash 1.4s ease-in-out infinite;
+  }
+  @keyframes vipTabFlash{
+    0%, 100%{ opacity:1; filter:drop-shadow(0 0 3px rgba(255,230,0,0.8)); }
+    50%{ opacity:0.45; filter:drop-shadow(0 0 8px rgba(255,230,0,1)); }
+  }
   .nav-item .nav-label{
     font-family:var(--font-mono);
     font-size:9px;
