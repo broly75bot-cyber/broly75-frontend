@@ -3363,6 +3363,16 @@ function openRelaisSearch(){
 }
 
 function setFulfillment(mode, card){
+  // Si on reclique sur la case déjà sélectionnée, on la replie au lieu de la garder ouverte
+  if (card.classList.contains('selected')){
+    fulfillmentMode = null;
+    card.classList.remove('selected');
+    document.getElementById('delivery-address-section').style.display = 'none';
+    document.getElementById('delivery-hours-section').style.display = 'none';
+    document.getElementById('delivery-meetup-section').style.display = 'none';
+    return;
+  }
+
   fulfillmentMode = mode;
   document.querySelectorAll('#fulfillment-toggle .option-card').forEach(c => c.classList.remove('selected'));
   card.classList.add('selected');
