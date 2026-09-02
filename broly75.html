@@ -2781,26 +2781,26 @@
     </div>
     <div id="fulfillment-toggle">
       <div class="option-card" data-mode="livraison" onclick="setFulfillment('livraison', this)">
-        <div class="oc-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+        <div class="oc-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></div>
         <div class="oc-info">
           <div class="oc-title" id="label-livraison-title">Service d'envoi</div>
-          <div class="oc-sub" id="label-livraison-sub">Remise en main propre ou dépôt local</div>
+          <div class="oc-sub" id="label-livraison-sub">Envoi postal France &amp; Europe</div>
         </div>
         <div class="oc-chevron">›</div>
       </div>
       <div class="option-card" data-mode="envoi" onclick="setFulfillment('envoi', this)">
-        <div class="oc-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></div>
+        <div class="oc-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="7" width="15" height="11" rx="1"/><path d="M16 10h3.5l3.5 3.5V18h-7z"/><circle cx="6" cy="19.5" r="1.8"/><circle cx="18.5" cy="19.5" r="1.8"/></svg></div>
         <div class="oc-info">
-          <div class="oc-title" id="label-envoi-title">Horaires de livraison</div>
-          <div class="oc-sub" id="label-envoi-sub">Choisis un créneau de passage</div>
+          <div class="oc-title" id="label-envoi-title">Livraison</div>
+          <div class="oc-sub" id="label-envoi-sub">Livraison à domicile avec créneau</div>
         </div>
         <div class="oc-chevron">›</div>
       </div>
       <div class="option-card" data-mode="retrait" onclick="setFulfillment('retrait', this)">
-        <div class="oc-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/></svg></div>
+        <div class="oc-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 17H4a2 2 0 0 1-2-2v-1a3 3 0 0 1 3-3h1"/><path d="M13 17h7a2 2 0 0 0 2-2v-1a3 3 0 0 0-3-3h-1"/><path d="M8 12a2 2 0 1 1 4 0v1H8z"/><path d="M12 13a2 2 0 1 1 4 0v1h-4z"/><circle cx="6" cy="9" r="2.5"/><circle cx="18" cy="9" r="2.5"/></svg></div>
         <div class="oc-info">
-          <div class="oc-title" id="label-retrait-title">Point relais</div>
-          <div class="oc-sub" id="label-retrait-sub">À récupérer toi-même, sous 2–4 jours</div>
+          <div class="oc-title" id="label-retrait-title">Meetup</div>
+          <div class="oc-sub" id="label-retrait-sub">À convenir en main propre</div>
         </div>
         <div class="oc-chevron">›</div>
       </div>
@@ -2935,7 +2935,7 @@
       <div class="checkout-section-header">
         <div class="csh-step">3</div>
         <div>
-          <div class="csh-title" id="label-hoursbox-title">Horaire de tournée</div>
+          <div class="csh-title" id="label-hoursbox-title">Horaires de tournée</div>
           <div class="csh-sub" id="label-hoursbox-sub">Choisis un créneau de passage</div>
         </div>
       </div>
@@ -3016,6 +3016,12 @@
     <button class="submit-btn" id="validate-order-btn" style="margin-top:10px;" onclick="validateAndCreateOrder()">Valider ma commande</button>
 
     <div id="post-validate-section" style="display:none;">
+      <div class="btc-box" id="order-confirmed-note" style="margin-top:22px;">
+        <div class="eyebrow">✅ Commande enregistrée</div>
+        <p style="margin-top:10px;" id="order-confirmed-id"></p>
+        <p style="margin-top:6px;">Tu recevras toute la suite (confirmation, préparation, envoi, livraison...) directement sur <b>Telegram</b>, dans ta discussion avec le bot.</p>
+      </div>
+
       <div class="btc-box" id="crypto-payment-box" style="margin-top:22px;">
         <div class="eyebrow" id="crypto-eyebrow">Paiement bitcoin</div>
         <div id="qrcode"></div>
@@ -3042,7 +3048,7 @@
   <div class="overlay-inner confirm-screen">
     <div class="mark">✓</div>
     <h2 style="margin-top:18px;">Commande validée</h2>
-    <p class="sub" style="margin:14px auto;">On vérifie la transaction sur la blockchain et on te recontacte pour l'expédition.</p>
+    <p class="sub" style="margin:14px auto;">Ton paiement est confirmé ! On te tient au courant de la suite directement sur Telegram.</p>
     <button class="close-btn" onclick="closeOverlay('confirm-overlay')" style="margin-top:22px;">Retour à la boutique</button>
   </div>
 </div>
@@ -3362,9 +3368,12 @@ function setFulfillment(mode, card){
   document.querySelectorAll('#fulfillment-toggle .option-card').forEach(c => c.classList.remove('selected'));
   card.classList.add('selected');
 
-  document.getElementById('delivery-address-section').style.display = mode === 'livraison' ? 'block' : 'none';
+  document.getElementById('delivery-address-section').style.display = (mode === 'livraison' || mode === 'envoi') ? 'block' : 'none';
   document.getElementById('delivery-hours-section').style.display = mode === 'envoi' ? 'block' : 'none';
   document.getElementById('delivery-meetup-section').style.display = mode === 'retrait' ? 'block' : 'none';
+
+  const addressSub = document.getElementById('f-address-sub');
+  if (addressSub) addressSub.textContent = mode === 'envoi' ? 'Pour la livraison à domicile' : 'Pour l\'envoi postal';
 
   if (mode === 'envoi'){
     renderHoursOptions();
@@ -4582,6 +4591,9 @@ async function openCheckout(){
   document.getElementById('validate-order-btn').textContent = 'Valider ma commande';
   if (fulfillmentMode === 'envoi') renderHoursOptions();
   if (fulfillmentMode === 'retrait') renderMeetupInfo();
+  const meetup = (siteContent && siteContent.meetup) || {};
+  const retraitSub = document.getElementById('label-retrait-sub');
+  if (retraitSub && meetup.location) retraitSub.textContent = meetup.location;
   renderCheckoutItems();
   renderRecap();
 }
@@ -4692,6 +4704,7 @@ async function validateAndCreateOrder(){
     }
 
     currentOrderId = data.orderId;
+    document.getElementById('order-confirmed-id').textContent = `Numéro de commande : ${data.orderId}`;
 
     if (data.manual) {
       document.getElementById('crypto-payment-box').style.display = 'none';
