@@ -966,6 +966,20 @@
       <input type="hidden" id="s-splash-logo-vip-url">
       <button type="button" class="secondary" id="s-splash-logo-vip-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearImageField('s-splash-logo-vip-url','s-splash-logo-vip-preview','s-splash-logo-vip-status','s-splash-logo-vip-clear-btn')">Retirer le logo image VIP</button>
 
+      <label style="margin-top:20px;">Papier peint de l'écran de lancement (facultatif — image de fond derrière le personnage et le logo)</label>
+      <input type="file" id="s-splash-wallpaper-file" accept="image/*" onchange="uploadStyleImage(this,'s-splash-wallpaper-url','s-splash-wallpaper-status','s-splash-wallpaper-preview')">
+      <div class="muted" id="s-splash-wallpaper-status"></div>
+      <img id="s-splash-wallpaper-preview" src="" style="max-width:220px; margin:8px 0; display:none; border-radius:8px;">
+      <input type="hidden" id="s-splash-wallpaper-url">
+      <button type="button" class="secondary" id="s-splash-wallpaper-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearImageField('s-splash-wallpaper-url','s-splash-wallpaper-preview','s-splash-wallpaper-status','s-splash-wallpaper-clear-btn')">Retirer le papier peint</button>
+
+      <label style="margin-top:16px;">Papier peint VIP (facultatif — affiché à la place de celui ci-dessus uniquement pour les clients VIP)</label>
+      <input type="file" id="s-splash-wallpaper-vip-file" accept="image/*" onchange="uploadStyleImage(this,'s-splash-wallpaper-vip-url','s-splash-wallpaper-vip-status','s-splash-wallpaper-vip-preview')">
+      <div class="muted" id="s-splash-wallpaper-vip-status"></div>
+      <img id="s-splash-wallpaper-vip-preview" src="" style="max-width:220px; margin:8px 0; border-radius:8px; display:none;">
+      <input type="hidden" id="s-splash-wallpaper-vip-url">
+      <button type="button" class="secondary" id="s-splash-wallpaper-vip-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearImageField('s-splash-wallpaper-vip-url','s-splash-wallpaper-vip-preview','s-splash-wallpaper-vip-status','s-splash-wallpaper-vip-clear-btn')">Retirer le papier peint VIP</button>
+
       <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
@@ -3149,6 +3163,17 @@ async function loadStyleSettings(){
   splashLogoVipPreview.style.display = s.splashLogoImageUrlVip ? 'block' : 'none';
   document.getElementById('s-splash-logo-vip-clear-btn').style.display = s.splashLogoImageUrlVip ? 'block' : 'none';
 
+  document.getElementById('s-splash-wallpaper-url').value = s.splashWallpaperUrl || '';
+  const splashWpPreview = document.getElementById('s-splash-wallpaper-preview');
+  splashWpPreview.src = s.splashWallpaperUrl || '';
+  splashWpPreview.style.display = s.splashWallpaperUrl ? 'block' : 'none';
+  document.getElementById('s-splash-wallpaper-clear-btn').style.display = s.splashWallpaperUrl ? 'block' : 'none';
+  document.getElementById('s-splash-wallpaper-vip-url').value = s.splashWallpaperUrlVip || '';
+  const splashWpVipPreview = document.getElementById('s-splash-wallpaper-vip-preview');
+  splashWpVipPreview.src = s.splashWallpaperUrlVip || '';
+  splashWpVipPreview.style.display = s.splashWallpaperUrlVip ? 'block' : 'none';
+  document.getElementById('s-splash-wallpaper-vip-clear-btn').style.display = s.splashWallpaperUrlVip ? 'block' : 'none';
+
   document.getElementById('s-announcement').value = s.announcement || '';
   document.getElementById('s-announcement-vip').value = s.announcementVip || '';
 }
@@ -3218,6 +3243,8 @@ async function saveStyleSettings(){
     splashCharacterUrlVip: document.getElementById('s-splash-vip-url').value,
     splashLogoImageUrl: document.getElementById('s-splash-logo-url').value,
     splashLogoImageUrlVip: document.getElementById('s-splash-logo-vip-url').value,
+    splashWallpaperUrl: document.getElementById('s-splash-wallpaper-url').value,
+    splashWallpaperUrlVip: document.getElementById('s-splash-wallpaper-vip-url').value,
     announcement: document.getElementById('s-announcement').value,
     announcementVip: document.getElementById('s-announcement-vip').value,
   };
