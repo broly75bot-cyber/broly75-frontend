@@ -1078,18 +1078,11 @@
     <div class="subscreen" id="reglages-admin-wallpaper">
       <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
       <h2>Papier peint de l'admin</h2>
-      <p class="muted" style="margin-bottom:10px;">Image de fond pour cette interface d'administration (pas pour la boutique). Réglage propre à cet appareil/navigateur.</p>
+      <p class="muted" style="margin-bottom:10px;">Image de fond pour cette interface d'administration (pas pour la boutique). Elle se recadre automatiquement pour remplir tout l'écran. Réglage propre à cet appareil/navigateur.</p>
       <input type="file" id="admin-wallpaper-file" accept="image/*" onchange="uploadAdminWallpaper(this)">
       <div class="muted" id="admin-wallpaper-status"></div>
       <img id="admin-wallpaper-preview" src="" style="max-width:220px; margin:8px 0; border-radius:8px; display:none;">
       <button type="button" class="secondary" id="admin-wallpaper-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearAdminWallpaper()">Retirer le papier peint</button>
-
-      <label style="margin-top:16px;">Ajustement à l'écran</label>
-      <select id="admin-wallpaper-fit" onchange="localStorage.setItem('adminWallpaperFit', this.value); applyAdminWallpaper();">
-        <option value="cover">Remplir l'écran (recadrée si besoin)</option>
-        <option value="contain">Toute l'image visible (pas de recadrage)</option>
-        <option value="repeat">Répéter en mosaïque</option>
-      </select>
     </div>
 
 
@@ -3365,23 +3358,12 @@ function clearAdminWallpaper(){
 
 function applyAdminWallpaper(){
   const url = localStorage.getItem('adminWallpaperUrl');
-  const fit = localStorage.getItem('adminWallpaperFit') || 'cover';
   const preview = document.getElementById('admin-wallpaper-preview');
   const clearBtn = document.getElementById('admin-wallpaper-clear-btn');
-  const fitSelect = document.getElementById('admin-wallpaper-fit');
-  if (fitSelect) fitSelect.value = fit;
   if (url){
     document.body.style.backgroundImage = `linear-gradient(rgba(11,12,13,0.82), rgba(11,12,13,0.88)), url('${url}')`;
-    if (fit === 'contain'){
-      document.body.style.backgroundSize = 'auto, contain';
-      document.body.style.backgroundRepeat = 'no-repeat, no-repeat';
-    } else if (fit === 'repeat'){
-      document.body.style.backgroundSize = 'auto, auto';
-      document.body.style.backgroundRepeat = 'no-repeat, repeat';
-    } else {
-      document.body.style.backgroundSize = 'auto, cover';
-      document.body.style.backgroundRepeat = 'no-repeat, no-repeat';
-    }
+    document.body.style.backgroundSize = 'auto, cover';
+    document.body.style.backgroundRepeat = 'no-repeat, no-repeat';
     document.body.style.backgroundPosition = 'center';
     document.body.style.backgroundAttachment = 'fixed';
     if (preview){ preview.src = url; preview.style.display = 'block'; }
