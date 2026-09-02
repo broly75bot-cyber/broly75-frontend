@@ -61,6 +61,11 @@
   button.secondary{ background:none; border:1px solid var(--border); color:var(--text); }
   button.danger{ background:var(--danger); color:#fff; border-color:var(--danger); }
 
+  #admin-wallpaper-layer{
+    position:fixed; inset:0; z-index:-1;
+    background-size:cover; background-position:center; background-repeat:no-repeat;
+    pointer-events:none;
+  }
   .login-box{ max-width:340px; margin:80px auto; text-align:center; }
   #app{ display:none; max-width:640px; margin:0 auto; }
 
@@ -194,6 +199,8 @@
 </style>
 </head>
 <body>
+
+<div id="admin-wallpaper-layer"></div>
 
 <div class="login-box" id="login-box">
   <input type="password" id="admin-key-input" placeholder="Mot de passe admin">
@@ -3382,18 +3389,15 @@ function clearAdminWallpaper(){
 
 function applyAdminWallpaper(){
   const url = localStorage.getItem('adminWallpaperUrl');
+  const layer = document.getElementById('admin-wallpaper-layer');
   const preview = document.getElementById('admin-wallpaper-preview');
   const clearBtn = document.getElementById('admin-wallpaper-clear-btn');
   if (url){
-    document.body.style.backgroundImage = `linear-gradient(rgba(11,12,13,0.82), rgba(11,12,13,0.88)), url('${url}')`;
-    document.body.style.backgroundSize = 'auto, cover';
-    document.body.style.backgroundRepeat = 'no-repeat, no-repeat';
-    document.body.style.backgroundPosition = 'center';
-    document.body.style.backgroundAttachment = 'fixed';
+    layer.style.backgroundImage = `linear-gradient(rgba(11,12,13,0.82), rgba(11,12,13,0.88)), url('${url}')`;
     if (preview){ preview.src = url; preview.style.display = 'block'; }
     if (clearBtn) clearBtn.style.display = 'block';
   } else {
-    document.body.style.backgroundImage = 'none';
+    layer.style.backgroundImage = 'none';
     if (preview) preview.style.display = 'none';
     if (clearBtn) clearBtn.style.display = 'none';
   }
