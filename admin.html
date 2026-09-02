@@ -825,6 +825,7 @@
         <button class="nav-row" onclick="openSettingsSection('logo')">Logo</button>
         <button class="nav-row" onclick="openSettingsSection('banner')">Bannière</button>
         <button class="nav-row" onclick="openSettingsSection('splash')">Personnage écran de lancement</button>
+        <button class="nav-row" onclick="openSettingsSection('admin-wallpaper')">Papier peint de l'admin</button>
 
         <div class="nav-group-title">Contenu &amp; promo</div>
         <button class="nav-row" onclick="openSettingsSection('announcement')">Bloc annonce / promo</button>
@@ -1018,6 +1019,17 @@
 
       <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
+
+    <div class="subscreen" id="reglages-admin-wallpaper">
+      <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
+      <h2>Papier peint de l'admin</h2>
+      <p class="muted" style="margin-bottom:10px;">Image de fond pour cette interface d'administration (pas pour la boutique). Réglage propre à cet appareil/navigateur.</p>
+      <input type="file" id="admin-wallpaper-file" accept="image/*" onchange="uploadAdminWallpaper(this)">
+      <div class="muted" id="admin-wallpaper-status"></div>
+      <img id="admin-wallpaper-preview" src="" style="max-width:220px; margin:8px 0; border-radius:8px; display:none;">
+      <button type="button" class="secondary" id="admin-wallpaper-clear-btn" style="display:none; width:100%; margin-top:6px;" onclick="clearAdminWallpaper()">Retirer le papier peint</button>
+    </div>
+
 
     <!-- Sous-écran : Bloc annonce -->
     <div class="subscreen" id="reglages-announcement">
@@ -1277,6 +1289,7 @@ async function login(){
   adminKey = password;
   document.getElementById('login-box').style.display = 'none';
   document.getElementById('app').style.display = 'block';
+  applyAdminWallpaper();
   loadOrders();
   loadStats();
 
@@ -3226,6 +3239,53 @@ async function loadStyleSettings(){
 
   document.getElementById('s-announcement').value = s.announcement || '';
   document.getElementById('s-announcement-vip').value = s.announcementVip || '';
+}
+
+async function uploadAdminWallpaper(input){
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('admin-wallpaper-status');
+  status.textContent = 'Envoi en cours...';
+  const formData = new FormData();
+  formData.append('photo', file);
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/upload`, {
+      method: 'POST',
+      headers: { 'x-admin-key': adminKey },
+      body: formData,
+    });
+    const data = await res.json();
+    if (!res.ok) { status.textContent = '❌ ' + (data.error || 'Erreur upload'); return; }
+    localStorage.setItem('adminWallpaperUrl', data.url);
+    applyAdminWallpaper();
+    status.textContent = '✅ Papier peint appliqué';
+  } catch (err) {
+    status.textContent = '❌ Erreur réseau';
+  }
+}
+
+function clearAdminWallpaper(){
+  localStorage.removeItem('adminWallpaperUrl');
+  applyAdminWallpaper();
+  document.getElementById('admin-wallpaper-status').textContent = 'Papier peint retiré';
+}
+
+function applyAdminWallpaper(){
+  const url = localStorage.getItem('adminWallpaperUrl');
+  const preview = document.getElementById('admin-wallpaper-preview');
+  const clearBtn = document.getElementById('admin-wallpaper-clear-btn');
+  if (url){
+    document.body.style.backgroundImage = `linear-gradient(rgba(11,12,13,0.82), rgba(11,12,13,0.88)), url('${url}')`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundAttachment = 'fixed';
+    if (preview){ preview.src = url; preview.style.display = 'block'; }
+    if (clearBtn) clearBtn.style.display = 'block';
+  } else {
+    document.body.style.backgroundImage = 'none';
+    if (preview) preview.style.display = 'none';
+    if (clearBtn) clearBtn.style.display = 'none';
+  }
 }
 
 async function uploadStyleImage(input, urlFieldId, statusFieldId, previewFieldId){
