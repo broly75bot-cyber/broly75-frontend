@@ -352,14 +352,18 @@
 
   <!-- ONGLET PRODUITS -->
   <div class="tab-panel" id="tab-produits">
-    <div class="section-header">
-      <h2>Produits</h2>
-      <button onclick="openProductForm()">+ Ajouter</button>
+    <div class="subscreen active" id="produits-menu">
+      <div class="section-header">
+        <h2>Produits</h2>
+        <button onclick="openProductForm()">+ Ajouter</button>
+      </div>
+      <div id="products-container"></div>
     </div>
-    <div id="products-container"></div>
 
-    <!-- Formulaire produit (ajout/édition) -->
-    <div class="card" id="product-form" style="display:none;">
+    <!-- Formulaire produit (ajout/édition), en fiche séparée -->
+    <div class="subscreen" id="produits-form">
+      <button class="subscreen-back" onclick="closeProductForm()">Produits</button>
+      <div class="card" id="product-form">
       <h2 id="pf-title">Nouveau produit</h2>
       <input type="hidden" id="pf-id">
       <div id="pf-field-name">
@@ -429,6 +433,7 @@
         <button onclick="saveProduct()">Enregistrer</button>
         <button class="secondary" onclick="closeProductForm()">Annuler</button>
       </div>
+    </div>
     </div>
   </div>
 
@@ -1388,7 +1393,7 @@ function switchTab(name, btn){
   if (name === 'apercu') loadStats();
   if (name === 'avis') { closeReviewDetail(); loadReviews(); }
   if (name === 'commandes') closeOrderDetail();
-  if (name === 'produits') loadProducts();
+  if (name === 'produits') { closeProductForm(); loadProducts(); }
   if (name === 'contenu') closeContentSection();
   if (name === 'reglages') { closeSettingsSection(); loadStyleSettings(); }
 }
@@ -2374,10 +2379,13 @@ async function openProductForm(){
   document.getElementById('pf-cat-new').value = '';
   document.getElementById('pf-brand-new').value = '';
   populateProductDropdowns('', '');
-  document.getElementById('product-form').style.display = 'block';
-  document.getElementById('product-form').scrollIntoView({behavior:'smooth'});
+  document.querySelectorAll('#tab-produits .subscreen').forEach(s => s.classList.remove('active'));
+  document.getElementById('produits-form').classList.add('active');
 }
-function closeProductForm(){ document.getElementById('product-form').style.display = 'none'; }
+function closeProductForm(){
+  document.querySelectorAll('#tab-produits .subscreen').forEach(s => s.classList.remove('active'));
+  document.getElementById('produits-menu').classList.add('active');
+}
 
 async function editProduct(id){
   const p = allProducts.find(x => x.id === id);
@@ -2414,8 +2422,8 @@ document.getElementById('pf-img-status').textContent = '';
   document.getElementById('pf-stock').value = p.stock || '';
   document.getElementById('pf-featured').checked = !!p.featured;
   document.getElementById('pf-vip-early').checked = !!p.vipEarlyAccess;
-  document.getElementById('product-form').style.display = 'block';
-  document.getElementById('product-form').scrollIntoView({behavior:'smooth'});
+  document.querySelectorAll('#tab-produits .subscreen').forEach(s => s.classList.remove('active'));
+  document.getElementById('produits-form').classList.add('active');
 }
 let productMedia = [];
 
