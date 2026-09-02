@@ -2,7 +2,13 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BROLY75 Admin">
+<meta name="theme-color" content="#0B0C0D">
+<meta name="format-detection" content="telephone=no">
 <title>BROLY75 — Administration</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
@@ -28,8 +34,16 @@
     --lime:var(--accent);
     --pink:var(--danger);
   }
-  *{box-sizing:border-box; margin:0; padding:0;}
-  body{ background:var(--bg); color:var(--text); font-family:'Inter', -apple-system, sans-serif; padding:0 16px calc(86px + env(safe-area-inset-bottom)); }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  html{ overscroll-behavior-y:none; }
+  body{
+    background:var(--bg); color:var(--text); font-family:'Inter', -apple-system, sans-serif;
+    padding:0 16px calc(86px + env(safe-area-inset-bottom));
+    overscroll-behavior-y:none;
+    -webkit-user-select:none; user-select:none;
+  }
+  input, textarea{ -webkit-user-select:text; user-select:text; }
+  button, .nav-row, .tab-btn{ -webkit-touch-callout:none; }
   h1{ font-family:'Inter', sans-serif; font-weight:700; font-size:19px; letter-spacing:-0.01em; margin-bottom:16px; }
   h2{ font-family:'Inter', sans-serif; font-weight:600; font-size:14px; margin-bottom:12px; color:var(--text); }
   input, textarea, select{
