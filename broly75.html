@@ -2796,6 +2796,17 @@
         </div>
         <div class="oc-chevron">›</div>
       </div>
+      <!-- HORAIRES DE TOURNÉE (visible seulement si "Livraison" est choisie, juste sous sa case) -->
+      <div class="section-box" id="delivery-hours-section" style="display:none; margin-top:-6px;">
+        <div class="checkout-section-header">
+          <div class="csh-step">3</div>
+          <div>
+            <div class="csh-title" id="label-hoursbox-title">Horaires de tournée</div>
+            <div class="csh-sub" id="label-hoursbox-sub">Choisis un créneau de passage</div>
+          </div>
+        </div>
+        <div id="checkout-hours-options"></div>
+      </div>
       <div class="option-card" data-mode="retrait" onclick="setFulfillment('retrait', this)">
         <div class="oc-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 17H4a2 2 0 0 1-2-2v-1a3 3 0 0 1 3-3h1"/><path d="M13 17h7a2 2 0 0 0 2-2v-1a3 3 0 0 0-3-3h-1"/><path d="M8 12a2 2 0 1 1 4 0v1H8z"/><path d="M12 13a2 2 0 1 1 4 0v1h-4z"/><circle cx="6" cy="9" r="2.5"/><circle cx="18" cy="9" r="2.5"/></svg></div>
         <div class="oc-info">
@@ -2803,6 +2814,30 @@
           <div class="oc-sub" id="label-retrait-sub">À convenir en main propre</div>
         </div>
         <div class="oc-chevron">›</div>
+      </div>
+      <!-- LIEU DU RENDEZ-VOUS (visible seulement si "Meetup" est choisi, juste sous sa case) -->
+      <div class="section-box" id="delivery-meetup-section" style="display:none; margin-top:-6px;">
+        <div class="checkout-section-header">
+          <div class="csh-step">3</div>
+          <div>
+            <div class="csh-title" id="label-meetupbox-title">Lieu du rendez-vous</div>
+          </div>
+        </div>
+        <div class="field-card">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span style="width:36px; height:36px; border-radius:10px; background:rgba(var(--glow-rgb),0.15); display:flex; align-items:center; justify-content:center; color:var(--lime); flex-shrink:0;">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            </span>
+            <span id="checkout-meetup-location" style="font-weight:700; font-size:15px;">—</span>
+          </div>
+        </div>
+        <div class="checkout-section-header" style="margin-top:14px;">
+          <div class="csh-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg></div>
+          <div><div class="csh-title">Disponibilités</div></div>
+        </div>
+        <div class="field-card" style="margin-bottom:0;">
+          <span id="checkout-meetup-hours" style="font-weight:700; font-size:15px;">—</span>
+        </div>
       </div>
     </div>
 
@@ -2930,42 +2965,6 @@
       </div>
     </div>
 
-    <!-- HORAIRE DE TOURNÉE (visible seulement si "Horaires de livraison" est choisi) -->
-    <div class="section-box" id="delivery-hours-section" style="display:none;">
-      <div class="checkout-section-header">
-        <div class="csh-step">3</div>
-        <div>
-          <div class="csh-title" id="label-hoursbox-title">Horaires de tournée</div>
-          <div class="csh-sub" id="label-hoursbox-sub">Choisis un créneau de passage</div>
-        </div>
-      </div>
-      <div id="checkout-hours-options"></div>
-    </div>
-
-    <!-- LIEU DU RENDEZ-VOUS (visible seulement si "Point relais" est choisi) -->
-    <div class="section-box" id="delivery-meetup-section" style="display:none;">
-      <div class="checkout-section-header">
-        <div class="csh-step">3</div>
-        <div>
-          <div class="csh-title" id="label-meetupbox-title">Lieu du rendez-vous</div>
-        </div>
-      </div>
-      <div class="field-card">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <span style="width:36px; height:36px; border-radius:10px; background:rgba(var(--glow-rgb),0.15); display:flex; align-items:center; justify-content:center; color:var(--lime); flex-shrink:0;">
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>
-          </span>
-          <span id="checkout-meetup-location" style="font-weight:700; font-size:15px;">—</span>
-        </div>
-      </div>
-      <div class="checkout-section-header" style="margin-top:14px;">
-        <div class="csh-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg></div>
-        <div><div class="csh-title">Disponibilités</div></div>
-      </div>
-      <div class="field-card" style="margin-bottom:0;">
-        <span id="checkout-meetup-hours" style="font-weight:700; font-size:15px;">—</span>
-      </div>
-    </div>
 
 
     <div class="section-label" id="label-recap-title">Récapitulatif</div>
