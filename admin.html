@@ -799,6 +799,7 @@
         <button class="nav-row" onclick="openSettingsSection('banner')">Bannière</button>
         <button class="nav-row" onclick="openSettingsSection('splash')">Personnage écran de lancement</button>
         <button class="nav-row" onclick="openSettingsSection('announcement')">Bloc annonce / promo</button>
+        <button class="nav-row" onclick="openSettingsSection('vip-benefits')">Avantages VIP Lounge</button>
         <button class="nav-row" onclick="openSettingsSection('security')">Sécurité</button>
         <button class="nav-row" onclick="openSettingsSection('crypto')">Paiement crypto</button>
         <button class="nav-row" onclick="openSettingsSection('vip')">Clients VIP</button>
@@ -994,6 +995,18 @@
       <input id="s-announcement-vip" placeholder="Ex : ★ Merci pour ta fidélité, client VIP">
 
       <button onclick="saveStyleSettings()" style="width:100%; margin-top:10px;">Enregistrer</button>
+    </div>
+
+    <div class="subscreen" id="reglages-vip-benefits">
+      <button class="subscreen-back" onclick="closeSettingsSection()">Réglages</button>
+      <h2>Avantages VIP Lounge</h2>
+      <label>Un avantage par ligne — affichés dans "Tes avantages VIP" sur l'onglet VIP de l'app</label>
+      <textarea id="s-vip-benefits" rows="6" placeholder="Accès en avant-première aux nouveaux produits
+Réduction automatique appliquée au panier
+Paiement Paysafecard / Transcash débloqué
+Thème doré exclusif dans toute l'app"></textarea>
+      <p class="muted" style="margin-top:6px;">Laisse vide pour garder la liste par défaut.</p>
+      <button onclick="saveContent()" style="width:100%; margin-top:10px;">Enregistrer</button>
     </div>
 
     <div class="subscreen" id="reglages-security">
@@ -2840,6 +2853,7 @@ async function loadContent(){
   document.getElementById('msg-delivered-retrait').value = sm.deliveredRetrait || '';
 
   const lb = c.labels || {};
+  document.getElementById('s-vip-benefits').value = (Array.isArray(lb.vipBenefits) ? lb.vipBenefits.join('\n') : '');
   document.getElementById('lb-hero-title').value = lb.heroTitle || '';
   document.getElementById('lb-hero-hidden').checked = !!lb.heroTitleHidden;
   document.getElementById('lb-cat1-name').value = lb.cat1Name || '';
@@ -2967,6 +2981,7 @@ async function saveContent(){
     deliveredRetrait: document.getElementById('msg-delivered-retrait').value,
   };
   const labels = {
+    vipBenefits: document.getElementById('s-vip-benefits').value.split('\n').map(s => s.trim()).filter(Boolean),
     heroTitle: document.getElementById('lb-hero-title').value,
     heroTitleHidden: document.getElementById('lb-hero-hidden').checked,
     cat1Name: document.getElementById('lb-cat1-name').value,

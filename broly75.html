@@ -2352,10 +2352,12 @@
 
     <div class="info-block" style="margin-top:16px;">
       <div class="info-block-title">Tes avantages VIP</div>
-      <div class="info-row"><span>★</span><span>Accès en avant-première aux nouveaux produits</span></div>
-      <div class="info-row"><span>★</span><span>Réduction automatique appliquée au panier</span></div>
-      <div class="info-row"><span>★</span><span>Paiement Paysafecard / Transcash débloqué</span></div>
-      <div class="info-row"><span>★</span><span>Thème doré exclusif dans toute l'app</span></div>
+      <div id="lounge-benefits-list">
+        <div class="info-row"><span>★</span><span>Accès en avant-première aux nouveaux produits</span></div>
+        <div class="info-row"><span>★</span><span>Réduction automatique appliquée au panier</span></div>
+        <div class="info-row"><span>★</span><span>Paiement Paysafecard / Transcash débloqué</span></div>
+        <div class="info-row"><span>★</span><span>Thème doré exclusif dans toute l'app</span></div>
+      </div>
     </div>
 
     <div id="lounge-exclusive-section" style="display:none; margin-top:16px;">
@@ -4106,6 +4108,12 @@ function timeAgo(dateStr){
 
 async function openVipLounge(){
   hideNav();
+  const benefits = siteContent?.labels?.vipBenefits;
+  if (Array.isArray(benefits) && benefits.length){
+    document.getElementById('lounge-benefits-list').innerHTML = benefits
+      .map(b => `<div class="info-row"><span>★</span><span>${b}</span></div>`)
+      .join('');
+  }
   const tgUser = tg?.initDataUnsafe?.user;
   let ordersCount = 0;
   if (tgUser){
