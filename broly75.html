@@ -1270,13 +1270,10 @@
     background:var(--co-bg); backdrop-filter:blur(6px);
     border:1.5px solid var(--co-g-dim, rgba(var(--glow-rgb),0.3));
     padding:14px;
-    display:flex; flex-direction:column; gap:0;
-  }
-  .item-slide .is-top-row{
-    display:flex; align-items:center; gap:14px; padding-bottom:12px;
+    display:flex; align-items:stretch; gap:14px;
   }
   .item-slide .is-thumb{
-    width:64px; height:64px; border-radius:14px; flex-shrink:0;
+    width:64px; border-radius:14px; flex-shrink:0;
     background:rgba(var(--glow-rgb),0.08); background-size:cover; background-position:center;
     border:1px solid var(--co-g-dim, rgba(var(--glow-rgb),0.3));
     display:flex; align-items:center; justify-content:center; color:var(--co-g, var(--lime));
@@ -1286,14 +1283,15 @@
     width:28px; height:28px; border-radius:50%; background:rgba(229,85,92,0.15); color:#E5555C;
     display:flex; align-items:center; justify-content:center; border:1.5px solid rgba(229,85,92,0.4); padding:0;
   }
-  .item-slide .is-divider{ border:none; border-top:1px solid var(--co-g-dim, rgba(var(--glow-rgb),0.3)); margin:0 0 12px; }
-  .item-slide .is-bottom-row{ display:flex; align-items:center; justify-content:space-between; gap:14px; }
-  .item-slide .is-body{ flex:1; min-width:0; padding-right:34px; }
+  .item-slide .is-content{ flex:1; min-width:0; display:flex; flex-direction:column; justify-content:space-between; }
+  .item-slide .is-divider{ border:none; border-top:1px solid var(--co-g-dim, rgba(var(--glow-rgb),0.3)); margin:6px 0; }
+  .item-slide .is-bottom-row{ display:flex; align-items:flex-end; justify-content:space-between; gap:14px; }
   .item-slide .is-name{
     font-weight:700; font-size:13.5px; color:var(--paper);
     overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    padding-right:34px;
   }
-  .item-slide .is-total{ font-family:var(--font-mono); font-weight:800; font-size:20px; color:var(--co-g, var(--lime)); }
+  .item-slide .is-total{ font-family:var(--font-mono); font-weight:800; font-size:18px; color:var(--co-g, var(--lime)); }
   .item-slide .qty-stepper{ flex-shrink:0; }
 
   .items-dots{ display:flex; justify-content:center; gap:6px; margin-bottom:20px; }
@@ -3783,21 +3781,19 @@ function renderCheckoutItems(){
       <button type="button" class="is-remove" onclick="removeCartItem(${p.id})">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
       </button>
-      <div class="is-top-row">
-        <div class="is-thumb" ${p.img ? `style="background-image:url('${p.img}')"` : ''}>
-          ${p.img ? '' : '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2l1.5 4h9L18 2"/><path d="M3 6h18l-1.5 14a2 2 0 0 1-2 1.8H6.5a2 2 0 0 1-2-1.8L3 6z"/></svg>'}
-        </div>
-        <div class="is-body">
-          <div class="is-name">${p.name}${p.tierLabel ? ' — ' + p.tierLabel : ''}${p.color ? ' / ' + p.color : ''}</div>
-        </div>
+      <div class="is-thumb" ${p.img ? `style="background-image:url('${p.img}')"` : ''}>
+        ${p.img ? '' : '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2l1.5 4h9L18 2"/><path d="M3 6h18l-1.5 14a2 2 0 0 1-2 1.8H6.5a2 2 0 0 1-2-1.8L3 6z"/></svg>'}
       </div>
-      <hr class="is-divider">
-      <div class="is-bottom-row">
-        <div class="is-total">${(p.price * p.qty).toFixed(2)} €</div>
-        <div class="qty-stepper">
-          <button type="button" onclick="updateQty(${p.id}, -1)">−</button>
-          <span class="qty-value">${p.qty}</span>
-          <button type="button" onclick="updateQty(${p.id}, 1)">+</button>
+      <div class="is-content">
+        <div class="is-name">${p.name}${p.tierLabel ? ' — ' + p.tierLabel : ''}${p.color ? ' / ' + p.color : ''}</div>
+        <hr class="is-divider">
+        <div class="is-bottom-row">
+          <div class="is-total">${(p.price * p.qty).toFixed(2)} €</div>
+          <div class="qty-stepper">
+            <button type="button" onclick="updateQty(${p.id}, -1)">−</button>
+            <span class="qty-value">${p.qty}</span>
+            <button type="button" onclick="updateQty(${p.id}, 1)">+</button>
+          </div>
         </div>
       </div>
     </div>
