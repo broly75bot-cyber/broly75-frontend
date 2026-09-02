@@ -800,6 +800,20 @@
     border-radius:20px;
     transform:rotate(6deg);
   }
+  .card .tag.tag-vip{
+    top:-9px; right:-8px;
+    font-family:var(--font-title);
+    font-size:10.5px;
+    font-weight:400;
+    letter-spacing:0.03em;
+    background:linear-gradient(135deg, #FFF3B0, #FFD700 55%, #E8B400);
+    color:#2A1D00;
+    padding:4px 10px 4px 8px;
+    border-radius:6px;
+    border:1.5px solid #FFF3B0;
+    box-shadow:0 0 10px rgba(255,215,0,0.65), 0 2px 4px rgba(0,0,0,0.4);
+    transform:rotate(0deg);
+  }
   .card img{
     width:100%;
     aspect-ratio:3/4;
@@ -915,23 +929,6 @@
     0%, 100%{ transform:translateY(0); }
     30%{ transform:translateY(-4px); }
     50%{ transform:translateY(0); }
-  }
-  .vip-exclusive-card{ position:relative; }
-  .vip-exclusive-card::before{
-    content:'';
-    position:absolute;
-    inset:-3px;
-    border-radius:19px;
-    padding:3px;
-    background:conic-gradient(from 0deg, transparent 0%, rgba(255,230,0,0.95) 15%, transparent 35%);
-    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;
-    mask-composite:exclude;
-    animation:vipBorderSpin 3s linear infinite;
-    pointer-events:none;
-  }
-  @keyframes vipBorderSpin{
-    to{ transform:rotate(360deg); }
   }
   .nav-item .badge{
     position:absolute;
@@ -3543,9 +3540,8 @@ function renderGrid(){
     (!p.vipEarlyAccess || isVipUser)
   );
   grid.innerHTML = list.map(p => `
-    <div class="card ${p.vipEarlyAccess ? 'vip-exclusive-card' : ''}" id="card-${p.id}" onclick="openProduct(${p.id})">
-      <div class="tag">${p.tag}</div>
-      ${p.vipEarlyAccess ? '<div class="tag" style="right:8px; left:auto; background:var(--lime); color:#04130A;">★ VIP</div>' : ''}
+    <div class="card" id="card-${p.id}" onclick="openProduct(${p.id})">
+      <div class="${p.vipEarlyAccess ? 'tag tag-vip' : 'tag'}">${p.vipEarlyAccess ? '★ VIP' : p.tag}</div>
       <img src="${p.img}" alt="${p.name}">
       ${p.brand ? `<div class="card-brand">${p.brand}</div>` : ''}
       <div class="name">${p.name}</div>
